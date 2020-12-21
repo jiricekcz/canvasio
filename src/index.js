@@ -6,6 +6,9 @@ const decimalRoundCoordinate = 3;
  * @description Amount of decimal places round angles in radians to
  */
 const decimalRoundAngle = 10;
+/**
+ * @description Class representing a canvas
+ */
 export class Canvas {
     /**
      * 
@@ -62,7 +65,6 @@ export class Canvas {
         this.translatation = new ZeroTranslation();
     }
     /**
-      * @function drawLine
       * @param {Number} A 
       * @param {Number} B 
       * @param {Number} C
@@ -70,7 +72,6 @@ export class Canvas {
       * @returns {void}
       */
     /**
-     * @function drawLine
      * @param {Object} A Point A
      * @param {Number} [A.x] The x coordinate
      * @param {Number} [A.y] The y coordinate
@@ -114,7 +115,6 @@ export class Canvas {
         return this.translatation.translate(x, y);
     }
     /**
-     * 
      * @param {Object} options
      * @param {Number} [options.x] The x coordinate of the [0, 0] point
      * @param {Number} [options.y] The y coordinate of the [0, 0] point
@@ -126,6 +126,9 @@ export class Canvas {
         if (!options) this.translatation = new ZeroTranslation(); else this.translatation = new Translation(options);
     }
 }
+/**
+ * @description Class representing a point on the canvas
+ */
 export class Point {
     /**
      * 
@@ -166,6 +169,9 @@ export class Point {
         return Math.pow(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2), 1 / 2);
     }
 }
+/**
+ * @description Class used for translating points with scale, moved zero and rotations
+ */
 export class Translation {
     /**
      * 
@@ -236,10 +242,25 @@ export class Translation {
         return new Point(x * this.scale.x + this.zero.x, y * this.scale.y + this.zero.y);
     }
 }
+/**
+ * @description Simplified version of Translation with default values and optimized algorithms for those values
+ * @extends {Translation}
+ */
 export class ZeroTranslation extends Translation {
     constructor() {
         super({});
     }
+    /**
+     * @description Translates a point represented by a Point object to a new Point represented by a Point object
+     * @param {Point} x 
+     * @returns {Point}
+     */
+    /**
+     * @description Translates a point represented by the x and y coordinates to a new Point represented by a Point object.
+     * @param {Number} x 
+     * @param {Number} y 
+     * @returns {Point}
+     */
     translate(x,y) {
         if (x.constructor.name === 'Point') {
             y = x.y;
@@ -252,7 +273,7 @@ export class ZeroTranslation extends Translation {
 /**
  * @description Rounds number with given constants 
  * @param {Number} x The number to round
- * @param {"coordinate", "angle"}
+ * @param {"coordinate" | "angle"}
  * @returns {Number}
  */
 function round(x, type = "coordinate") {
