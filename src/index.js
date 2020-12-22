@@ -156,6 +156,13 @@ export class Canvas {
     setTransform(transform) {
         this.context.setTransform(transform);
     }
+    /**
+     * @description Clears the canvas
+     * @returns {void}
+     */
+    clear() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    }
 }
 /**
  * @description Class representing a point on the canvas
