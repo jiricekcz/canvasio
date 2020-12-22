@@ -85,6 +85,7 @@ export class Canvas {
             this.context.beginPath();
             this.context.moveTo(A.x, A.y);
             this.context.lineTo(B.x, B.y);
+            this.context.closePath();
             this.context.stroke();
         } catch (e) {
             throw new Error(`Unable to draw line from [${A.x}, ${A.y}] to [${B.x}, ${B.y}]`);
