@@ -177,19 +177,52 @@ export class Canvas {
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
-        for (var i = width; i < this.canvas.height; i+= width) {
+        for (var i = width; i < this.canvas.height; i += width) {
             this.drawLine(-this.canvas.width, i, this.canvas.width, i);
         }
-        for (var i = -width; i > -this.canvas.height; i-= width) {
+        for (var i = -width; i > -this.canvas.height; i -= width) {
             this.drawLine(-this.canvas.width, i, this.canvas.width, i);
         }
-        for (var i = width; i < this.canvas.width; i+= width) {
+        for (var i = width; i < this.canvas.width; i += width) {
             this.drawLine(i, -this.canvas.height, i, this.canvas.height);
         }
-        for (var i = -width; i > -this.canvas.width; i-= width) {
+        for (var i = -width; i > -this.canvas.width; i -= width) {
             this.drawLine(i, -this.canvas.height, i, this.canvas.height);
         }
         this.context.lineWidth = lw;
+    }
+    /**
+     * @description Draws a rectangle outline
+     * @param {Number} x The x coordinate of the upper left corner of the rectangle
+     * @param {Number} y The y coordinate of the upper left corner of the rectangle
+     * @param {Number} width The width of the rectangle 
+     * @param {Number} height The height of the rectangle
+     * @returns {void}
+     */
+    rect(x, y, width, height) {
+        this.context.strokeRect(x, y, width, height);
+    }
+    /**
+     * @description Fills a rectangle
+     * @param {Number} x The x coordinate of the upper left corner of the rectangle
+     * @param {Number} y The y coordinate of the upper left corner of the rectangle
+     * @param {Number} width The width of the rectangle 
+     * @param {Number} height The height of the rectangle
+     * @returns {void}
+     */
+    fillRect(x, y, width, height) {
+        this.context.fillRect(x, y, width, height);
+    }
+    /**
+     * @description Clears a rectangle
+     * @param {Number} x The x coordinate of the upper left corner of the rectangle
+     * @param {Number} y The y coordinate of the upper left corner of the rectangle
+     * @param {Number} width The width of the rectangle 
+     * @param {Number} height The height of the rectangle
+     * @returns {void}
+     */
+    clearRect(x, y, width, height) {
+        this.context.clearRect(x, y, width, height);
     }
 }
 /**
