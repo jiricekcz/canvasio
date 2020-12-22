@@ -238,6 +238,99 @@ export class Canvas {
     load() {
         this.context.restore();
     }
+    /**
+     * @description Draws a text on the canvas
+     * @param {String} text Text to be drawn on canvas
+     * @param {Number} x The x coordinate of the upper left corner of the text
+     * @param {Number} y The y coordinate of the upper left corner of the text
+     * @param {?Number} maxWidth Max width of the text
+     * @returns {void}
+     */
+    text(text, x, y, maxWidth) {
+        this.context.fillText(text, x, y, maxWidth);
+    }
+    /**
+     * @description Draws a text outline on the canvas
+     * @param {String} text Text to be drawn on canvas
+     * @param {Number} x The x coordinate of the upper left corner of the text
+     * @param {Number} y The y coordinate of the upper left corner of the text
+     * @param {?Number} maxWidth Max width of the text
+     * @returns {void}
+     */
+    textOutline(text, x, y, maxWidth) {
+        this.context.strokeText(text, x, y, maxWidth);
+    }
+    /**
+     * @description Sets line width 
+     * @param {Number} width 
+     * @returns {void}
+     */
+    setLineWidth(width) {
+        this.context.lineWidth = width;
+    }
+    /**
+     * @description Sets the type of line endings 
+     * @param {"butt" | "round" | "square"} cap Type of cap
+     * @returns {void}
+     */
+    setLineCap(cap = "butt") {
+        this.context.lineCap = cap;
+    }
+    /**
+     * @description Sets the type of corners where two lines meet
+     * @param {"round" | "bevel" | "miter"} join Type of line join
+     * @returns {void}
+     */
+    setLineJoin(join = "miter") {
+        this.lineJoin = join;
+    }
+    /**
+     * @description Sets the miter limit
+     * @param {Number} limit 
+     * @returns {void}
+     */
+    setMiterLimit(limit) {
+        this.context.miterLimit = limit;
+    }
+    /**
+     * @description Sets the spacing of a line
+     * @param {Number} lineWidth The width of the line
+     * @param {Number} spacing Spacing of the lines 
+     * @returns {void}
+     */
+    /**
+     * @description Sets the spacing of a line
+     * @param {Array<Number>} lineWidth 
+     * @returns {void}
+     */
+    setLineDash(lineWidth, spacing) {
+        if (typeof lineWidth === "object") this.context.setLineDash(lineWidth); else this.context.setLineDash([lineWidth, spacing]);
+    }
+    /**
+     * @description Gets the line dashing pattern
+     * @return {LineDashPattern}
+     */
+    getLineDash() {
+        return new LineDashPattern(this.context.getLineDash()); 
+    }
+    /**
+     * @description Sets the line dash offset
+     * @param {Number} offset The offset of the line dash
+     * @returns {void}
+     */
+    setLineDashOffset(offset) {
+        this.context.lineDashOffset = offset;
+    }
+}
+/**
+ * @description Class representing a line dash pattern
+ * @extends {Array}
+ */
+export class LineDashPattern extends Array {
+    constructor(pattern) {
+        super();
+        this.push(...pattern);
+    }
 }
 /**
  * @description Class representing a point on the canvas
