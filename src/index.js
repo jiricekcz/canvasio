@@ -224,6 +224,20 @@ export class Canvas {
     clearRect(x, y, width, height) {
         this.context.clearRect(x, y, width, height);
     }
+    /**
+     * @returns {void}
+     * @description Saves the currect state of the canvas to stack. Can be restored using Canvas.load()
+     */
+    save() {
+        this.context.save();
+    }
+    /**
+     * @returns {void}
+     * @description Loads the last saved canvas from the stack
+     */
+    load() {
+        this.context.restore();
+    }
 }
 /**
  * @description Class representing a point on the canvas
