@@ -162,7 +162,10 @@ export class Canvas {
      * @returns {void}
      */
     clear() {
-        this.context.clearRect(-this.canvas.width, -this.canvas.height, this.canvas.width * 2, this.canvas.height * 2)
+        var s = this.getTransform();
+        this.transform();
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.setTransform(s);
     }
     /**
      * @description Draws a grid
