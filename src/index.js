@@ -283,43 +283,6 @@ export class Point {
     }
 }
 /**
- * @description Class describing the configuration of a canvas
- */
-class CanvasConfiguration {
-    /**
-     * 
-     * @param {Canvas} canvas The canvas to load the configuration from
-     */
-    constructor(canvas) {
-        /**
-         * @type {Canvas}
-         * @description The canvas object
-         */
-        this.canvas = canvas;
-        this.lineWidth = canvas.context.lineWidth;
-        this.lineCap = canvas.context.lineCap;
-        this.lineJoin = canvas.context.lineJoin;
-        this.miterLimit = canvas.context.miterLimit;
-        this.lineDashOffset = canvas.context.lineDashOffset;
-        this.lineDash = canvas.context.getLineDash();
-        this.transform = canvas.context.getTransform();
-        this.font = canvas.context.font;
-        this.textAlign = canvas.context.textAlign;
-        this.textBaseline = canvas.context.textBaseline;
-        this.direction = canvas.context.direction;
-        this.fillStyle = canvas.context.fillStyle;
-        this.strokeStyle = canvas.context.strokeStyle;
-        this.shadowBlur = canvas.context.shadowBlur;
-        this.shadowColor = canvas.context.shadowColor;
-        this.shadowOffsetX = canvas.context.shadowOffsetX;
-        this.shadowOffsetY = canvas.context.shadowOffsetY;
-        this.globalAlpha = canvas.context.globalAlpha;
-        this.globalCompositeOperation = canvas.context.globalCompositeOperation;
-        this.imageSmoothingEnabled = canvas.context.imageSmoothingEnabled;
-        this.imageSmoothingQuality = canvas.context.imageSmoothingQuality;
-    }
-}
-/**
  * @description Rounds number with given constants 
  * @param {Number} x The number to round
  * @param {"coordinate" | "angle"}
