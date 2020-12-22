@@ -165,7 +165,7 @@ export class Canvas {
         this.context.clearRect(-this.canvas.width, -this.canvas.height, this.canvas.width * 2, this.canvas.height * 2)
     }
     /**
-     * 
+     * @description Draws a grid
      * @param {Number} width How far apart should the lines of the grid be
      */
     drawGrid(width = 50) {
