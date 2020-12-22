@@ -311,7 +311,7 @@ export class Canvas {
      * @return {LineDashPattern}
      */
     getLineDash() {
-        return new LineDashPattern(this.context.getLineDash()); 
+        return new LineDashPattern(this.context.getLineDash());
     }
     /**
      * @description Sets the line dash offset
@@ -321,7 +321,55 @@ export class Canvas {
     setLineDashOffset(offset) {
         this.context.lineDashOffset = offset;
     }
-}
+    /**
+     * @description Sets the font style
+     * @param {String} font String represnting the css style font
+     * @returns {void}
+     */
+    setFont(font) {
+        this.context.font = font;
+    }
+    /**
+     * @description Sets the text align
+     * @param {"start" | "end" | "left" | "right" | "center"} textAlign Text align type
+     * @returns {void}
+     */
+    setTextAlign(textAlign = "start") {
+        this.context.textAlign = textAlign;
+    }
+    /**
+     * @description Sets the test baseline
+     * @param {"top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom"} textBaseline Text baseline style
+     * @returns {void} 
+     */
+    setTextBaseline(textBaseline = "alphabetic") {
+        this.context.textBaseline = textBaseline;
+    }
+    /**
+     * @description Sets text direction
+     * @param {"ltr" | "rtl" | "inherit"} direction Direction of the text
+     * @returns {void}
+     */
+    setDirection(direction = "inherit") {
+        this.context.direction = direction;
+    }
+    /**
+     * @description Sets the fill style
+     * @param {String | CanvasGradient | CanvasPattern} style Syle of fill (color | gradient | image)
+     * @returns {void}
+     */
+    setFill(style) {
+        this.context.fillStyle = style;
+    }
+    /**
+     * @description Sets the stroke style
+     * @param {String | CanvasGradient | CanvasPattern} style Syle of stroke (color | gradient | image)
+     * @returns {void}
+     */
+    setStroke(style) {
+        this.context.strokeStyle = style;
+    }
+} 
 /**
  * @description Class representing a line dash pattern
  * @extends {Array}
