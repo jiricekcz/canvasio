@@ -115,6 +115,47 @@ export class Canvas {
             this.context.rotate(round(options.rotation, "angle"));
         }
     }
+    /**
+     * @description Moves the zero point of the canvas
+     * @param {Number} x X axis move 
+     * @param {Number} y Y axis move
+     * @returns {void}
+     */
+    translate(x = 0, y = 0) {
+        this.context.translate(x, y);
+    }
+    /**
+     * @description Scales the canvas
+     * @param {Number} x X axis scale
+     * @param {Number} y Y axis scale
+     * @return {void}
+     */
+    scale(x = 1, y = 1) {
+        this.context.scale(x, y);
+    }
+    /**
+     * @description Rotates the canvas
+     * @param {Number} angle Angle of rotation in radians
+     * @return {void}
+     */
+    rotate(angle) {
+        this.context.rotate(angle);
+    }
+    /**
+     * @description Gets the transform matrix
+     * @return {DOMMatrix2DInit}
+     */
+    getTransform() {
+        return this.context.getTransform();
+    }
+    /**
+     * @description Sets the transform matrix
+     * @param {DOMMatrix2DInit} transform 
+     * @returns {void}
+     */
+    setTransform(transform) {
+        this.context.setTransform(transform);
+    }
 }
 /**
  * @description Class representing a point on the canvas
