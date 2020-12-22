@@ -77,7 +77,7 @@ export class Canvas {
      */
     drawLine(A, B, C, D) {
         if (A === undefined || B === undefined) throw new Error("At least two arguments need to be provided.")
-        if (C) {
+        if (typeof C === "number") {
             A = new Point(A, B);
             B = new Point(C, D);
         }
@@ -162,6 +162,30 @@ export class Canvas {
      */
     clear() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    }
+    /**
+     * 
+     * @param {Number} width How far apart should the lines of the grid be
+     */
+    drawGrid(width = 50) {
+        var lw = this.context.lineWidth;
+        this.context.lineWidth = 2;
+        this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
+        this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
+        this.context.lineWidth = 0.5;
+        for (var i = width; i < this.canvas.height; i+= width) {
+            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+        }
+        for (var i = -width; i > -this.canvas.height; i-= width) {
+            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+        }
+        for (var i = width; i < this.canvas.width; i+= width) {
+            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+        }
+        for (var i = -width; i > -this.canvas.width; i-= width) {
+            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+        }
+        this.context.lineWidth = lw;
     }
 }
 /**
