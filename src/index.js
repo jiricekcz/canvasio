@@ -475,7 +475,16 @@ export class Canvas {
         this.filters.clear();
         this.context.filter = this.filters.toString();
     }
-
+    /**
+     * @description Sets the image smoothing
+     * @param {"disabled" | "low" | "medium" | "high"} imageSmoothingMode 
+     * @returns {void}
+     */
+    setImageSmooth(imageSmoothingMode) {
+        if (imageSmoothingMode === "disabled") return (this.context.imageSmoothingEnabled = false, [][0]);
+        this.context.imageSmoothingEnabled = true;
+        this.context.imageSmoothingQuality = imageSmoothingMode;
+    }
 }
 /**
  * @description Class representing a line dash pattern
