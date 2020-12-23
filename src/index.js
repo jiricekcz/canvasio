@@ -58,6 +58,11 @@ export class Canvas {
          * @type {CanvasRenderingContext2D}
          */
         this.context = this.canvas.getContext("2d");
+        /**
+         * @description Filters for the canvas
+         * @type {FilterManager}
+         */
+        this.filters = new FilterManager();
     }
     /**
       * @param {Number} A 
@@ -438,6 +443,39 @@ export class Canvas {
     getImageData(rectangle) {
         return this.context.getImageData(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
+    /**
+     * @description Applies a filter to the canvas
+     * @param {Filter} filter Filter to be applied
+     * @returns {void}
+     */
+    applyFilter(filter) {
+        this.filters.add(filter);
+        this.context.filter = this.filters.toString();
+    }
+    /**
+     * @description Returns all the filters
+     * @returns {FilterManager}
+     */
+    getAllFilters() {
+        return this.filters;
+    }
+    /**
+     * @description Removes a filter
+     * @param {Number | Filter} filter 
+     */
+    removeFilter(filter) {
+        this.filters.remove(filter);
+        this.context.filter = this.filters.toString();
+    }
+    /**
+     * @description Clears all filters
+     * @returns {void}
+     */
+    clearFilters() {
+        this.filters.clear();
+        this.context.filter = this.filters.toString();
+    }
+
 }
 /**
  * @description Class representing a line dash pattern
@@ -524,6 +562,291 @@ export class Image {
         if (typeof this.w === "number" && typeof this.h === "number") {
             return (typeof this.cropRectangle === "object" && typeof this.cropRectangle.height === "number" && typeof this.cropRectangle.width === "number" && typeof this.cropRectangle.x === "number" && typeof this.cropRectangle.y === "number") ? "crop" : "resize";
         } else return "normal";
+    }
+}
+/**
+ * @description Represents a filter that can be applied to the canvas
+ */
+/**
+ * @description Manages filters for a canvas
+ * @extends {Array<Filter>}
+ */
+class FilterManager extends Array {
+    constructor() {
+        super();
+    }
+    /**
+     * @description Adds a filter
+     * @param {Filter} filter 
+     */
+    add(filter) {
+        this.push(filter);
+    }
+    /**
+     * @description Removes an existing filter
+     * @param {Number | Filter} f 
+     * @returns {void}
+     */
+    remove(f) {
+        if (typeof f === "number") {
+            this.splice(f, 1);
+        } else if (typeof f === "object") {
+            if (this.findIndex(v => v === f) == -1) throw new Error("Filter not found.");
+            this.splice(this.findIndex(v => v === f), 1);
+        } else throw new TypeError("Parameter must be and index or a filter.");
+    }
+    /**
+     * @description Clears all filters
+     * @returns {void}
+     */
+    clear() {
+        this.splice(0, this.length);
+    }
+    /**
+     * @description Returns a string representation of the filters
+     * @returns {String}
+     */
+    toString() {
+        return this.join(" ");
+    }
+}
+export class Filter {
+    constructor(type, value) {
+        /**
+         * @description The type of the filter
+         * @type {"url" | "blur" | "brightness" | "contrast" | "dropShadow" | "Grayscale" | "hue-rotate" | "invert" | "opacity" | "saturate" | "sepia"}
+         */
+        this.type = type;
+        /**
+         * @description The value of the filter
+         * @type {Number}
+         */
+        this.value = value;
+        /**
+         * @description Used to construct the filter string
+         * @type {String}
+         */
+        this.unit;
+    }
+    /**
+     * @description The toString function
+     * @returns {String}
+     */
+    toString() {
+        return `${this.type}(${this.value}${this.unit})`;
+    }
+    /**
+     * @description All possible filters
+     * @constant
+     */
+    static filters = {
+        url: Filter.Url,
+        blur: Filter.Blur,
+        brightness: Filter.Brightness,
+        contrast: Filter.Contrast,
+        dropShadow: Filter.DropShadow,
+        grayscale: Filter.Grayscale,
+        hueRotate: Filter.HueRotate,
+        invert: Filter.Invert,
+        opacity: Filter.Opacity,
+        saturation: Filter.Saturation,
+        sepia: Filter.Sepia
+    }
+}
+/**
+ * @description Blur filter
+ * @extends {Filter}
+ */
+Filter.Blur = class BlurFilter extends Filter {
+    /**
+     * 
+     * @param {Number} radius A number representing the radius of the blur
+     */
+    constructor(radius) {
+        if (typeof radius !== 'number') throw new TypeError("Radius must be a number.");
+        super("blur", radius);
+        this.unit = "px";
+    }
+}
+/**
+ * @description External SVG filter
+ * @extends {Filter}
+ */
+Filter.Url = class UrlFilter extends Filter {
+    /**
+     * 
+     * @param {String} url The url to the filter
+     */
+    constructor(url) {
+        if (typeof url !== "string") throw new TypeError("Url must be a string.");
+        super("url", url);
+        this.unit = "";
+    }
+}
+/**
+ * @description Brightness filter
+ * @extends {Filter}
+ */
+Filter.Brightness = class BrightnessFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("brightness", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description Contrast filter
+ * @extends {Filter}
+ */
+Filter.Contrast = class ContrastFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("contrast", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description DropShadow filter 
+ * @extends {Filter}
+ */
+Filter.DropShadow = class DropShadowFilter extends Filter {
+    /**
+     * 
+     * @param {Number} xOffset X axis offset
+     * @param {Number} yOffset Y axis offset
+     * @param {Number} blurRadius Blur radius
+     * @param {String} color Color of the shadow
+     */
+    constructor(xOffset, yOffset, blurRadius, color) {
+        if (typeof xOffset !== "number") throw new TypeError("X Offset must be a number.");
+        if (typeof yOffset !== "number") throw new TypeError("Y Offset must be a number.");
+        if (typeof blurRadius !== "number") throw new TypeError("Blur radius must be a number.");
+        if (blurRadius < 0) throw new Error("Blur radius must be greater than or equal to zero.");
+        if (!color || (typeof color !== "string" && typeof color.toString() !== "string")) throw new TypeError("Color must be representable by a string.");
+        if (typeof color !== "string") color = color.toString();
+        this.type = "drop-shadow";
+        /**
+         * @description Values to the function
+         * @type {Number | String}
+         */
+        this.values = [xOffset, yOffset, blurRadius, color];
+        /**
+         * @description Units to the values
+         * @type {String}
+         */
+        this.units = ["px", "px", "", ""];
+    }
+    /**
+     * @description The toString function
+     * @returns {String}
+     */
+    toString() {
+        return `${this.type}(${this.values[0]}${this.units[0]} ${this.values[1]}${this.units[1]} ${this.values[2]}${this.units[2]} ${this.values[3]}${this.units[3]})`;
+    }
+}
+/**
+ * @description Grayscale filter 
+ * @extends {Filter}
+ */
+Filter.Grayscale = class GrayscaleFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("grayscale", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description Filter that rotates all colors hue by an angle
+ * @extends {Filter}
+ */
+Filter.HueRotate = class HueRotateFilter extends Filter {
+    /**
+     * 
+     * @param {Number} angle Angle to rotate in radians
+     */
+    constructor(angle) {
+        if (typeof angle !== "number") throw new TypeError("Angle must be a number.");
+        super("hue-rotate", Math.round(angle / Math.PI * 180 * 1e2) * 1e2);
+        this.unit = "deg";
+    }
+}
+/**
+ * @description Invert filter 
+ * @extends {Filter}
+ */
+Filter.Invert = class InvertFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("invert", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description Opacity filter 
+ * @extends {Filter}
+ */
+Filter.Opacity = class OpacityFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("opacity", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description Saturation filter 
+ * @extends {Filter}
+ */
+Filter.Saturation = class SaturationFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("saturate", intensity * 100);
+        this.unit = "%";
+    }
+}
+/**
+ * @description Sepia filter 
+ * @extends {Filter}
+ */
+Filter.Sepia = class SepiaFilter extends Filter {
+    /**
+     * 
+     * @param {Number} intensity A number between 0 and 1 representing the intensity
+     */
+    constructor(intensity) {
+        if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        super("sepia", intensity * 100);
+        this.unit = "%";
     }
 }
 /**
