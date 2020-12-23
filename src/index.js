@@ -412,19 +412,31 @@ export class Canvas {
         this.context.globalCompositeOperation = operation;
     }
     /**
-     * @description
+     * @description Draws an image to the canvas
      * @param {Image} image The image to be drawn
      * @param {Number} x The X coordinate of the upper left corner
      * @param {Number} y The Y coordinate of the upper left corner
      * @returns {void}
      */
     drawImage(image, x, y) {
-        if (image.constructor.name !== 'Image') throw new Error("Please provide a valid Image object.");
+        if (image.constructor.name !== 'Image') throw new TypeError("Please provide a valid Image object.");
         switch (image.getDrawType()) {
             case "normal": return (this.context.drawImage(image.image, x, y), [][0]);
             case "resize": return (this.context.drawImage(image.image, x, y, image.w, image.h), [][0]);
             case "crop": return (this.context.drawImage(image.image, image.cropRectangle.x, image.cropRectangle.y, image.cropRectangle.width, image.cropRectangle.height, x, y, image.w, image.h), [][0]);
         }
+    }
+    /**
+     * @description Returns ImageData object with pixels from the rectangle from the canvas
+     * @param {Object} rectangle Object represnting the rectangle
+     * @param {Number} [rectangle.x] The x coordinate of the upper left corner of the rectangle
+     * @param {Number} [rectangle.y] The y coordinate of the upper left corner of the rectangle
+     * @param {Number} [rectangle.width] The width of the rectangle
+     * @param {Number} [rectangle.height] The height of the rectangle
+     * @returns {ImageData}
+     */
+    getImageData(rectangle) {
+        return this.context.getImageData(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 }
 /**
@@ -459,6 +471,19 @@ export class Image {
      */
     static fromUrl(url) {
         return new Image(`url(${url})`);
+    }
+    /**
+     * @description Creates Image object from ImageData object
+     * @param {ImageData} imageData 
+     * @returns {Promise<Image>}
+     */
+    static fromImageData(imageData) {
+        return new Promise((resolve, reject) => {
+            createImageBitmap(imageData).then(e => {
+                resolve(new Image(e));
+            })
+        })
+
     }
     /**
      * @description Resizes the image for drawing
@@ -511,8 +536,8 @@ export class Point {
      * @param {Number} y The y coordinate of the point 
      */
     constructor(x, y) {
-        if (typeof x !== 'number') throw new Error("Point x must be a number.");
-        if (typeof y !== 'number') throw new Error("Point y must be a number.");
+        if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
+        if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
         /**
          * @description The x coordinate
          * @type {Number}
@@ -539,8 +564,8 @@ export class Point {
         if (x.constructor.name === "Point") {
             y = x.y;
             x = x.x
-        } else if (typeof x !== 'number') throw new Error("Point x must be a number.");
-        else if (typeof y !== 'number') throw new Error("Point y must be a number.");
+        } else if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
+        else if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
         return Math.pow(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2), 1 / 2);
     }
 }
