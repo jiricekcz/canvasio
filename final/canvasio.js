@@ -1,32 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>CanvasIO | Source: index.js</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Source: index.js</h1>
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
+/**
  * @description Amount of decimal places round coordinates to
  */
 const decimalRoundCoordinate = 3;
@@ -210,13 +182,13 @@ export class Canvas {
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
-        for (var i = width; i &lt; this.canvas.height; i += width) {
+        for (var i = width; i < this.canvas.height; i += width) {
             this.drawLine(-this.canvas.width, i, this.canvas.width, i);
         }
         for (var i = -width; i > -this.canvas.height; i -= width) {
             this.drawLine(-this.canvas.width, i, this.canvas.width, i);
         }
-        for (var i = width; i &lt; this.canvas.width; i += width) {
+        for (var i = width; i < this.canvas.width; i += width) {
             this.drawLine(i, -this.canvas.height, i, this.canvas.height);
         }
         for (var i = -width; i > -this.canvas.width; i -= width) {
@@ -333,7 +305,7 @@ export class Canvas {
      */
     /**
      * @description Sets the spacing of a line
-     * @param {Array&lt;Number>} lineWidth 
+     * @param {Array<Number>} lineWidth 
      * @returns {void}
      */
     setLineDash(lineWidth, spacing) {
@@ -585,7 +557,7 @@ export class Image {
     /**
      * @description Creates Image object from ImageData object
      * @param {ImageData} imageData 
-     * @returns {Promise&lt;Image>}
+     * @returns {Promise<Image>}
      */
     static fromImageData(imageData) {
         return new Promise((resolve, reject) => {
@@ -631,15 +603,15 @@ export class Image {
      * @returns {"normal" | "resize" | "crop"}
      */
     getDrawType() {
-        if (typeof this.w === "number" &amp;&amp; typeof this.h === "number") {
-            return (typeof this.cropRectangle === "object" &amp;&amp; typeof this.cropRectangle.height === "number" &amp;&amp; typeof this.cropRectangle.width === "number" &amp;&amp; typeof this.cropRectangle.x === "number" &amp;&amp; typeof this.cropRectangle.y === "number") ? "crop" : "resize";
+        if (typeof this.w === "number" && typeof this.h === "number") {
+            return (typeof this.cropRectangle === "object" && typeof this.cropRectangle.height === "number" && typeof this.cropRectangle.width === "number" && typeof this.cropRectangle.x === "number" && typeof this.cropRectangle.y === "number") ? "crop" : "resize";
         } else return "normal";
     }
 }
 
 /**
  * @description Manages filters for a canvas
- * @extends {Array&lt;Filter>}
+ * @extends {Array<Filter>}
  */
 class FilterManager extends Array {
     constructor() {
@@ -767,7 +739,7 @@ Filter.Brightness = class BrightnessFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("brightness", intensity * 100);
         this.unit = "%";
     }
@@ -783,7 +755,7 @@ Filter.Contrast = class ContrastFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("contrast", intensity * 100);
         this.unit = "%";
     }
@@ -804,8 +776,8 @@ Filter.DropShadow = class DropShadowFilter extends Filter {
         if (typeof xOffset !== "number") throw new TypeError("X Offset must be a number.");
         if (typeof yOffset !== "number") throw new TypeError("Y Offset must be a number.");
         if (typeof blurRadius !== "number") throw new TypeError("Blur radius must be a number.");
-        if (blurRadius &lt; 0) throw new Error("Blur radius must be greater than or equal to zero.");
-        if (!color || (typeof color !== "string" &amp;&amp; typeof color.toString() !== "string")) throw new TypeError("Color must be representable by a string.");
+        if (blurRadius < 0) throw new Error("Blur radius must be greater than or equal to zero.");
+        if (!color || (typeof color !== "string" && typeof color.toString() !== "string")) throw new TypeError("Color must be representable by a string.");
         if (typeof color !== "string") color = color.toString();
         this.type = "drop-shadow";
         /**
@@ -838,7 +810,7 @@ Filter.Grayscale = class GrayscaleFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("grayscale", intensity * 100);
         this.unit = "%";
     }
@@ -869,7 +841,7 @@ Filter.Invert = class InvertFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("invert", intensity * 100);
         this.unit = "%";
     }
@@ -885,7 +857,7 @@ Filter.Opacity = class OpacityFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("opacity", intensity * 100);
         this.unit = "%";
     }
@@ -901,7 +873,7 @@ Filter.Saturation = class SaturationFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("saturate", intensity * 100);
         this.unit = "%";
     }
@@ -917,7 +889,7 @@ Filter.Sepia = class SepiaFilter extends Filter {
      */
     constructor(intensity) {
         if (typeof intensity !== "number") throw new TypeError("Intensity must be a number.");
-        if (intensity &lt; 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
+        if (intensity < 0 || intensity > 1) throw new Error("Intensity must be between 0 and 1.");
         super("sepia", intensity * 100);
         this.unit = "%";
     }
@@ -980,26 +952,4 @@ function round(x, type = "coordinate") {
         case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
         default: throw new Error("Unsuported rounding type.")
     }
-}</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Canvas.html">Canvas</a></li><li><a href="Filter.html">Filter</a></li><li><a href="Filter.Blur.html">Blur</a></li><li><a href="Filter.Brightness.html">Brightness</a></li><li><a href="Filter.Contrast.html">Contrast</a></li><li><a href="Filter.DropShadow.html">DropShadow</a></li><li><a href="Filter.Grayscale.html">Grayscale</a></li><li><a href="Filter.HueRotate.html">HueRotate</a></li><li><a href="Filter.Invert.html">Invert</a></li><li><a href="Filter.Opacity.html">Opacity</a></li><li><a href="Filter.Saturation.html">Saturation</a></li><li><a href="Filter.Sepia.html">Sepia</a></li><li><a href="Filter.Url.html">Url</a></li><li><a href="FilterManager.html">FilterManager</a></li><li><a href="Image.html">Image</a></li><li><a href="LineDashPattern.html">LineDashPattern</a></li><li><a href="Path.html">Path</a></li><li><a href="Point.html">Point</a></li></ul><h3>Global</h3><ul><li><a href="global.html#decimalRoundAngle">decimalRoundAngle</a></li><li><a href="global.html#decimalRoundCoordinate">decimalRoundCoordinate</a></li><li><a href="global.html#round">round</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Dec 23 2020 22:29:01 GMT+0100 (Central European Standard Time)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>
+}
