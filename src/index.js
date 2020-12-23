@@ -369,7 +369,64 @@ export class Canvas {
     setStroke(style) {
         this.context.strokeStyle = style;
     }
-} 
+    /**
+     * @description Sets the shadow blur. Default is 0, higher level is more blur
+     * @param {Number} level Blur level
+     * @returns {void}
+     */
+    setShadowBlur(level) {
+        this.context.shadowBlur = level;
+    }
+    /**
+     * @description Sets the shadow color
+     * @param {String} color CSS style color
+     * @returns {void}
+     */
+    setShadowColor(color) {
+        this.context.shadowColor = color;
+    }
+    /**
+     * @description Sets shadow offset
+     * @param {?Number} x X shadow offset
+     * @param {?Number} y Y shadow offset
+     * @returns {void}
+     */
+    setShadowOffset(x, y) {
+        if (typeof x === "number") this.context.shadowOffsetX = x;
+        if (typeof y === "number") this.context.shadowOffsetY = y;
+    }
+    /**
+     * @description Sets global alpha for all drawn objects
+     * @param {Number} alpha Number between 0 and 1 representing the global alpha value
+     * @returns {void}
+     */
+    setGlobalAlpha(alpha) {
+        this.context.globalAlpha = alpha;
+    }
+    /**
+     * @description Sets the global composite operation. For more information about operations visit offical MDN documentation
+     * @param {"source-over" | "source-in" | "source-out" | "source-atop" | "destination-over" | "destination-in" | "destination-out" | "destination-atop" | "lighter" | "copy" | "xor" | "multiply" | "screen" | "overlay" | "darken" | "lighten" | "color-dodge" | "color-burn" | "hard-light" | "soft-light" | "difference" | "exclusion" | "hue" | "saturation" | "color" | "luminosity"} operation The operation
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+     */
+    setGlobalCompositeOperation(operation) {
+        this.context.globalCompositeOperation = operation;
+    }
+    /**
+     * @description
+     * @param {Image} image The image to be drawn
+     * @param {Number} x The X coordinate of the upper left corner
+     * @param {Number} y The Y coordinate of the upper left corner
+     * @returns {void}
+     */
+    drawImage(image, x, y) {
+        if (image.constructor.name !== 'Image') throw new Error("Please provide a valid Image object.");
+        switch (image.getDrawType()) {
+            case "normal": return (this.context.drawImage(image.image, x, y), [][0]);
+            case "resize": return (this.context.drawImage(image.image, x, y, image.w, image.h), [][0]);
+            case "crop": return (this.context.drawImage(image.image, image.cropRectangle.x, image.cropRectangle.y, image.cropRectangle.width, image.cropRectangle.height, x, y, image.w, image.h), [][0]);
+        }
+    }
+}
 /**
  * @description Class representing a line dash pattern
  * @extends {Array}
@@ -378,6 +435,70 @@ export class LineDashPattern extends Array {
     constructor(pattern) {
         super();
         this.push(...pattern);
+    }
+}
+/**
+ * @description Class representing an Image, Graphics or a Video
+ */
+export class Image {
+    /**
+     * 
+     * @param {HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas} image 
+     */
+    constructor(image) {
+        /**
+         * @description Image
+         * @type {HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas}
+         */
+        this.image = image;
+    }
+    /**
+     * @description Creates Image object from url
+     * @param {String} url 
+     * @returns {Image}
+     */
+    static fromUrl(url) {
+        return new Image(`url(${url})`);
+    }
+    /**
+     * @description Resizes the image for drawing
+     * @param {Number} width Image width
+     * @param {Number} height Image height
+     * @returns {void}
+     */
+    resize(width, height) {
+        /**
+         * @description Image width used when image is drawn 
+         * @type {Number}
+         */
+        this.w = width;
+        /**
+         * @description Image height used when image is drawn
+         * @type {Number}
+         */
+        this.h = height;
+    }
+    /**
+     * @description Crops the original image to a rectangle
+     * @param {Object} rectangle Object represnting the rectangle to crop out of the original image
+     * @param {Number} [rectangle.x] The x coordinate of the upper left corner of the rectangle
+     * @param {Number} [rectangle.y] The y coordinate of the upper left corner of the rectangle
+     * @param {Number} [rectangle.width] The width of the rectangle
+     * @param {Number} [rectangle.height] The height of the rectangle
+     * @returns {void}
+     */
+    crop(rectangle) {
+        this.cropRectangle = rectangle;
+    }
+    /**
+     * @description Returns the method that will be used when drawing the rectangle
+     * @ignore
+     * @returns {"normal" | "resize" | "crop"}
+     */
+    getDrawType() {
+        if (typeof this.w === "number" && typeof this.h === "number") {
+            return (typeof this.cropRectangle === "object" && typeof this.cropRectangle.height === "number" && typeof this.cropRectangle.width === "number" && typeof this.cropRectangle.x === "number" && typeof this.cropRectangle.y === "number") ? "crop" : "resize";
+        } else return "normal";
     }
 }
 /**
