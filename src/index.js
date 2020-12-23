@@ -434,10 +434,10 @@ export class Canvas {
     /**
      * @description Returns ImageData object with pixels from the rectangle from the canvas
      * @param {Object} rectangle Object represnting the rectangle
-     * @param {Number} [rectangle.x] The x coordinate of the upper left corner of the rectangle
-     * @param {Number} [rectangle.y] The y coordinate of the upper left corner of the rectangle
-     * @param {Number} [rectangle.width] The width of the rectangle
-     * @param {Number} [rectangle.height] The height of the rectangle
+     * @param {Number} rectangle.x The x coordinate of the upper left corner of the rectangle
+     * @param {Number} rectangle.y The y coordinate of the upper left corner of the rectangle
+     * @param {Number} rectangle.width The width of the rectangle
+     * @param {Number} rectangle.height The height of the rectangle
      * @returns {ImageData}
      */
     getImageData(rectangle) {
@@ -484,6 +484,41 @@ export class Canvas {
         if (imageSmoothingMode === "disabled") return (this.context.imageSmoothingEnabled = false, [][0]);
         this.context.imageSmoothingEnabled = true;
         this.context.imageSmoothingQuality = imageSmoothingMode;
+    }
+    /**
+     * @description Creates a path
+     * @returns {Path}
+     */
+    createPath() {
+        return new Path(this);
+    }
+}
+/**
+ * @description Simple Path class that inherits all functionalities from Path2D and adds fill() and draw() methods for direct draw on the canvas
+ * @extends {Path2D}
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/Path2D
+ */
+export class Path extends Path2D {
+    /**
+     * @param {Canvas} canvas
+     */
+    constructor(canvas) {
+        super();
+        this.canvas = canvas;
+    }
+    /**
+     * @description Fills the path
+     * @returns {void}
+     */
+    fill() {
+        this.canvas.context.fill(this);
+    }
+    /**
+     * @description Draws the path
+     * @returns {void}
+     */
+    draw() {
+        this.canvas.context.stroke(this);
     }
 }
 /**
@@ -859,6 +894,9 @@ Filter.Sepia = class SepiaFilter extends Filter {
         this.unit = "%";
     }
 }
+
+
+// GEOMETRY
 /**
  * @description Class representing a point on the canvas
  */
