@@ -573,9 +573,7 @@ export class Image {
         } else return "normal";
     }
 }
-/**
- * @description Represents a filter that can be applied to the canvas
- */
+
 /**
  * @description Manages filters for a canvas
  * @extends {Array<Filter>}
@@ -619,6 +617,9 @@ class FilterManager extends Array {
         return this.join(" ");
     }
 }
+/**
+ * @description Represents a filter that can be applied to the canvas
+ */
 export class Filter {
     constructor(type, value) {
         /**
