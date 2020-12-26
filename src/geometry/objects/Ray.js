@@ -54,4 +54,11 @@ export class Ray extends Base {
     getLine() {
         return new Line(this.a, this.b);
     }
+    /**
+     * @description Returns the string representation of this point in the form Ray: ([x1, y1], [x2, y2])
+     * @returns {String}
+     */
+    toString() {
+        return `Ray: (${this.a}, ${this.b})`;
+    }
 }

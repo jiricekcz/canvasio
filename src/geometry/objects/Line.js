@@ -56,4 +56,11 @@ export class Line extends Base {
         var a = (this.a.y - b) / this.a.x;
         return new Polynom(a, b);
     }
+    /**
+     * @description Returns the string representation of this point in the form Line: ([x1, y1], [x2, y2])
+     * @returns {String}
+     */
+    toString() {
+        return `Line: (${this.a}, ${this.b})`;
+    }
 }
