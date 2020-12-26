@@ -30,4 +30,32 @@ export class Polynom extends Base {
     valueAt(x) {
         return this.coefficients.map((v, i) => v * Math.pow(x, i)).reduce((a, b) => a + b);
     }
+    /**
+     * @description Gets the absolute coefficient of this polynom
+     * @returns {Number}
+     */
+    getAbsoluleCoefficient() {
+        return this.coefficients[0];
+    }
+    /**
+     * @description Gets the linear coefficient of this polynom
+     * @returns {Number}
+     */
+    getLinearCoefficient() {
+        return this.coefficients[1];
+    }
+    /**
+     * @description Gets the quadratic coefficient of this polynom
+     * @returns {Number}
+     */
+    getQuadraticCoefficient() {
+        return this.coefficients[2];
+    }
+    /**
+     * @description Gets the cubic coefficient of this polynom
+     * @returns {Number}
+     */
+    getCubicCoefficient() {
+        return this.coefficients[3];
+    }
 }
