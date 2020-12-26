@@ -70,4 +70,42 @@ const intersectFunctions = {
             }
         }
     },
+    Segment: {
+        /**
+         * 
+         * @param {Segment} segment 
+         * @param {Segment} segment2 
+         * @returns {Segment | Point | null}
+         */ 
+        Segment: (segment, segment2) => {
+            var a1 = segment.getLine().getLinePolynom().getLinearCoefficient();
+            var b1 = segment.getLine().getLinePolynom().getAbsoluleCoefficient();
+            var a2 = segment2.getLine().getLinePolynom().getLinearCoefficient();
+            var b2 = segment2.getLine().getLinePolynom().getAbsoluleCoefficient();
+            if (a1 === a2) {
+                if (b1 === b2) {
+                    //Segment
+                }
+                return null;
+            } else {
+                var x = (b2 - b1) / (a1 - a2);
+                var y = a1 * x + b1;
+                var p = new Point(x, y);
+                return p.intersects(segment) && p.intersects(segment2) ? p : null;
+            }
+        },
+        /**
+         * 
+         * @param {Segment} segment 
+         * @param {Line} line 
+         * @returns {Segment | Point | null}
+         */
+        Line: (segment, line) => {
+            var l = segment.getLine();
+            var i = l.getIntersect(line);
+            if (i === null) return null; else {
+                return i instanceof Line ? segment : i;           
+            }
+        }   
+    }
 }
