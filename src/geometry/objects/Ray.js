@@ -22,6 +22,27 @@ export class Ray extends Base {
          * @type {Point}
          */
         this.b = point2;
-    
+    }
+    /**
+     * @description Returns the y value for a point with given x that lays on this ray
+     * @param {Number} x The x coordinate
+     * @returns {Number | undefined} y
+     */
+    y(x) {
+        if (this.a.x < this.b.x) if (this.a.x > x) return undefined; else; if (this.a.x < x) return undefined;
+        var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
+        var a = (this.a.y - b) / this.a.x;
+        return a * x + b;
+    }
+    /**
+     * @description Returns the x value for a point with given y that lays on this ray
+     * @param {Number} y The y coordinate
+     * @returns {Number | undefined} x
+     */
+    x(y) {
+        if (this.a.y < this.b.y) if (this.a.y > y) return undefined; else; if (this.a.y < y) return undefined;
+        var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
+        var a = (this.a.y - b) / this.a.x;
+        return (y - b) / a;
     }
 }
