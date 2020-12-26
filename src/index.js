@@ -76,8 +76,8 @@ export class Canvas {
     drawLine(A, B, C, D) {
         if (A === undefined || B === undefined) throw new Error("At least two arguments need to be provided.")
         if (typeof C === "number") {
-            A = new Point(A, B);
-            B = new Point(C, D);
+            A = { x: A, y: B},
+            B = { x: C, y: D}
         }
         try {
             this.context.beginPath();
@@ -888,51 +888,6 @@ Filter.Sepia = class SepiaFilter extends Filter {
     }
 }
 
-
-// GEOMETRY
-/**
- * @description Class representing a point on the canvas
- */
-export class Point {
-    /**
-     * 
-     * @param {Number} x The x coordinate of the point
-     * @param {Number} y The y coordinate of the point 
-     */
-    constructor(x, y) {
-        if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
-        if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
-        /**
-         * @description The x coordinate
-         * @type {Number}
-         */
-        this.x = round(x);
-        /**
-         * @description The y coordinate
-         * @type {Number}
-         */
-        this.y = round(y);
-    }
-    /**
-     * 
-     * @param {Number} x The x coordinate of the point
-     * @param {Number} y The y coordinate of the point
-     * @returns {Number} The distance
-     */
-    /**
-     * @description Calculates the distance between two points using the pythagorian theorem
-     * @param {Point} x The point to calculate the distance to
-     * @returns {Number} The distance
-     */
-    distance(x, y) {
-        if (x.constructor.name === "Point") {
-            y = x.y;
-            x = x.x
-        } else if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
-        else if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
-        return Math.pow(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2), 1 / 2);
-    }
-}
 /**
  * @description Rounds number with given constants 
  * @param {Number} x The number to round
