@@ -11,7 +11,7 @@ export class Base {
     /**
      * @description The default intersect function. May be overriden by extending classes.
      * @param {Base} object Object to calculate the intersect with
-     * @returns {Base | null} 
+     * @returns {Base | Array<Base> | null} 
      */
     getIntersect(object) {
         try {
