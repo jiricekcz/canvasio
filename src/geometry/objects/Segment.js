@@ -1,4 +1,5 @@
 import { Base } from './Base.js';
+import { Line } from './Line.js';
 export class Segment extends Base {
     /**
      * 
@@ -48,6 +49,13 @@ export class Segment extends Base {
      */
     toString() {
         return `Segment: (${this.a}, ${this.b})`;
+    }
+    /**
+     * @description Returns this segment extended to a line
+     * @returns {Line}
+     */
+    getLine() {
+        return new Line(this.a, this.b);
     }
 }
 
