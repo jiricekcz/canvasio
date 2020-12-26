@@ -285,6 +285,9 @@ export class Line extends Base {
 
 
 //! Point 
+/**
+ * @description Class representing a point
+ */
 export class Point extends Base {
     /**
      * 
@@ -350,6 +353,9 @@ export class Point extends Base {
 
 
 //! Polynom
+/**
+ * @description Class representing a polynom
+ */
 export class Polynom {
     /**
      * @param  {...Number} coefficients The coefficents of this polynom in the usual oreder 
@@ -413,6 +419,9 @@ export class Polynom {
 
 
 //! Ray
+/**
+ * @description Class representing a ray
+ */
 export class Ray extends Base {
     /**
      * 
@@ -475,6 +484,9 @@ export class Ray extends Base {
 
 
 //! Segment
+/**
+ * @description Class representing a segment
+ */
 export class Segment extends Base {
     /**
      * 
@@ -538,5 +550,40 @@ export class Segment extends Base {
      */
     length() {
         return this.a.distance(this.b);
+    }
+}
+
+
+
+//! Circle
+/**
+ * @description Class representing a circle
+ */
+export class Circle extends Base {
+    /**
+     * @param {Point} center Center of the circle
+     * @param {Number} radius Radius of the circle
+     */
+    constructor(center, radius) {
+        if (typeof radius !== 'number') throw new TypeError("Radius must be a number.");
+        if (!center instanceof Point) throw new TypeError("Center must be a Point.");
+        super();
+        /**
+         * @description Radius of the circle
+         * @type {Number} 
+         */
+        this.r = radius;
+        /**
+         * @description Center of the circle
+         * @type {Point}
+         */
+        this.center = center;
+    }
+    /**
+     * @description Returns the circumference of the circe 
+     * @returns {Number}
+     */
+    length() {
+        return Math.PI * 2 * this.r;
     }
 }
