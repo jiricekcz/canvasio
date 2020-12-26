@@ -175,16 +175,16 @@ export class Canvas {
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
-        for (var i = width; i < this.canvas.height; i += width) {
+        for (var i = width; i < 2*this.canvas.height; i += width) {
             this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
         }
-        for (var i = -width; i > -this.canvas.height; i -= width) {
+        for (var i = -width; i > -2*this.canvas.height; i -= width) {
             this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
         }
-        for (var i = width; i < this.canvas.width; i += width) {
+        for (var i = width; i < 2*this.canvas.width; i += width) {
             this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
         }
-        for (var i = -width; i > -this.canvas.width; i -= width) {
+        for (var i = -width; i > -2*this.canvas.width; i -= width) {
             this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
         }
         this.context.lineWidth = lw;
