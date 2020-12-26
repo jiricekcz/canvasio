@@ -42,9 +42,9 @@ export class Canvas {
                     throw new Error("Unknown preset: " + options.preset);
             }
         } else {
-            options.container.appendChild(this.canvas);
-            this.canvas.height = options.height + "px";
-            this.canvas.width = options.width + "px";
+            (options.container).appendChild(this.canvas);
+            this.canvas.height = options.height;
+            this.canvas.width = options.width;
         }
         /**
          * @description Context of the canvas
@@ -176,16 +176,16 @@ export class Canvas {
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
         for (var i = width; i < this.canvas.height; i += width) {
-            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+            this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
         }
         for (var i = -width; i > -this.canvas.height; i -= width) {
-            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+            this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
         }
         for (var i = width; i < this.canvas.width; i += width) {
-            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+            this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
         }
         for (var i = -width; i > -this.canvas.width; i -= width) {
-            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+            this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
         }
         this.context.lineWidth = lw;
     }
