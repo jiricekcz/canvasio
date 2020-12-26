@@ -1,5 +1,6 @@
 import { Base } from './Base.js'
 import { Point } from './Point.js'
+import { Line } from './Line.js'
 
 
 export class Ray extends Base {
@@ -44,5 +45,12 @@ export class Ray extends Base {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.a.y - b) / this.a.x;
         return (y - b) / a;
+    }
+    /**
+     * @description Returns this ray extended to a line
+     * @returns {Line}
+     */
+    getLine() {
+        return new Line(this.a, this.b);
     }
 }
