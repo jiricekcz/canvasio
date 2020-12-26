@@ -1,11 +1,4 @@
-/**
- * @description Amount of decimal places round coordinates to
- */
-const decimalRoundCoordinate = 3;
-/**
- * @description Amount of decimal places round angles in radians to
- */
-const decimalRoundAngle = 15;
+import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js"
 /**
  * @description Class representing a canvas
  */
