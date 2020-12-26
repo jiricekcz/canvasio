@@ -1,6 +1,7 @@
 import { Base } from './Base.js'
 import { Point } from './Point.js'
 import { Line } from './Line.js'
+import { round } from '../util.js';
 
 
 export class Ray extends Base {
@@ -33,7 +34,7 @@ export class Ray extends Base {
         if (this.a.x < this.b.x) if (this.a.x > x) return undefined; else; if (this.a.x < x) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.a.y - b) / this.a.x;
-        return a * x + b;
+        return round(a * x + b, "coordinate");
     }
     /**
      * @description Returns the x value for a point with given y that lays on this ray
@@ -44,7 +45,7 @@ export class Ray extends Base {
         if (this.a.y < this.b.y) if (this.a.y > y) return undefined; else; if (this.a.y < y) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.a.y - b) / this.a.x;
-        return (y - b) / a;
+        return round((y - b) / a, "coordinate");
     }
     /**
      * @description Returns this ray extended to a line

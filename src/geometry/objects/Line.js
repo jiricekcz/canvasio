@@ -1,6 +1,7 @@
 import { Point } from "./Point.js";
 import { Base } from "./Base.js";
 import { Polynom } from "./Polynom.js";
+import { round } from "../util";
 
 /**
  * @description Class representing a line
@@ -34,7 +35,7 @@ export class Line extends Base {
     y(x) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.a.y - b) / this.a.x;
-        return a * x + b;
+        return round(a * x + b, "coordinate");
     }
     /**
      * @description Returns the x value for a point with given y that lays on this line
@@ -44,7 +45,7 @@ export class Line extends Base {
     x(y) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.a.y - b) / this.a.x;
-        return (y - b) / a;
+        return round((y - b) / a, "coordinate");
     }
     /**
      * @description Returns a polynom of this line
