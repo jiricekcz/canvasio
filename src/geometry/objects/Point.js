@@ -1,4 +1,6 @@
-import Base from "./Base.js";
+import { Base } from "./Base.js";
+import { round } from "../util.js";
+
 export class Point extends Base {
     /**
      * 
@@ -13,12 +15,12 @@ export class Point extends Base {
          * @type {Number}
          * @description The x coordinate of the point.
          */
-        this.x = x;
+        this.x = round(x, "coordinate");
         /**
          * @type {Number}
          * @description The y coordinate of the point.
          */
-        this.y = y;
+        this.y = round(y, "coordinate");
     }
     /**
      * @description Returns the absolute value of point (aka. distance from [0, 0])

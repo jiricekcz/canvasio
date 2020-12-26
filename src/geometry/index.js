@@ -1,6 +1,6 @@
 // File used to unify all exports
-import base from './objects/Base.js';
-
+import { Point } from './objects/Point.js';
+import { Line } from './objects/Line.js';
 export {
-    base as Base
+    Point, Line
 }
