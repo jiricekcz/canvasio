@@ -231,16 +231,17 @@ const intersectFunctions = {
                 var c = Math.sin(Math.acos(angle1cos)) * circle.r;
                 return [new Point(y, x - c), new Point(y, x + c)];
             }
-            var angle1cos = (l.length() ** 2 + circle.r ** 2 - circle2.r ** 2) / (2 * l.length() + circle2.r);
+            var angle1cos = (l.length() ** 2 + circle.r ** 2 - circle2.r ** 2) / (2 * l.length() * circle2.r);
             var k = angle1cos * circle.r;
             var kRatio = k / l.length();
             var pdx = dx * kRatio;
-            var x = circle.center.x + pdx;
+            var x = circle.center.x - pdx;
             var y = l.getLine().y(x);
+            var c = Math.sin(Math.acos(angle1cos)) * circle.r;
             var p = new Point(x, y);
             var p2 = new Point(p.x, circle.center.y);
+            if (p.distance(p2) === 0) return [new Point(p.x, p.y + c), new Point(p.x, p.y - c)];
             var t = new Triangle(circle.center, p2, p);
-            var c = Math.sin(Math.acos(angle1cos)) * circle.r;
             var angle2 = t.getGamma();
             var angle3 = Math.PI / 2 - angle2;
             var dy = -Math.cos(angle3) * c;
@@ -271,7 +272,7 @@ export class Base {
             return getIntersect(this, object);
         } catch (err) {
             console.log(err);
-            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page." );
+            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page.");
         }
     }
     /**
@@ -703,6 +704,7 @@ export class Triangle extends Base {
         if (!b instanceof Point) throw new TypeError("The b argument must be a type of Point.");
         if (!c instanceof Point) throw new TypeError("The c argument must be a type of Point.");
         if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
+        if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle can not match.");
         super();
         /**
          * @description One vertex of the triangle
@@ -723,17 +725,17 @@ export class Triangle extends Base {
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.c = new Segment(a, b);
+        this.c = new Segment(this.A, this.B);
         /**
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.b = new Segment(a, c);
+        this.b = new Segment(this.A, this.C);
         /**
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.a = new Segment(b, c);
+        this.a = new Segment(this.B, this.C);
         /**
          * @description Vertices of the triangle
          * @type {Array<Point>}
@@ -780,6 +782,7 @@ export class Triangle extends Base {
         var a = this.a.length();
         var b = this.b.length();
         var c = this.c.length();
+        console.log(this);
         return Math.acos((a * a + b * b - c * c) / (2 * a * b));
     }
 }
