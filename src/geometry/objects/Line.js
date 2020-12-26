@@ -12,6 +12,7 @@ export class Line extends Base {
     constructor(point1, point2) {
         if (!point1 instanceof Point) throw new TypeError("The point1 argument must be a type of Point.");
         if (!point2 instanceof Point) throw new TypeError("The point2 argument must be a type of Point.");
+        super();
         /**
          * @description The first point of the line
          * @type {Point}

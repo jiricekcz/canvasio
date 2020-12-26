@@ -1,3 +1,4 @@
+import { decimalRoundCoordinate, decimalRoundAngle } from './constants.js'
 
 /**
  * @description Rounds number with given constants 
