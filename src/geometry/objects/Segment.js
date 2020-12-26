@@ -1,5 +1,7 @@
 import { Base } from './Base.js';
 import { Line } from './Line.js';
+import { Point } from './Point';
+
 export class Segment extends Base {
     /**
      * 
@@ -56,6 +58,13 @@ export class Segment extends Base {
      */
     getLine() {
         return new Line(this.a, this.b);
+    }
+    /**
+     * @description Returns the length of the segment
+     * @returns {Number}
+     */
+    length() {
+        return this.a.distance(this.b);
     }
 }
 

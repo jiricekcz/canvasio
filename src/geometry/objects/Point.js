@@ -44,6 +44,15 @@ export class Point extends Base {
         return [this.x, this.y];
     }
     /**
+     * @description Returns the distance between this and the point provided
+     * @param {Point} point The point provided
+     * @returns {Number} The distance
+     */
+    distance(point) {
+        if (!point instanceof Point) throw new TypeError("The point argument must be a Point.");
+        return round(Math.pow(Math.pow(this.x - point.x, 2) + Math.pow(this.y - point.y, 2), 1 / 2), "coordinate");
+    }
+    /**
      * @description Creates a point object form the string representation of it tin the form [x, y];
      * @param {String} string 
      * @returns {Point}
