@@ -26,6 +26,6 @@ export class Base {
      * @returns {Boolean}
      */
     intersects(object) {
-        return this.getIntersect(object) === null;
+        return this.getIntersect(object) !== null;
     }
 }
