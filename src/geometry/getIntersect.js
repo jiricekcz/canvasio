@@ -76,7 +76,7 @@ const intersectFunctions = {
          * @param {Segment} segment 
          * @param {Segment} segment2 
          * @returns {Segment | Point | null}
-         */ 
+         */
         Segment: (segment, segment2) => {
             var a1 = segment.getLine().getLinePolynom().getLinearCoefficient();
             var b1 = segment.getLine().getLinePolynom().getAbsoluleCoefficient();
@@ -104,8 +104,27 @@ const intersectFunctions = {
             var l = segment.getLine();
             var i = l.getIntersect(line);
             if (i === null) return null; else {
-                return i instanceof Line ? segment : i;           
+                return i instanceof Line ? segment : i;
             }
-        }   
+        }
+    },
+    Ray: {
+        /**
+         * 
+         * @param {Ray} ray 
+         * @param {Ray} ray2 
+         * @returns {Ray | Segment | Point | null}
+         */
+        Ray: (ray, ray2) => {
+            var [l, l2] = [ray, ray2].map(v => v.getLine());
+            var i = l.getIntersect(l2);
+            if (i === null) return null; else {
+                if (i instanceof Line) {
+                    if (ray.a.distance(ray2.a) === 0 && ray.b.distance(ray2.b) === 0) return ray;
+                    if (ray.intersects(ray2.a) && ray2.intersects(ray.a)) return new Segment(ray.a, ray2.a);
+                    if (ray.intersects(ray2.a)) return ray2; else return ray;
+                } else return i;
+            }
+        }
     }
 }
