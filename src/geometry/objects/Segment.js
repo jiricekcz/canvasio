@@ -1,6 +1,6 @@
 import { Base } from './Base.js';
 import { Line } from './Line.js';
-import { Point } from './Point';
+import { Point } from './Point.js';
 
 export class Segment extends Base {
     /**
@@ -67,4 +67,3 @@ export class Segment extends Base {
         return this.a.distance(this.b);
     }
 }
-

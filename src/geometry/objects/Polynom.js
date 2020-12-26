@@ -1,5 +1,4 @@
-import { Base } from './Base.js';
-export class Polynom extends Base {
+export class Polynom {
     /**
      * @param  {...Number} coefficients The coefficents of this polynom in the usual oreder 
      * @example new Polynom(1, 0, 0); //Creates the x^2 polynom
@@ -8,7 +7,6 @@ export class Polynom extends Base {
         for (var coefficient of coefficients) {
             if (typeof coefficient !== 'number') throw new TypeError("All coefficients of a polynom must be numbers.");
         }
-        super();
         /**
          * @type {Number}
          * @description The degree of the polynom

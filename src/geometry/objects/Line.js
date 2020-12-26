@@ -1,7 +1,3 @@
-import { Point } from "./Point.js";
-import { Base } from "./Base.js";
-import { Polynom } from "./Polynom.js";
-import { round } from "../util";
 
 /**
  * @description Class representing a line
@@ -64,3 +60,7 @@ export class Line extends Base {
         return `Line: (${this.a}, ${this.b})`;
     }
 }
+import { Point } from "./Point.js";
+import { Base } from "./Base.js";
+import { Polynom } from "./Polynom.js";
+import { round } from "../util.js";

@@ -1,9 +1,9 @@
+
+import { getIntersect } from '../getIntersect.js';
 /**
  * @description Class representing datatypes of the geometry canvasio library
  * @abstract
  */
-import { getIntersect } from '../getIntersect.js';
-
 export class Base {
     constructor() {
 
