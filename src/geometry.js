@@ -251,7 +251,7 @@ export class Line extends Base {
      */
     y(x) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -261,7 +261,7 @@ export class Line extends Base {
      */
     x(y) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
@@ -270,7 +270,7 @@ export class Line extends Base {
      */
     getLinePolynom() {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return new Polynom(a, b);
     }
     /**
@@ -442,7 +442,7 @@ export class Ray extends Base {
     y(x) {
         if (this.a.x < this.b.x) if (this.a.x > x) return undefined; else; if (this.a.x < x) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -453,7 +453,7 @@ export class Ray extends Base {
     x(y) {
         if (this.a.y < this.b.y) if (this.a.y > y) return undefined; else; if (this.a.y < y) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
@@ -504,7 +504,7 @@ export class Segment extends Base {
     y(x) {
         if (x < this.a.x || x > this.b.x) return null;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -513,9 +513,9 @@ export class Segment extends Base {
      * @returns {Number | null} x
      */
     x(y) {
-        if (this.a.y < this.b.y) if (y < this.a.y || y > this.b.y) return null; else; if (y > this.a.y || y < this.b.y) return null;  
+        if (this.a.y < this.b.y) if (y < this.a.y || y > this.b.y) return null; else; if (y > this.a.y || y < this.b.y) return null;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.a.y - b) / this.a.x;
+        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
