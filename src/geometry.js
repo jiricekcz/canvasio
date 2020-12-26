@@ -70,6 +70,13 @@ const intersectFunctions = {
          * @param {Segment} segment 
          */
         Segment: (point, segment) => segment.x(point.y) === point.x ? point : null,
+        /**
+         * 
+         * @param {Point} point 
+         * @param {Circle} circle 
+         * @returns {Point | null}
+         */
+        Circle: (point, circle) => point.distance(circle.center) == round(circle.radius, "coordinate") ? point : null,
     },
     Line: {
         /**
@@ -79,6 +86,14 @@ const intersectFunctions = {
          * @returns {Line | Point | null}
          */
         Line: (line, line2) => {
+            if (line.a.x == line.b.x) {
+                if (line2.a.x == line2.b.x) {
+                    return line.a.intersects(line2) ? line : null;
+                } else {
+                    return new Point(line.a.x, line2.y(line.a.x));
+                }
+            }
+            if (line2.a.x == line2.b.x) return new Point(line2.a.x, line.y(line2.a.x));
             var a1 = line.getLinePolynom().getLinearCoefficient();
             var b1 = line.getLinePolynom().getAbsoluleCoefficient();
             var a2 = line2.getLinePolynom().getLinearCoefficient();
@@ -181,6 +196,57 @@ const intersectFunctions = {
                 }
             }
         }
+    },
+    Circle: {
+        /**
+         * 
+         * @param {Circle} circle 
+         * @param {Circle} circle2 
+         * @returns {Circle | [Point, Point] | Point | null}
+         */
+        Circle: (circle, circle2) => {
+            if (circle.center.distance(circle2.center) === 0) return round(circle.r) === round(circle2.r) ? circle : null;
+            if (circle.center.distance(circle2.center) > round(circle.r + circle2.r)) return null;
+            var l = new Segment(circle.center, circle2.center)
+            var rRatio = circle.r / (circle.r + circle2.r);
+            let dx = circle.center.x - circle2.center.x;
+            if (circle.center.distance(circle2.center) === round(circle.r + circle2.r)) {
+                if (l.a.x == l.b.x) {
+                    var ya = Math.max(l.a.y, l.b.y) - [circle, circle2].find(c => c.center.y == Math.max(l.a.y, l.b.y)).r;
+                    return new Point(l.a.x, ya);
+                }
+                let pdx = dx * rRatio;
+                let x = circle.center.x + pdx;
+                let y = l.y(x);
+                return new Point(x, y);
+            }
+            if (circle.center.x === circle2.center.x) {
+                var angle1cos = (l.length() ** 2 + circle.r ** 2 - circle2.r ** 2) / (2 * l.length() + circle2.r);
+                var k = angle1cos * circle.r;
+                var kRatio = k / l.length();
+                var pdx = dx * kRatio;
+                var x = circle.center.x + pdx;
+                var y = circle.center.x;
+                var p = new Point(x, y);
+                var c = Math.sin(Math.acos(angle1cos)) * circle.r;
+                return [new Point(y, x - c), new Point(y, x + c)];
+            }
+            var angle1cos = (l.length() ** 2 + circle.r ** 2 - circle2.r ** 2) / (2 * l.length() + circle2.r);
+            var k = angle1cos * circle.r;
+            var kRatio = k / l.length();
+            var pdx = dx * kRatio;
+            var x = circle.center.x + pdx;
+            var y = l.getLine().y(x);
+            var p = new Point(x, y);
+            var p2 = new Point(p.x, circle.center.y);
+            var t = new Triangle(circle.center, p2, p);
+            var c = Math.sin(Math.acos(angle1cos)) * circle.r;
+            var angle2 = t.getGamma();
+            var angle3 = Math.PI / 2 - angle2;
+            var dy = -Math.cos(angle3) * c;
+            dx = Math.sin(angle3) * c;
+            return [new Point(p.x + dx, p.y + dy), new Point(p.x - dx, p.y - dy)];
+        }
     }
 }
 
@@ -202,9 +268,10 @@ export class Base {
      */
     getIntersect(object) {
         try {
-            return getIntersect(this, object)
+            return getIntersect(this, object);
         } catch (err) {
-            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page.");
+            console.log(err);
+            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page." );
         }
     }
     /**
@@ -232,6 +299,7 @@ export class Line extends Base {
     constructor(point1, point2) {
         if (!point1 instanceof Point) throw new TypeError("The point1 argument must be a type of Point.");
         if (!point2 instanceof Point) throw new TypeError("The point2 argument must be a type of Point.");
+        if (point1.distance(point2) === 0) throw new Error("Need two different points to construct a line.");
         super();
         /**
          * @description The first point of the line
@@ -242,7 +310,7 @@ export class Line extends Base {
          * @description The second point of the line
          * @type {Point}
          */
-        this.b = [point1, point2].find(p => p.x === Math.max(point1.x, point2.x));
+        this.b = [point1, point2].find(p => p.distance(this.a) > 0);
     }
     /**
      * @description Returns the y value for a point with given x that lays on this line
@@ -251,7 +319,7 @@ export class Line extends Base {
      */
     y(x) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -261,7 +329,7 @@ export class Line extends Base {
      */
     x(y) {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
@@ -270,7 +338,7 @@ export class Line extends Base {
      */
     getLinePolynom() {
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return new Polynom(a, b);
     }
     /**
@@ -279,6 +347,37 @@ export class Line extends Base {
      */
     toString() {
         return `Line: (${this.a}, ${this.b})`;
+    }
+    /**
+     * @description Returns a perpendicular line going thru the point
+     * @param {Point} point The point
+     * @returns {Line}
+     */
+    getPerpendicular(point) {
+        if (!point.intersects(this)) {
+            var pline = this.getPrallel(point);
+            return pline.getPerpendicular(point);
+        }
+        var a = new Point(point.x - 1, this.y(point));
+        var b = new Point(point.x + 1, this.y(point));
+        var dx = (b.x - a.x);
+        var dy = (b.y - a.y);
+        var x = a.x + dx - dy;
+        var y = a.y + dx + dy;
+        return new Line(point, new Point(x, y));
+    }
+    /**
+     * @description Returns a parallel line going thru the point
+     * @param {Point} point The point
+     * @returns {Line}
+     */
+    getPrallel(point) {
+        if (this.intersects(point)) return this;
+        var l = new Line(point, new Point(point.x, point.y - 1));
+        var p = l.getIntersect(this);
+        if (p === null) return l;
+        var p2 = new Point(p.x - 1, this.y(p.x - 1));
+        return new Line(point, new Point(p2.x, p2.y + point.y - p.y));
     }
 }
 
@@ -451,7 +550,7 @@ export class Ray extends Base {
     y(x) {
         if (this.a.x < this.b.x) if (this.a.x > x) return undefined; else; if (this.a.x < x) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -462,7 +561,7 @@ export class Ray extends Base {
     x(y) {
         if (this.a.y < this.b.y) if (this.a.y > y) return undefined; else; if (this.a.y < y) return undefined;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
@@ -516,7 +615,7 @@ export class Segment extends Base {
     y(x) {
         if (x < this.a.x || x > this.b.x) return null;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
     }
     /**
@@ -527,7 +626,7 @@ export class Segment extends Base {
     x(y) {
         if (this.a.y < this.b.y) if (y < this.a.y || y > this.b.y) return null; else; if (y > this.a.y || y < this.b.y) return null;
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
-        var a = (this.b.y - this.a.y)/(this.b.x - this.a.x);
+        var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round((y - b) / a, "coordinate");
     }
     /**
@@ -585,5 +684,102 @@ export class Circle extends Base {
      */
     length() {
         return Math.PI * 2 * this.r;
+    }
+    /**
+     * @description Returns the string representation of this circle
+     * @returns {String}
+     */
+    toString() {
+        return `Circle(${this.r}, ${this.center})`;
+    }
+}
+
+
+
+//! Triangle
+export class Triangle extends Base {
+    constructor(a, b, c) {
+        if (!a instanceof Point) throw new TypeError("The a argument must be a type of Point.");
+        if (!b instanceof Point) throw new TypeError("The b argument must be a type of Point.");
+        if (!c instanceof Point) throw new TypeError("The c argument must be a type of Point.");
+        if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
+        super();
+        /**
+         * @description One vertex of the triangle
+         * @type {Point}
+         */
+        this.A = a;
+        /**
+         * @description One vertex of the triangle
+         * @type {Point}
+         */
+        this.B = b;
+        /**
+         * @description One vertex of the triangle
+         * @type {Point}
+         */
+        this.C = c;
+        /**
+         * @description One edge of the triangle
+         * @type {Segment}
+         */
+        this.c = new Segment(a, b);
+        /**
+         * @description One edge of the triangle
+         * @type {Segment}
+         */
+        this.b = new Segment(a, c);
+        /**
+         * @description One edge of the triangle
+         * @type {Segment}
+         */
+        this.a = new Segment(b, c);
+        /**
+         * @description Vertices of the triangle
+         * @type {Array<Point>}
+         */
+        this.vertices = [this.A, this.B, this.C];
+        /**
+         * @description Edges of the triangle
+         * @type {Array<Segment>}
+         */
+        this.edges = [this.a, this.b, this.c];
+    }
+    /**
+     * @description Returns the string representation of this object
+     * @returns {String}
+     */
+    toString() {
+        return `Triangle: (${this.A}, ${this.B}, ${this.C})`;
+    }
+    /**
+     * @description Returns the value of the angle α
+     * @returns {Number}
+     */
+    getAlpha() {
+        var a = this.a.length();
+        var b = this.b.length();
+        var c = this.c.length();
+        return Math.acos((b * b + c * c - a * a) / (2 * b * c));
+    }
+    /**
+     * @description Returns the value of the angle β
+     * @returns {Number}
+     */
+    getBeta() {
+        var a = this.a.length();
+        var b = this.b.length();
+        var c = this.c.length();
+        return Math.acos((a * a + c * c - b * b) / (2 * a * c));
+    }
+    /**
+     * @description Returns the value of the angle γ
+     * @returns {Number}
+     */
+    getGamma() {
+        var a = this.a.length();
+        var b = this.b.length();
+        var c = this.c.length();
+        return Math.acos((a * a + b * b - c * c) / (2 * a * b));
     }
 }
