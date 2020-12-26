@@ -1,4 +1,4 @@
-import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js"
+import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js";
 /**
  * @description Class representing a canvas
  */

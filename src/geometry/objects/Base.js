@@ -1,7 +1,8 @@
 /**
  * @description Class representing datatypes of the geometry canvasio library
+ * @abstract
  */
-export default class Base {
+export class Base {
     constructor() {
 
     }
