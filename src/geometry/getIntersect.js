@@ -125,6 +125,36 @@ const intersectFunctions = {
                     if (ray.intersects(ray2.a)) return ray2; else return ray;
                 } else return i;
             }
+        },
+        /**
+         * 
+         * @param {Ray} ray 
+         * @param {Line} line 
+         * @returns {Ray | Point | null}
+         */
+        Line: (ray, line) => {
+            var l = ray.getLine();
+            var i = l.getIntersect(line);
+            if (i === null) return null; else if (i instanceof Line) return ray; else {
+                return ray.intersects(i) ? i : null
+            }
+        },
+        /**
+         * 
+         * @param {Ray} ray 
+         * @param {Segment} segment
+         * @returns {Segment | Point | null} 
+         */
+        Segment: (ray, segment) => {
+            var l = segment.getLine();
+            var i = l.getIntersect(ray);
+            if (i === null) return null; if (i instanceof Point) return i.intersects(segment) ? i : null; else {
+                if (segment.a.intersects(ray)) {
+                    return segment.b.intersects(ray) ? segment : new Segment(segment.a, ray.a);
+                } else {
+                    return segment.b.intersects(ray) ? new Segment(segment.b, ray.a) : null;
+                }
+            }
         }
     }
 }
