@@ -247,6 +247,35 @@ const intersectFunctions = {
             var dy = -Math.cos(angle3) * c;
             dx = Math.sin(angle3) * c;
             return [new Point(p.x + dx, p.y + dy), new Point(p.x - dx, p.y - dy)];
+        },
+        /**
+         * 
+         * @param {Circle} circle 
+         * @param {Line} line 
+         * @returns {[Point, Point] | Point | null}
+         */
+        Line: (circle, line) => {
+            if (round(circle.center.distance(line)) > round(circle.r)) return null;
+            if (round(circle.center.distance(line)) === round(circle.r)) {
+                let l = line.getPerpendicular(circle.center);
+                return l.getIntersect(line);
+            }
+            var h = line.getPerpendicular(circle.center);
+            var d = h.distance(circle.center);
+            var l = Math.pow(circle.r ** 2 - d * d, 1 / 2);
+            if (line.intersects(circle.center)) {
+                if (line.a.x === line.b.x) {
+                    return [new Point(circle.center.x, circle.center.y - circle.r), new Point(circle.center.x, circle.center.y + circle.r)];
+                }
+                let s = new Segment(line.a, line.b);
+                let angle = Math.acos((s.b.x - s.a.x) / s.length());
+                let dx = Math.cos(angle) * l;
+                let dy = Math.sin(angle) * l;
+                let p = new Point(circle.center.x + dx, circle.center.y + dy);
+                return [p, p.reflectAbout(circle.center)];
+            }
+            var c = new Circle(line.intersects(h), l);
+            return c.getIntersect(line);
         }
     }
 }
@@ -451,6 +480,24 @@ export class Point extends Base {
             return this.distance(p);
         }
         throw new TypeError("The point argument must be a Point.");
+    }
+    /**
+     * @description Reflects the point about an object
+     * @param {Line | Point} object
+     * @returns {Point}
+     */
+    reflectAbout(object) {
+        if (object instanceof Point) {
+            var dx = object.x - this.x;
+            var dy = object.y - this.y;
+            return new Point(object.x + dx, object.y + dy);
+        }
+        if (object instanceof Line) {
+            var perpendicular = object.getPerpendicular(this);
+            var i = perpendicular.getIntersect(object);
+            return this.reflectAbout(i);
+        }
+        throw new TypeError("Can not reflect about this object.");
     }
     /**
      * @description Creates a point object form the string representation of it tin the form [x, y];
