@@ -1,14 +1,5 @@
 import { Canvas } from './index.js'
-//! Constants
-/**
- * @description Amount of decimal places round coordinates to
- */
-export const decimalRoundCoordinate = 6;
-/**
- * @description Amount of decimal places round angles in radians to
- */
-export const decimalRoundAngle = 15;
-
+import { decimalRoundAngle, decimalRoundCoordinate, lineLengthMultiplier } from "./constants.js"
 
 
 //! Util
@@ -262,7 +253,7 @@ const intersectFunctions = {
                 return l.getIntersect(line);
             }
             var h = line.getPerpendicular(circle.center);
-            var d = h.distance(circle.center);
+            var d = line.distance(circle.center);
             var l = Math.pow(circle.r ** 2 - d * d, 1 / 2);
             if (line.intersects(circle.center)) {
                 if (line.a.x === line.b.x) {
@@ -275,7 +266,7 @@ const intersectFunctions = {
                 let p = new Point(circle.center.x + dx, circle.center.y + dy);
                 return [p, p.reflectAbout(circle.center)];
             }
-            var c = new Circle(line.intersects(h), l);
+            var c = new Circle(line.getIntersect(h), l);
             return c.getIntersect(line);
         },
         /**
@@ -337,8 +328,7 @@ export class Base {
         try {
             return getIntersect(this, object);
         } catch (err) {
-            console.log(err);
-            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page.");
+            throw new Error("Intersect for these two objects has not been yet defined. If you belive this is a mistake, please report this on the offical GitHub page. Objects: " + this + " and " + object);
         }
     }
     /**
@@ -364,8 +354,8 @@ export class Line extends Base {
      * @param {Point} point2 
      */
     constructor(point1, point2) {
-        if (!point1 instanceof Point) throw new TypeError("The point1 argument must be a type of Point.");
-        if (!point2 instanceof Point) throw new TypeError("The point2 argument must be a type of Point.");
+        if (!(point1 instanceof Point)) throw new TypeError("The point1 argument must be a type of Point.");
+        if (!(point2 instanceof Point)) throw new TypeError("The point2 argument must be a type of Point.");
         if (point1.distance(point2) === 0) throw new Error("Need two different points to construct a line.");
         super();
         /**
@@ -422,23 +412,20 @@ export class Line extends Base {
      */
     getPerpendicular(point) {
         if (!point.intersects(this)) {
-            var pline = this.getPrallel(point);
+            var pline = this.getParallel(point);
             return pline.getPerpendicular(point);
         }
-        var a = new Point(point.x - 1, this.y(point));
-        var b = new Point(point.x + 1, this.y(point));
-        var dx = (b.x - a.x);
-        var dy = (b.y - a.y);
-        var x = a.x + dx - dy;
-        var y = a.y + dx + dy;
-        return new Line(point, new Point(x, y));
+        var angle = Math.atan((this.a.x - this.b.x) / (this.a.y - this.b.y));
+        var x = -Math.cos(angle);
+        var y = Math.sin(angle);
+        return new Line(point, new Point(x + point.x, y + point.y));
     }
     /**
      * @description Returns a parallel line going thru the point
      * @param {Point} point The point
      * @returns {Line}
      */
-    getPrallel(point) {
+    getParallel(point) {
         if (this.intersects(point)) return this;
         var l = new Line(point, new Point(point.x, point.y - 1));
         var p = l.getIntersect(this);
@@ -514,6 +501,7 @@ export class Point extends Base {
         if (object instanceof Line) {
             var l = object.getPerpendicular(this);
             var p = l.getIntersect(object);
+            if (p instanceof Line) return 0;
             return this.distance(p);
         }
         throw new TypeError("The point argument must be a Point.");
@@ -626,8 +614,8 @@ export class Ray extends Base {
      * @param {Point} point2 Point describing the rays direction
      */
     constructor(endPoint, point2) {
-        if (!endPoint instanceof Point) throw new TypeError("The endPoint argument must be a type of Point.");
-        if (!point2 instanceof Point) throw new TypeError("The point2 argument must be a type of Point.");
+        if (!(endPoint instanceof Point)) throw new TypeError("The endPoint argument must be a type of Point.");
+        if (!(point2 instanceof Point)) throw new TypeError("The point2 argument must be a type of Point.");
         super();
         /**
          * @description The first point of the line
@@ -646,7 +634,12 @@ export class Ray extends Base {
      * @returns {Number | undefined} y
      */
     y(x) {
-        if (this.a.x < this.b.x) if (this.a.x > x) return undefined; else; if (this.a.x < x) return undefined;
+        if (this.a.x < this.b.x) {
+            if (this.a.x > x) return undefined
+        } else {
+            if (this.a.x < x) return undefined;
+        }
+
         var b = (this.b.y * this.a.x - this.a.y * this.b.x) / (this.a.x - this.b.x);
         var a = (this.b.y - this.a.y) / (this.b.x - this.a.x);
         return round(a * x + b, "coordinate");
@@ -691,8 +684,8 @@ export class Segment extends Base {
      * @param {Point} point2 
      */
     constructor(point1, point2) {
-        if (!point1 instanceof Point) throw new TypeError("The point1 argument must be a type of Point.");
-        if (!point2 instanceof Point) throw new TypeError("The point2 argument must be a type of Point.");
+        if (!(point1 instanceof Point)) throw new TypeError("The point1 argument must be a type of Point.");
+        if (!(point2 instanceof Point)) throw new TypeError("The point2 argument must be a type of Point.");
         super();
         /**
          * @description The first point of the segment
@@ -763,7 +756,7 @@ export class Circle extends Base {
      */
     constructor(center, radius) {
         if (typeof radius !== 'number') throw new TypeError("Radius must be a number.");
-        if (!center instanceof Point) throw new TypeError("Center must be a Point.");
+        if (!(center instanceof Point)) throw new TypeError("Center must be a Point.");
         super();
         /**
          * @description Radius of the circle
@@ -797,9 +790,9 @@ export class Circle extends Base {
 //! Triangle
 export class Triangle extends Base {
     constructor(a, b, c) {
-        if (!a instanceof Point) throw new TypeError("The a argument must be a type of Point.");
-        if (!b instanceof Point) throw new TypeError("The b argument must be a type of Point.");
-        if (!c instanceof Point) throw new TypeError("The c argument must be a type of Point.");
+        if (!(a instanceof Point)) throw new TypeError("The a argument must be a type of Point.");
+        if (!(b instanceof Point)) throw new TypeError("The b argument must be a type of Point.");
+        if (!(c instanceof Point)) throw new TypeError("The c argument must be a type of Point.");
         if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
         if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle can not match.");
         super();
@@ -879,7 +872,6 @@ export class Triangle extends Base {
         var a = this.a.length();
         var b = this.b.length();
         var c = this.c.length();
-        console.log(this);
         return Math.acos((a * a + b * b - c * c) / (2 * a * b));
     }
 }
@@ -890,7 +882,7 @@ export class Triangle extends Base {
 /**
  * @description Class that manages drawing Geometry object to canvas.
  */
-class Drawer {
+export class Drawer {
     /**
      * 
      * @param {Canvas} canvas 
@@ -908,53 +900,91 @@ class Drawer {
      * @returns {void}
      */
     draw(object) {
-        if (object instanceof Point) this.#drawPoint(object);
-        if (object instanceof Line) this.#drawLine(object);
-        if (object instanceof Ray) this.#drawRay(object);
-        if (object instanceof Segment) this.#drawSegment(object);
-        if (object instanceof Circle) this.#drawCircle(object);
-        throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page." );
+        if (object instanceof Point) return this.#drawPoint(object);
+        if (object instanceof Line) return this.#drawLine(object);
+        if (object instanceof Ray) return this.#drawRay(object);
+        if (object instanceof Segment) return this.#drawSegment(object);
+        if (object instanceof Circle) return this.#drawCircle(object);
+        throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page. Object:" + (object && object.constructor ? object.constructor.name : object));
     }
     /**
      * @description Draws a Point on to the canvas
      * @param {Point} point
      * @returns {void}
+     * @private
      */
     #drawPoint(point) {
-        if (!point instanceof Point) throw new TypeError("The point argument must be a type of Point.")
+        if (!(point instanceof Point)) throw new TypeError("The point argument must be a type of Point.")
         var d = this.canvas.context.lineWidth;
-        this.canvas.arc(point.x, point.y, d / 2, 0, Math.PI / 2);
+        this.canvas.context.beginPath();
+        this.canvas.context.arc(point.x, point.y, d * 2, 0, Math.PI * 2);
+        this.canvas.context.closePath();
+        this.canvas.context.fill();
     }
     /**
      * @description Draws a Line on to the canvas
      * @param {Line} line
      * @returns {void}
+     * @private
      */
     #drawLine(line) {
-
+        if (!(line instanceof Line)) throw new TypeError("The line argument must be a type of Line.");
+        if (line.a.x === line.b.x) {
+            this.canvas.drawLine({
+                x: line.a.x,
+                y: -lineLengthMultiplier
+            }, {
+                x: line.b.x,
+                y: lineLengthMultiplier
+            });
+        } else {
+            this.canvas.drawLine({
+                x: -lineLengthMultiplier,
+                y: line.y(-lineLengthMultiplier)
+            }, {
+                x: lineLengthMultiplier,
+                y: line.y(lineLengthMultiplier)
+            });
+        }
     }
     /**
      * @description Draws a Ray on to the canvas
      * @param {Ray} ray 
      * @returns {void}
+     * @private
      */
     #drawRay(ray) {
-
+        if (!(ray instanceof Ray)) throw new TypeError("The ray argument must be a type of Ray.");
+        if (ray.a.x === ray.b.x) {
+            this.canvas.drawLine(ray.a, {
+                x: ray.b.x,
+                y: ray.b.y < ray.a.y ? -lineLengthMultiplier : lineLengthMultiplier
+            });
+        } else {
+            this.canvas.drawLine(ray.a, {
+                x: ray.b.x < ray.a.x ? -lineLengthMultiplier : lineLengthMultiplier,
+                y: ray.y(ray.b.x < ray.a.x ? -lineLengthMultiplier : lineLengthMultiplier)
+            });
+        }
     }
     /**
      * @description Draws a Segment on to the canvas
      * @param {Segment} segment 
      * @returns {void}
+     * @private
      */
     #drawSegment(segment) {
-
+        if (!(segment instanceof Segment)) throw new TypeError("The segment argument must be a type of Segment.");
+        this.canvas.drawLine(segment.a, segment.b);
     }
     /**
      * @description Draws a circle on to the canvas
      * @param {Circle} circle 
      * @returns {void}
+     * @private
      */
     #drawCircle(circle) {
-
+        if (!(circle instanceof Circle)) throw new TypeError("The circle argument must be a type of Circle.")
+        this.canvas.drawCircle(circle.center.x, circle.center.y, circle.r);
     }
 }

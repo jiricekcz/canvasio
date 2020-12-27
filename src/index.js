@@ -1,4 +1,5 @@
 import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js";
+import * as Geometry from "./geometry.js"
 /**
  * @description Class representing a canvas
  */
@@ -48,7 +49,10 @@ export class Canvas {
                     this.canvas.style.position = "absolute";
                     this.canvas.style.top = 0;
                     this.canvas.style.left = 0;
-                    this.translate(this.canvas.width/2, this.canvas.height/2);
+                    this.context = this.canvas.getContext("2d");
+                    this.translate(this.canvas.width / 2, this.canvas.height / 2);
+                    this.scale(1, -1);
+                    break;
                 default:
                     throw new Error("Unknown preset: " + options.preset);
             }
@@ -67,6 +71,11 @@ export class Canvas {
          * @type {FilterManager}
          */
         this.filters = new FilterManager();
+        /**
+         * @description Object that handles drawing of geometry objects on the canvas
+         * @type {Geometry.Drawer}
+         */
+        this.drawer = new Geometry.Drawer(this);
     }
     /**
       * @param {Number} A 
@@ -87,8 +96,8 @@ export class Canvas {
     drawLine(A, B, C, D) {
         if (A === undefined || B === undefined) throw new Error("At least two arguments need to be provided.")
         if (typeof C === "number") {
-            A = { x: A, y: B},
-            B = { x: C, y: D}
+            A = { x: A, y: B },
+                B = { x: C, y: D }
         }
         try {
             this.context.beginPath();
@@ -186,17 +195,17 @@ export class Canvas {
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
-        for (var i = width; i < 2*this.canvas.height; i += width) {
-            this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
+        for (var i = width; i < 2 * this.canvas.height; i += width) {
+            this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
-        for (var i = -width; i > -2*this.canvas.height; i -= width) {
-            this.drawLine(-2*this.canvas.width, i, 2*this.canvas.width, i);
+        for (var i = -width; i > -2 * this.canvas.height; i -= width) {
+            this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
-        for (var i = width; i < 2*this.canvas.width; i += width) {
-            this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
+        for (var i = width; i < 2 * this.canvas.width; i += width) {
+            this.drawLine(i, -2 * this.canvas.height, i, 2 * this.canvas.height);
         }
-        for (var i = -width; i > -2*this.canvas.width; i -= width) {
-            this.drawLine(i, -2*this.canvas.height, i, 2*this.canvas.height);
+        for (var i = -width; i > -2 * this.canvas.width; i -= width) {
+            this.drawLine(i, -2 * this.canvas.height, i, 2 * this.canvas.height);
         }
         this.context.lineWidth = lw;
     }
@@ -495,6 +504,71 @@ export class Canvas {
      */
     createPath() {
         return new Path(this);
+    }
+    /**
+     * @description Draws the outline of a circle
+     * @param {Number} x The x coordinate of the center point of this circle
+     * @param {Number} y The y coordinate of the center point of this circle 
+     * @param {Number} radius The radius of the circle 
+     */
+    drawCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, 2 * Math.PI);
+        this.context.closePath();
+        this.context.stroke();
+    }
+    /**
+     * @description Draws a circle with infill
+     * @param {Number} x The x coordinate of the center point of this circle
+     * @param {Number} y The y coordinate of the center point of this circle 
+     * @param {Number} radius The radius of the circle 
+     */
+    fillCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, 2 * Math.PI);
+        this.context.closePath();
+        this.context.fill();
+    }
+    /**
+     * @description Draws an object on the canvas
+     * @param {...(Geometry.Line | Geometry.Ray | Geometry.Segment | Geometry.Point | Geometry.Circle | Array<Geometry.Line | Geometry.Ray | Geometry.Segment | Geometry.Point | Geometry.Circle>)} object
+     * @returns {void}
+     */
+    draw(...object) {
+        for (var o of object) {
+            if (o === null) {
+                console.warn("Attempted to draw an empty object.");
+                continue;
+            }
+            if (o instanceof Array) {
+                for (var oo of o) {
+                    this.draw(oo);
+                }
+            } else this.drawer.draw(o);
+        }
+    }
+    /**
+     * @description Redraws the whole canvas with a filter and resets all filters applied to the canvas
+     * @param {Filter} filter
+     * @returns {Promise<void>}
+     * @async
+     */
+    async redrawWithFilter(filter) {
+        this.save();
+        this.transform();
+        var id = this.getImageData({
+            x: 0,
+            y: 0,
+            width: this.canvas.width, 
+            height: this.canvas.height
+        });
+        var a = this.filters;
+        this.filters.clear();
+        this.applyFilter(filter);
+        var image = await Image.fromImageData(id);
+        this.clear();
+        this.drawImage(image, 0, 0);
+        this.load();
     }
 }
 /**
