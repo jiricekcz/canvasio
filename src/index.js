@@ -9,7 +9,7 @@ export class Canvas {
      * @param {Number} [options.width] The width of the canvas
      * @param {Number} [options.height] The height of the canvas
      * @param {HTMLElement} [options.container] The parent element of the canvas
-     * @param {?"fullscreen" | "small"} [options.preset] If preset is present, it will bypass all other options and initialize the canvas with the preset
+     * @param {?"fullscreen" | "small" | "math"} [options.preset] If preset is present, it will bypass all other options and initialize the canvas with the preset
      */
     constructor(options = { width: window.innerWidth / 2, height: window.innerHeight / 2, container: document.body }) {
         /**
@@ -38,6 +38,17 @@ export class Canvas {
                     this.canvas.width = window.innerWidt / 4;
                     this.canvas.height = window.innerHeight / 4;
                     break;
+                case "math":
+                    document.body.appendChild(this.canvas);
+                    document.body.style.margin = 0;
+                    document.body.style.overflow = "hidden";
+                    this.canvas.style.margin = 0;
+                    this.canvas.width = window.innerWidth
+                    this.canvas.height = window.innerHeight;
+                    this.canvas.style.position = "absolute";
+                    this.canvas.style.top = 0;
+                    this.canvas.style.left = 0;
+                    this.translate(this.canvas.width/2, this.canvas.height/2);
                 default:
                     throw new Error("Unknown preset: " + options.preset);
             }

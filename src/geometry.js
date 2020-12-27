@@ -1,3 +1,4 @@
+import { Canvas } from './index.js'
 //! Constants
 /**
  * @description Amount of decimal places round coordinates to
@@ -880,5 +881,80 @@ export class Triangle extends Base {
         var c = this.c.length();
         console.log(this);
         return Math.acos((a * a + b * b - c * c) / (2 * a * b));
+    }
+}
+
+
+
+//! Draw
+/**
+ * @description Class that manages drawing Geometry object to canvas.
+ */
+class Drawer {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     */
+    constructor(canvas) {
+        /**
+         * @description The canvas this drawer draws to
+         * @type {Canvas}
+         */
+        this.canvas = canvas;
+    }
+    /**
+     * @description Draws an object
+     * @param {Point | Line | Ray | Segment | Circle} object 
+     * @returns {void}
+     */
+    draw(object) {
+        if (object instanceof Point) this.#drawPoint(object);
+        if (object instanceof Line) this.#drawLine(object);
+        if (object instanceof Ray) this.#drawRay(object);
+        if (object instanceof Segment) this.#drawSegment(object);
+        if (object instanceof Circle) this.#drawCircle(object);
+        throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page." );
+    }
+    /**
+     * @description Draws a Point on to the canvas
+     * @param {Point} point
+     * @returns {void}
+     */
+    #drawPoint(point) {
+        if (!point instanceof Point) throw new TypeError("The point argument must be a type of Point.")
+        var d = this.canvas.context.lineWidth;
+        this.canvas.arc(point.x, point.y, d / 2, 0, Math.PI / 2);
+    }
+    /**
+     * @description Draws a Line on to the canvas
+     * @param {Line} line
+     * @returns {void}
+     */
+    #drawLine(line) {
+
+    }
+    /**
+     * @description Draws a Ray on to the canvas
+     * @param {Ray} ray 
+     * @returns {void}
+     */
+    #drawRay(ray) {
+
+    }
+    /**
+     * @description Draws a Segment on to the canvas
+     * @param {Segment} segment 
+     * @returns {void}
+     */
+    #drawSegment(segment) {
+
+    }
+    /**
+     * @description Draws a circle on to the canvas
+     * @param {Circle} circle 
+     * @returns {void}
+     */
+    #drawCircle(circle) {
+
     }
 }
