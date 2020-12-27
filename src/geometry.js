@@ -380,6 +380,14 @@ export class Line extends Base {
         var p2 = new Point(p.x - 1, this.y(p.x - 1));
         return new Line(point, new Point(p2.x, p2.y + point.y - p.y));
     }
+    /**
+     * @description Returns the distance between this line and the given point
+     * @param {Point} point
+     * @returns {Number}
+     */
+    distance(point) {
+        return point.distance(this);
+    }
 }
 
 
@@ -431,13 +439,18 @@ export class Point extends Base {
         return [this.x, this.y];
     }
     /**
-     * @description Returns the distance between this and the point provided
-     * @param {Point} point The point provided
+     * @description Returns the distance between this and the object provided
+     * @param {Point | Line} object The object provided
      * @returns {Number} The distance
      */
-    distance(point) {
-        if (!point instanceof Point) throw new TypeError("The point argument must be a Point.");
-        return round(Math.pow(Math.pow(this.x - point.x, 2) + Math.pow(this.y - point.y, 2), 1 / 2), "coordinate");
+    distance(object) {
+        if (object instanceof Point) return round(Math.pow(Math.pow(this.x - object.x, 2) + Math.pow(this.y - object.y, 2), 1 / 2), "coordinate");
+        if (object instanceof Line) {
+            var l = object.getPerpendicular(this);
+            var p = l.getIntersect(object);
+            return this.distance(p);
+        }
+        throw new TypeError("The point argument must be a Point.");
     }
     /**
      * @description Creates a point object form the string representation of it tin the form [x, y];
