@@ -294,6 +294,24 @@ const intersectFunctions = {
                 if (a.length === 1) return a[1];
                 return a;
             }
+        },
+        /**
+         *  
+         * @param {Circle} circle 
+         * @param {Segment} segment 
+         * @returns {[Point, Point], Point, null}
+         */
+        Segment: (circle, segment) => {
+            var l = segment.getLine();
+            var is = l.getIntersects(circle);
+            if (is === null) return null;
+            if (is instanceof Point) return is.intersects(segment) ? is : null;
+            if (is instanceof Array) {
+                var a = is.filter(i => i.intersects(segment));
+                if (a.length === 0) return null;
+                if (a.length === 1) return a[1];
+                return a;
+            }
         }
     }
 }
