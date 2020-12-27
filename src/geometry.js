@@ -276,6 +276,24 @@ const intersectFunctions = {
             }
             var c = new Circle(line.intersects(h), l);
             return c.getIntersect(line);
+        },
+        /**
+         * 
+         * @param {Circle} circle 
+         * @param {Ray} ray 
+         * @returns {[Point, Point], Point, null}
+         */
+        Ray: (circle, ray) => {
+            var l = ray.getLine();
+            var is = l.getIntersects(circle);
+            if (is === null) return null;
+            if (is instanceof Point) return is.intersects(ray) ? is : null;
+            if (is instanceof Array) {
+                var a = is.filter(i => i.intersects(ray));
+                if (a.length === 0) return null;
+                if (a.length === 1) return a[1];
+                return a;
+            }
         }
     }
 }
