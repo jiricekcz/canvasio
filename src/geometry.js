@@ -69,6 +69,13 @@ const intersectFunctions = {
          * @returns {Point | null}
          */
         Circle: (point, circle) => point.distance(circle.center) == round(circle.radius, "coordinate") ? point : null,
+        /**
+         * 
+         * @param {Point} point 
+         * @param {Polygon} polygon 
+         * @returns {Point | null}
+         */
+        Polygon: (point, polygon) => polygon.edges.map(v => v.getIntersect(point)).filter(v => v !== null).length > 0 ? point : null,
     },
     Line: {
         /**
@@ -110,20 +117,28 @@ const intersectFunctions = {
          * @returns {Segment | Point | null}
          */
         Segment: (segment, segment2) => {
-            var a1 = segment.getLine().getLinePolynom().getLinearCoefficient();
-            var b1 = segment.getLine().getLinePolynom().getAbsoluleCoefficient();
-            var a2 = segment2.getLine().getLinePolynom().getLinearCoefficient();
-            var b2 = segment2.getLine().getLinePolynom().getAbsoluleCoefficient();
-            if (a1 === a2) {
-                if (b1 === b2) {
-                    //Segment
+            var l = segment.getLine();
+            var l2 = segment2.getLine();
+            var i = l.getIntersect(l2);
+            if (i === null) return null;
+            if (i instanceof Point) return i.intersects(segemnt) && i.intersects(segment2) ? i : null;
+            if (i instanceof Line) {
+                if (i.a.x === i.b.x) {
+                    var t = [l.a, l.b, l2.a, l2.b].sort((a, b) => a.y - b.y);
+                } else var t = [l.a, l.b, l2.a, l2.b].sort((a, b) => a.x - b.x);
+                if (t[0].distance(t[1]) === 0) {
+                    if (t[2].distance(t[3]) === 0) {
+                        return segment;
+                    } else {
+                        return [segment, segment2].find(v => v.a.distance(t[3]) === 0 || v.b.distance(t[3]) === 0)
+                    }
                 }
-                return null;
-            } else {
-                var x = (b2 - b1) / (a1 - a2);
-                var y = a1 * x + b1;
-                var p = new Point(x, y);
-                return p.intersects(segment) && p.intersects(segment2) ? p : null;
+                if (t[1].distance(t[2]) === 0) return t[1];
+                if (t[1].intersects(segment) && t[2].intersects(segment) && t[1].intersects(segment2) && t[2].intersects(segment2)) {
+                    if (!t[0].intersects(segment) && !t[3].intersects(segment)) return segment;
+                    if (!t[0].intersects(segment2) && !t[3].intersects(segment2)) return segment2;
+                    return new Segment(t[1], t[2]);
+                } else return null;
             }
         },
         /**
@@ -305,6 +320,62 @@ const intersectFunctions = {
                 return a;
             }
         }
+    },
+    Polygon: {
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Line} line 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Line: (polygon, line) => {
+            /**
+             * @type {Array<Segment | Point | null>}
+             */
+            var c = [];
+            for (var e of polygon.edges) {
+                c.push(e.getIntersect(line));
+            }
+            c = c.flat(3);
+            //Removes points that lay on segments, that intersect and nulls
+            c = c.filter((v, i, a) => {
+                if (v === null) return false;
+                if (v instanceof Point) {
+                    for (var e of a) {
+                        if (!(e instanceof Point)) continue;
+                        if (e.intersects(v)) return false;
+                    }
+                }
+                return true;
+            });
+            //Removes duplicate points
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (!(v instanceof Point)) continue;
+                if (c.filter(a => a instanceof Point && a.distance(v) === 0)) {
+                    c.splice(i, 1);
+                }
+            }
+            //Join segments if possible
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    if (!a.intersects(v)) continue;
+                    c.push(v.join(a));
+                }
+            }
+            //Removes extra segments
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    if (!a.getIntersect(v) === v) c.splice(i, 1);
+                }
+            }
+        }
     }
 }
 
@@ -338,6 +409,46 @@ export class Base {
      */
     intersects(object) {
         return this.getIntersect(object) !== null;
+    }
+}
+
+
+
+//! Polygon
+/**
+ * @description Class representing any polygon
+ * @extends {Base}
+ */
+export class Polygon extends Base {
+    /**
+     * 
+     * @param {Array<Point>} points 
+     */
+    constructor(points) {
+        for (var p of points) {
+            if (!(p instanceof Point)) throw new TypeError("All vericies of a polygon must be Points.");
+        }
+        super();
+        /**
+         * @description Vertices of this polygon
+         * @type {Array<Point>} 
+         */
+        this.vertices = points;
+        /**
+         * @description Edges of this polygon
+         * @type {Array<Segment>}
+         */
+        this.edges = this.vertices.map((v, i, a) => {
+            if (i === 0) i = a.length;
+            return new Segment(v, a[i - 1]);
+        });
+    }
+    /**
+     * @description Returns the string representation of this object
+     * @returns {String}
+     */
+    toString() {
+        return `Polygon: (${this.edges.join(", ")}})`;
     }
 }
 
@@ -741,6 +852,27 @@ export class Segment extends Base {
     length() {
         return this.a.distance(this.b);
     }
+    /**
+     * @description Join two segments
+     * @param {Segment} segment 
+     * @returns {Segment}
+     */
+    join(segment) {
+        if (!(segment instanceof Segment)) throw new TypeError("The segemnt argument mus be a Segment.");
+        var i = this.getIntersect(segment);
+        if (i === null) throw new Error("Can not join segments that do not intersect.");
+        if (i instanceof Point) {
+            if (!(this.getLine().getIntersect(this) instanceof Segment)) throw new Error("Can not join segments that do not lay on one line.");
+            var a = [this.a, this.b].find(v => v.distance(i) > 0);
+            var b = [segment.a, segment.b].find(v => v.distance(i) > 0);
+            return new Segment(a, b);
+        }
+        if (i instanceof Segment) {
+            var a = [this.a, this.b].find(v => !v.intersects(i));
+            var b = [segment.a, segment.b].find(v => !v.intersects(i));
+            return new Segment(a, b);
+        }
+    }
 }
 
 
@@ -788,14 +920,24 @@ export class Circle extends Base {
 
 
 //! Triangle
-export class Triangle extends Base {
+/**
+ * @description Class representing a triangle
+ * @extends {Polygon}
+ */
+export class Triangle extends Polygon {
+    /**
+     * 
+     * @param {Point} a The A point of the triangle
+     * @param {Point} b The B point of the triangle
+     * @param {Point} c The C point of the triangle
+     */
     constructor(a, b, c) {
         if (!(a instanceof Point)) throw new TypeError("The a argument must be a type of Point.");
         if (!(b instanceof Point)) throw new TypeError("The b argument must be a type of Point.");
         if (!(c instanceof Point)) throw new TypeError("The c argument must be a type of Point.");
         if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
         if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle can not match.");
-        super();
+        super([a, b, c]);
         /**
          * @description One vertex of the triangle
          * @type {Point}
@@ -815,34 +957,17 @@ export class Triangle extends Base {
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.c = new Segment(this.A, this.B);
+        this.c = this.edges[1];
         /**
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.b = new Segment(this.A, this.C);
+        this.b = this.edges[0];
         /**
          * @description One edge of the triangle
          * @type {Segment}
          */
-        this.a = new Segment(this.B, this.C);
-        /**
-         * @description Vertices of the triangle
-         * @type {Array<Point>}
-         */
-        this.vertices = [this.A, this.B, this.C];
-        /**
-         * @description Edges of the triangle
-         * @type {Array<Segment>}
-         */
-        this.edges = [this.a, this.b, this.c];
-    }
-    /**
-     * @description Returns the string representation of this object
-     * @returns {String}
-     */
-    toString() {
-        return `Triangle: (${this.A}, ${this.B}, ${this.C})`;
+        this.a = this.edges[2];
     }
     /**
      * @description Returns the value of the angle α
@@ -878,6 +1003,7 @@ export class Triangle extends Base {
 
 
 
+
 //! Draw
 /**
  * @description Class that manages drawing Geometry object to canvas.
@@ -896,7 +1022,7 @@ export class Drawer {
     }
     /**
      * @description Draws an object
-     * @param {Point | Line | Ray | Segment | Circle} object 
+     * @param {Point | Line | Ray | Segment | Circle | Triangle} object 
      * @returns {void}
      */
     draw(object) {
@@ -905,6 +1031,7 @@ export class Drawer {
         if (object instanceof Ray) return this.#drawRay(object);
         if (object instanceof Segment) return this.#drawSegment(object);
         if (object instanceof Circle) return this.#drawCircle(object);
+        if (object instanceof Triangle) return this.#drawTriangle(object);
         throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page. Object:" + (object && object.constructor ? object.constructor.name : object));
     }
     /**
@@ -986,5 +1113,17 @@ export class Drawer {
     #drawCircle(circle) {
         if (!(circle instanceof Circle)) throw new TypeError("The circle argument must be a type of Circle.")
         this.canvas.drawCircle(circle.center.x, circle.center.y, circle.r);
+    }
+    /**
+     * @description Draws a triangle on to the canvas
+     * @param {Triangle} triangle 
+     * @returns {void}
+     * @private
+     */
+    #drawTriangle(triangle) {
+        if (!(triangle instanceof Triangle)) throw new TypeError("The triangle argument must be a type of triangle.");
+        for (var e of triangle.edges) {
+            this.#drawSegment(e);
+        }
     }
 }
