@@ -422,6 +422,68 @@ const intersectFunctions = {
             if (ps.length === 0) return null;
             if (ps.length === 1) return ps[0];
             return ps;
+        },
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Polygon} polygon2 
+         * @returns {Polygon | Array<Segment | Point> | Segment | Point | null}
+         */
+        Polygon: (polygon, polygon2) => {
+            if (polygon === polygon2) return polygon;
+            /**
+             * @type {Array<Segment | Point | null>}
+             */
+            var c = [];
+            for (var e of polygon2.edges) {
+                c.push(e.getIntersect(polygon));
+            }
+            c = c.flat(3);
+            //Removes points that lay on segments, that intersect and nulls
+            c = c.filter((v, i, a) => {
+                if (v === null) return false;
+                if (v instanceof Point) {
+                    for (var e of a) {
+                        if (!(e instanceof Point)) continue;
+                        if (e.intersects(v)) return false;
+                    }
+                }
+                return true;
+            });
+            //Removes duplicate points
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (!(v instanceof Point)) continue;
+                if (c.filter(a => a instanceof Point && a.distance(v) === 0)) {
+                    c.splice(i, 1);
+                }
+            }
+            //Join segments if possible
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    var g = a.getIntersect(v);
+                    if (g === null) continue;
+                    if (g instanceof Segment) c.push(v.join(a));
+                    if (g instanceof Point) {
+                        if ([v.a, v.b, a.a, a.b].filter(j => j.intersects(v)).length === 4) c.push(v.join(a));
+                    }
+                }
+            }
+            //Removes extra segments
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    if (!a.getIntersect(v) === v) c.splice(i, 1);
+                }
+            }
+            if (c.length === 0) return null;
+            if (c.length === 1) return c[0];
+            return c;
         }
     }
 }
