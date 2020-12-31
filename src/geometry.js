@@ -76,6 +76,13 @@ const intersectFunctions = {
          * @returns {Point | null}
          */
         Polygon: (point, polygon) => polygon.edges.map(v => v.getIntersect(point)).filter(v => v !== null).length > 0 ? point : null,
+        /**
+         * 
+         * @param {Point} point 
+         * @param {Triangle} triangle
+         * @returns {Point | null}
+         */
+        Triangle: (point, triangle) => intersectFunctions.Point.Polygon(point, triangle),
     },
     Line: {
         /**
@@ -416,7 +423,7 @@ const intersectFunctions = {
             //Removes duplicates
             for (var i = 0; i < ps.length; i++) {
                 for (var a of ps) {
-                    if (a.distance(ps[i]) === 0) ps.splice(i, 1); 
+                    if (a.distance(ps[i]) === 0) ps.splice(i, 1);
                 }
             }
             if (ps.length === 0) return null;
@@ -485,6 +492,50 @@ const intersectFunctions = {
             if (c.length === 1) return c[0];
             return c;
         }
+    },
+    Triangle: {
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Triangle} trinagle2 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Triangle: (triangle, trinagle2) => intersectFunctions.Polygon.Polygon(triangle, trinagle2),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Circle} circle
+         * @returns {Array<Point> | Point | null}
+         */
+        Circle: (triangle, circle) => intersectFunctions.Polygon.Circle(triangle, circle),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Polygon} polygon 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Polygon: (triangle, polygon) => intersectFunctions.Polygon.Polygon(triangle, polygon),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Line} line 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Line: (triangle, line) => intersectFunctions.Polygon.Line(triangle, line),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Ray} ray
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Ray: (triangle, ray) => intersectFunctions.Polygon.Ray(triangle, ray),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Segment} segment
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Segment: (triangle, segment) => intersectFunctions.Polygon.Ray(triangle, segment),
     }
 }
 
