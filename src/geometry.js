@@ -292,7 +292,7 @@ const intersectFunctions = {
          */
         Ray: (circle, ray) => {
             var l = ray.getLine();
-            var is = l.getIntersects(circle);
+            var is = l.getIntersect(circle);
             if (is === null) return null;
             if (is instanceof Point) return is.intersects(ray) ? is : null;
             if (is instanceof Array) {
@@ -310,7 +310,7 @@ const intersectFunctions = {
          */
         Segment: (circle, segment) => {
             var l = segment.getLine();
-            var is = l.getIntersects(circle);
+            var is = l.getIntersect(circle);
             if (is === null) return null;
             if (is instanceof Point) return is.intersects(segment) ? is : null;
             if (is instanceof Array) {
@@ -375,6 +375,53 @@ const intersectFunctions = {
                     if (!a.getIntersect(v) === v) c.splice(i, 1);
                 }
             }
+            if (c.length === 0) return null;
+            if (c.length === 1) return c[0];
+            return c;
+        },
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Ray} ray 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Ray: (polygon, ray) => {
+            var l = ray.getLine();
+            var i = l.getIntersect(polygon);
+            if (i === null) return null;
+            if (i instanceof Segment || i instanceof Point) return i.getIntersect(ray);
+            if (i instanceof Array) return i.map(v => v.getIntersect(ray)).filter(v => v !== null);
+        },
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Segment} segment 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Segment: (polygon, segment) => {
+            var l = segment.getLine();
+            var i = l.getIntersect(polygon);
+            if (i === null) return null;
+            if (i instanceof Segment || i instanceof Point) return i.getIntersect(segment);
+            if (i instanceof Array) return i.map(v => v.getIntersect(segment)).filter(v => v !== null);
+        },
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Circle} circle 
+         * @returns {Array<Point> | Point | null}
+         */
+        Circle: (polygon, circle) => {
+            var ps = polygon.vertices.map(v => v.getIntersect(circle)).filter(v => v !== null).flat(3);
+            //Removes duplicates
+            for (var i = 0; i < ps.length; i++) {
+                for (var a of ps) {
+                    if (a.distance(ps[i]) === 0) ps.splice(i, 1); 
+                }
+            }
+            if (ps.length === 0) return null;
+            if (ps.length === 1) return ps[0];
+            return ps;
         }
     }
 }
