@@ -263,7 +263,12 @@ const intersectFunctions = {
                 let angle = Math.acos((s.b.x - s.a.x) / s.length());
                 let dx = Math.cos(angle) * l;
                 let dy = Math.sin(angle) * l;
-                let p = new Point(circle.center.x + dx, circle.center.y + dy);
+                let p;
+                if (s.b.y - s.b.x > 0) {
+                    p = new Point(circle.center.x + dx, circle.center.y + dy);
+                } else {
+                    p = new Point(circle.center.x + dx, circle.center.y - dy);
+                }
                 return [p, p.reflectAbout(circle.center)];
             }
             var c = new Circle(line.getIntersect(h), l);

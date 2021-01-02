@@ -9,3 +9,7 @@ package-lock.json
 out/
 geometryOut/
 todo.txt
+
+#debug.log
+debug.log
+src/debug.log
