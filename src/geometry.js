@@ -28,6 +28,7 @@ export function getIntersect(a, b) {
     try {
         return intersectFunctions[a.constructor.name][b.constructor.name](a, b);
     } catch (e) {
+        console.log(a.constructor.name, b.constructor.name)
         return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
     }
 }
@@ -430,7 +431,113 @@ const intersectFunctions = {
             if (ps.length === 0) return null;
             if (ps.length === 1) return ps[0];
             return ps;
+        }, 
+        /**
+         * 
+         * @param {Polygon} polygon 
+         * @param {Polygon} polygon2 
+         * @returns {Polygon | Array<Segment | Point> | Segment | Point | null}
+         */
+        Polygon: (polygon, polygon2) => {
+            if (polygon === polygon2) return polygon;
+            /**
+             * @type {Array<Segment | Point | null>}
+             */
+            var c = [];
+            for (var e of polygon2.edges) {
+                c.push(e.getIntersect(polygon));
+            }
+            c = c.flat(3);
+            //Removes points that lay on segments, that intersect and nulls
+            c = c.filter((v, i, a) => {
+                if (v === null) return false;
+                if (v instanceof Point) {
+                    for (var e of a) {
+                        if (!(e instanceof Point)) continue;
+                        if (e.intersects(v)) return false;
+                    }
+                }
+                return true;
+            });
+            //Removes duplicate points
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (!(v instanceof Point)) continue;
+                if (c.filter(a => a instanceof Point && a.distance(v) === 0)) {
+                    c.splice(i, 1);
+                }
+            }
+            //Join segments if possible
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    var g = a.getIntersect(v);
+                    if (g === null) continue;
+                    if (g instanceof Segment) c.push(v.join(a));
+                    if (g instanceof Point) {
+                        if ([v.a, v.b, a.a, a.b].filter(j => j.intersects(v)).length === 4) c.push(v.join(a));
+                    }
+                }
+            }
+            //Removes extra segments
+            for (var i = 0; i < c.length; i++) {
+                var v = c[i];
+                if (v instanceof Point) continue;
+                for (var a of c) {
+                    if (a instanceof Point) continue;
+                    if (!a.getIntersect(v) === v) c.splice(i, 1);
+                }
+            }
+            if (c.length === 0) return null;
+            if (c.length === 1) return c[0];
+            return c;
         }
+    },
+    Triangle: {
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Triangle} trinagle2 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Triangle: (triangle, trinagle2) => intersectFunctions.Polygon.Polygon(triangle, trinagle2),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Circle} circle
+         * @returns {Array<Point> | Point | null}
+         */
+        Circle: (triangle, circle) => intersectFunctions.Polygon.Circle(triangle, circle),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Polygon} polygon 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Polygon: (triangle, polygon) => intersectFunctions.Polygon.Polygon(triangle, polygon),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Line} line 
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Line: (triangle, line) => intersectFunctions.Polygon.Line(triangle, line),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Ray} ray
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Ray: (triangle, ray) => intersectFunctions.Polygon.Ray(triangle, ray),
+        /**
+         * 
+         * @param {Triangle} triangle 
+         * @param {Segment} segment
+         * @returns {Array<Segment | Point> | Segment | Point | null}
+         */
+        Segment: (triangle, segment) => intersectFunctions.Polygon.Ray(triangle, segment),
     }
 }
 
@@ -1053,6 +1160,13 @@ export class Triangle extends Polygon {
         var b = this.b.length();
         var c = this.c.length();
         return Math.acos((a * a + b * b - c * c) / (2 * a * b));
+    }
+    /**
+     * @description Returns the string representation of this object
+     * @returns {String}
+     */
+    toString() {
+        return `Triangle: (${this.vertices.join(", ")}})`;
     }
 }
 
