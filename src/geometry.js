@@ -536,7 +536,7 @@ const intersectFunctions = {
          * @param {Segment} segment
          * @returns {Array<Segment | Point> | Segment | Point | null}
          */
-        Segment: (triangle, segment) => intersectFunctions.Polygon.Ray(triangle, segment),
+        Segment: (triangle, segment) => intersectFunctions.Polygon.Segment(triangle, segment),
     }
 }
 
