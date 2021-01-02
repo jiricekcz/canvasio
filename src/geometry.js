@@ -28,7 +28,13 @@ export function getIntersect(a, b) {
     try {
         return intersectFunctions[a.constructor.name][b.constructor.name](a, b);
     } catch (e) {
-        return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
+        if (!(e instanceof TypeError)) console.error(e);
+        try {
+            return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
+        } catch (e) {
+            console.error(e);
+        }
+        
     }
 }
 /**
@@ -204,6 +210,7 @@ const intersectFunctions = {
             var i = l.getIntersect(ray);
             if (i === null) return null; if (i instanceof Point) return i.intersects(segment) ? i : null; else {
                 if (segment.a.intersects(ray)) {
+                    if (segment.a.distance(ray.a) === 0) return ray.a;
                     return segment.b.intersects(ray) ? segment : new Segment(segment.a, ray.a);
                 } else {
                     return segment.b.intersects(ray) ? new Segment(segment.b, ray.a) : null;
@@ -794,7 +801,7 @@ export class Point extends Base {
             var i = perpendicular.getIntersect(object);
             return this.reflectAbout(i);
         }
-        throw new TypeError("Can not reflect about this object.");
+        throw new TypeError("Cannot reflect about this object.");
     }
     /**
      * @description Creates a point object form the string representation of it tin the form [x, y];
@@ -958,6 +965,7 @@ export class Segment extends Base {
     constructor(point1, point2) {
         if (!(point1 instanceof Point)) throw new TypeError("The point1 argument must be a type of Point.");
         if (!(point2 instanceof Point)) throw new TypeError("The point2 argument must be a type of Point.");
+        if (point1.distance(point2) === 0) throw new Error("Need two different points to construct a segment.")
         super();
         /**
          * @description The first point of the segment
@@ -1019,11 +1027,11 @@ export class Segment extends Base {
      * @returns {Segment}
      */
     join(segment) {
-        if (!(segment instanceof Segment)) throw new TypeError("The segemnt argument mus be a Segment.");
+        if (!(segment instanceof Segment)) throw new TypeError("The segemnt argument must be a Segment.");
         var i = this.getIntersect(segment);
-        if (i === null) throw new Error("Can not join segments that do not intersect.");
+        if (i === null) throw new Error("Cannot join segments that do not intersect.");
         if (i instanceof Point) {
-            if (!(this.getLine().getIntersect(this) instanceof Segment)) throw new Error("Can not join segments that do not lay on one line.");
+            if (!(this.getLine().getIntersect(this) instanceof Segment)) throw new Error("Cannot join segments that do not lay on one line.");
             var a = [this.a, this.b].find(v => v.distance(i) > 0);
             var b = [segment.a, segment.b].find(v => v.distance(i) > 0);
             return new Segment(a, b);
@@ -1031,6 +1039,7 @@ export class Segment extends Base {
         if (i instanceof Segment) {
             var a = [this.a, this.b].find(v => !v.intersects(i));
             var b = [segment.a, segment.b].find(v => !v.intersects(i));
+            if (a.distance(b) === 0) return this;
             return new Segment(a, b);
         }
     }
@@ -1096,8 +1105,8 @@ export class Triangle extends Polygon {
         if (!(a instanceof Point)) throw new TypeError("The a argument must be a type of Point.");
         if (!(b instanceof Point)) throw new TypeError("The b argument must be a type of Point.");
         if (!(c instanceof Point)) throw new TypeError("The c argument must be a type of Point.");
-        if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
-        if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle can not match.");
+        if (new Line(a, b).intersects(c)) throw new Error("Cannot construct a triangle from three points that lay on the same line.");
+        if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle cannot match.");
         super([a, b, c]);
         /**
          * @description One vertex of the triangle
