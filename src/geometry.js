@@ -76,6 +76,13 @@ const intersectFunctions = {
          * @returns {Point | null}
          */
         Polygon: (point, polygon) => polygon.edges.map(v => v.getIntersect(point)).filter(v => v !== null).length > 0 ? point : null,
+        /**
+         * 
+         * @param {Point} point 
+         * @param {Triangle} triangle 
+         * @returns {Point | null}
+         */
+        Triangle: (point, triangle) => triangle.edges.map(v => v.getIntersect(point)).filter(v => v !== null).length > 0 ? point : null,
     },
     Line: {
         /**
@@ -417,7 +424,7 @@ const intersectFunctions = {
             //Removes duplicates
             for (var i = 0; i < ps.length; i++) {
                 for (var a of ps) {
-                    if (a.distance(ps[i]) === 0) ps.splice(i, 1); 
+                    if (a.distance(ps[i]) === 0) ps.splice(i, 1);
                 }
             }
             if (ps.length === 0) return null;
@@ -496,7 +503,7 @@ export class Polygon extends Base {
      * @returns {String}
      */
     toString() {
-        return `Polygon: (${this.edges.join(", ")}})`;
+        return `Polygon: (${this.vertices.join(", ")}})`;
     }
 }
 
