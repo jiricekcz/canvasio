@@ -1083,7 +1083,7 @@ export class Drawer {
         if (object instanceof Ray) return this.#drawRay(object);
         if (object instanceof Segment) return this.#drawSegment(object);
         if (object instanceof Circle) return this.#drawCircle(object);
-        if (object instanceof Triangle) return this.#drawTriangle(object);
+        if (object instanceof Polygon || object instanceof Triangle) return this.#drawPolygon(object);
         throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page. Object:" + (object && object.constructor ? object.constructor.name : object));
     }
     /**
@@ -1167,15 +1167,19 @@ export class Drawer {
         this.canvas.drawCircle(circle.center.x, circle.center.y, circle.r);
     }
     /**
-     * @description Draws a triangle on to the canvas
-     * @param {Triangle} triangle 
+     * @description Draws a polygon on to the canvas
+     * @param {Polygon} polygon 
      * @returns {void}
      * @private
      */
-    #drawTriangle(triangle) {
-        if (!(triangle instanceof Triangle)) throw new TypeError("The triangle argument must be a type of triangle.");
-        for (var e of triangle.edges) {
-            this.#drawSegment(e);
+    #drawPolygon(polygon) {
+        if (!(polygon instanceof Polygon)) throw new TypeError("The polygon argument must be a type of polygon.");
+        this.canvas.context.beginPath();
+        this.canvas.context.moveTo(polygon.vertices[0].x, polygon.vertices[0].y)
+        for (var i = 1; i < polygon.vertices.length; i++) {
+            this.canvas.context.lineTo(polygon.vertices[i].x, polygon.vertices[i].y);
         }
+        this.canvas.context.closePath();
+        this.canvas.context.stroke();
     }
 }
