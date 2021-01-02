@@ -34,7 +34,7 @@ export function getIntersect(a, b) {
         } catch (e) {
             console.error(e);
         }
-        
+
     }
 }
 /**
@@ -50,7 +50,7 @@ const intersectFunctions = {
          */
         Line: (point, line) => line.x(point.y) === point.x ? point : null,
         /**
-         * 
+         * `
          * @param {Point} point 
          * @param {Point} point2 
          * @returns {Point | null}
@@ -375,12 +375,15 @@ const intersectFunctions = {
             for (var i = 0; i < c.length; i++) {
                 var v = c[i];
                 if (v instanceof Point) continue;
+                var u = [];
                 for (var a of c) {
-                    if (a instanceof Point) continue;
+                    if (a instanceof Point || a === v) continue;
                     if (!a.intersects(v)) continue;
-                    c.push(v.join(a));
+                    u.push(v.join(a));
                 }
             }
+            c.push(...u);
+            
             //Removes extra segments
             for (var i = 0; i < c.length; i++) {
                 var v = c[i];
@@ -437,7 +440,7 @@ const intersectFunctions = {
             if (ps.length === 0) return null;
             if (ps.length === 1) return ps[0];
             return ps;
-        }, 
+        },
         /**
          * 
          * @param {Polygon} polygon 
@@ -804,7 +807,7 @@ export class Point extends Base {
         throw new TypeError("Cannot reflect about this object.");
     }
     /**
-     * @description Creates a point object form the string representation of it tin the form [x, y];
+     * @description Creates a point object form the string representation of it in the form [x, y];
      * @param {String} string 
      * @returns {Point}
      */
@@ -1039,7 +1042,7 @@ export class Segment extends Base {
         if (i instanceof Segment) {
             var a = [this.a, this.b].find(v => !v.intersects(i));
             var b = [segment.a, segment.b].find(v => !v.intersects(i));
-            if (a.distance(b) === 0) return this;
+            if (a.distance(b) === 0) return segment;
             return new Segment(a, b);
         }
     }
