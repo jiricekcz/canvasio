@@ -28,7 +28,6 @@ export function getIntersect(a, b) {
     try {
         return intersectFunctions[a.constructor.name][b.constructor.name](a, b);
     } catch (e) {
-        console.log(a.constructor.name, b.constructor.name)
         return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
     }
 }
