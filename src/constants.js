@@ -9,4 +9,4 @@ export const decimalRoundAngle = 15;
 /**
  * @description A large number used to draw lines. 
  */
-export const lineLengthMultiplier = 1e6
+export const lineLengthMultiplier = 1e6;
