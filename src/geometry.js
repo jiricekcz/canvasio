@@ -1,20 +1,6 @@
-import { Canvas } from './index.js'
+import { Canvas, round } from './index.js'
 import { decimalRoundAngle, decimalRoundCoordinate, lineLengthMultiplier } from "./constants.js"
 
-//! Util
-/**
- * @description Rounds number with given constants 
- * @param {Number} x The number to round
- * @param {"coordinate" | "angle"}
- * @returns {Number}
- */
-export function round(x, type = "coordinate") {
-    switch (type) {
-        case "coordinate": return Math.round(x * Math.pow(10, decimalRoundCoordinate)) / Math.pow(10, decimalRoundCoordinate);
-        case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
-        default: throw new Error("Unsuported rounding type.")
-    }
-}
 
 
 
@@ -23,7 +9,7 @@ export function round(x, type = "coordinate") {
  * 
  * @private
  */
-export function getIntersect(a, b) {
+function getIntersect(a, b) {
     try {
         return intersectFunctions[a.constructor.name][b.constructor.name](a, b);
     } catch (e) {
@@ -33,7 +19,6 @@ export function getIntersect(a, b) {
         } catch (e) {
             console.error(e);
         }
-
     }
 }
 /**
@@ -302,7 +287,7 @@ const intersectFunctions = {
          * 
          * @param {Circle} circle 
          * @param {Ray} ray 
-         * @returns {[Point, Point], Point, null}
+         * @returns {[Point, Point] | Point | null}
          */
         Ray: (circle, ray) => {
             var l = ray.getLine();
