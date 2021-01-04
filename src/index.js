@@ -111,7 +111,7 @@ export class Canvas {
     }
     /**
      * @description Transforms the canvas according to the provided properties. If no options argument provided, this function will reset the transformation.
-     * @param {?Object} options
+     * @param {object} options
      * @param {?Number} [options.x] The x coordinate of the [0, 0] point
      * @param {?Number} [options.y] The y coordinate of the [0, 0] point
      * @param {?Number} [options.xScale] The scaling factor of the x axis
@@ -218,6 +218,12 @@ export class Canvas {
      * @returns {void}
      */
     rect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.strokeRect(x, y, width, height);
     }
     /**
@@ -229,6 +235,12 @@ export class Canvas {
      * @returns {void}
      */
     fillRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.fillRect(x, y, width, height);
     }
     /**
@@ -240,6 +252,12 @@ export class Canvas {
      * @returns {void}
      */
     clearRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.clearRect(x, y, width, height);
     }
     /**
@@ -329,7 +347,7 @@ export class Canvas {
      * @return {LineDashPattern}
      */
     getLineDash() {
-        return new LineDashPattern(this.context.getLineDash());
+        return new LineDashPattern(new LineDashPattern(this.context.getLineDash()));
     }
     /**
      * @description Sets the line dash offset
@@ -689,7 +707,7 @@ export class Image {
 
 /**
  * @description Manages filters for a canvas
- * @extends {Array<Filter>}
+ * @extends {Array<Filter.Base>}
  */
 class FilterManager extends Array {
     constructor() {
@@ -697,22 +715,22 @@ class FilterManager extends Array {
     }
     /**
      * @description Adds a filter
-     * @param {Filter} filter 
+     * @param {Filter.Base} filter 
      */
     add(filter) {
         this.push(filter);
     }
     /**
      * @description Removes an existing filter
-     * @param {Number | Filter} f 
+     * @param {Number | Filter.Base} filter 
      * @returns {void}
      */
-    remove(f) {
-        if (typeof f === "number") {
-            this.splice(f, 1);
-        } else if (typeof f === "object") {
-            if (this.findIndex(v => v === f) == -1) throw new Error("Filter not found.");
-            this.splice(this.findIndex(v => v === f), 1);
+    remove(filter) {
+        if (typeof filter === "number") {
+            this.splice(filter, 1);
+        } else if (typeof filter === "object") {
+            if (this.findIndex(v => v === filter) == -1) throw new Error("Filter not found.");
+            this.splice(this.findIndex(v => v === filter), 1);
         } else throw new TypeError("Parameter must be and index or a filter.");
     }
     /**
@@ -730,10 +748,15 @@ class FilterManager extends Array {
         return this.join(" ");
     }
 }
+
+var Filter = {};
 /**
  * @description Represents a filter that can be applied to the canvas
+ * @class
+ * @abstract
+ * @private
  */
-export class Filter {
+Filter.Base = class Filter {
     constructor(type, value) {
         /**
          * @description The type of the filter
@@ -758,29 +781,12 @@ export class Filter {
     toString() {
         return `${this.type}(${this.value}${this.unit})`;
     }
-    /**
-     * @description All possible filters
-     * @constant
-     */
-    static filters = {
-        url: Filter.Url,
-        blur: Filter.Blur,
-        brightness: Filter.Brightness,
-        contrast: Filter.Contrast,
-        dropShadow: Filter.DropShadow,
-        grayscale: Filter.Grayscale,
-        hueRotate: Filter.HueRotate,
-        invert: Filter.Invert,
-        opacity: Filter.Opacity,
-        saturation: Filter.Saturation,
-        sepia: Filter.Sepia
-    }
 }
 /**
  * @description Blur filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Blur = class BlurFilter extends Filter {
+Filter.Blur = class BlurFilter extends Filter.Base {
     /**
      * 
      * @param {Number} radius A number representing the radius of the blur
@@ -793,9 +799,9 @@ Filter.Blur = class BlurFilter extends Filter {
 }
 /**
  * @description External SVG filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Url = class UrlFilter extends Filter {
+Filter.Url = class UrlFilter extends Filter.Base {
     /**
      * 
      * @param {String} url The url to the filter
@@ -808,9 +814,9 @@ Filter.Url = class UrlFilter extends Filter {
 }
 /**
  * @description Brightness filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Brightness = class BrightnessFilter extends Filter {
+Filter.Brightness = class BrightnessFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -824,9 +830,9 @@ Filter.Brightness = class BrightnessFilter extends Filter {
 }
 /**
  * @description Contrast filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Contrast = class ContrastFilter extends Filter {
+Filter.Contrast = class ContrastFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -840,9 +846,9 @@ Filter.Contrast = class ContrastFilter extends Filter {
 }
 /**
  * @description DropShadow filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.DropShadow = class DropShadowFilter extends Filter {
+Filter.DropShadow = class DropShadowFilter extends Filter.Base {
     /**
      * 
      * @param {Number} xOffset X axis offset
@@ -879,9 +885,9 @@ Filter.DropShadow = class DropShadowFilter extends Filter {
 }
 /**
  * @description Grayscale filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Grayscale = class GrayscaleFilter extends Filter {
+Filter.Grayscale = class GrayscaleFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -895,9 +901,9 @@ Filter.Grayscale = class GrayscaleFilter extends Filter {
 }
 /**
  * @description Filter that rotates all colors hue by an angle
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.HueRotate = class HueRotateFilter extends Filter {
+Filter.HueRotate = class HueRotateFilter extends Filter.Base {
     /**
      * 
      * @param {Number} angle Angle to rotate in radians
@@ -910,9 +916,9 @@ Filter.HueRotate = class HueRotateFilter extends Filter {
 }
 /**
  * @description Invert filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Invert = class InvertFilter extends Filter {
+Filter.Invert = class InvertFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -926,9 +932,9 @@ Filter.Invert = class InvertFilter extends Filter {
 }
 /**
  * @description Opacity filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Opacity = class OpacityFilter extends Filter {
+Filter.Opacity = class OpacityFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -942,9 +948,9 @@ Filter.Opacity = class OpacityFilter extends Filter {
 }
 /**
  * @description Saturation filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Saturation = class SaturationFilter extends Filter {
+Filter.Saturation = class SaturationFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -958,9 +964,9 @@ Filter.Saturation = class SaturationFilter extends Filter {
 }
 /**
  * @description Sepia filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Sepia = class SepiaFilter extends Filter {
+Filter.Sepia = class SepiaFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity

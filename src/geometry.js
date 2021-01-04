@@ -1,7 +1,6 @@
 import { Canvas } from './index.js'
 import { decimalRoundAngle, decimalRoundCoordinate, lineLengthMultiplier } from "./constants.js"
 
-
 //! Util
 /**
  * @description Rounds number with given constants 
