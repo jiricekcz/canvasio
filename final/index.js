@@ -1,11 +1,5 @@
-/**
- * @description Amount of decimal places round coordinates to
- */
-const decimalRoundCoordinate = 3;
-/**
- * @description Amount of decimal places round angles in radians to
- */
-const decimalRoundAngle = 15;
+import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js";
+import * as Geometry from "./geometry.js"
 /**
  * @description Class representing a canvas
  */
@@ -16,7 +10,7 @@ export class Canvas {
      * @param {Number} [options.width] The width of the canvas
      * @param {Number} [options.height] The height of the canvas
      * @param {HTMLElement} [options.container] The parent element of the canvas
-     * @param {?"fullscreen" | "small"} [options.preset] If preset is present, it will bypass all other options and initialize the canvas with the preset
+     * @param {?"fullscreen" | "small" | "math"} [options.preset] If preset is present, it will bypass all other options and initialize the canvas with the preset
      */
     constructor(options = { width: window.innerWidth / 2, height: window.innerHeight / 2, container: document.body }) {
         /**
@@ -45,13 +39,27 @@ export class Canvas {
                     this.canvas.width = window.innerWidt / 4;
                     this.canvas.height = window.innerHeight / 4;
                     break;
+                case "math":
+                    document.body.appendChild(this.canvas);
+                    document.body.style.margin = 0;
+                    document.body.style.overflow = "hidden";
+                    this.canvas.style.margin = 0;
+                    this.canvas.width = window.innerWidth
+                    this.canvas.height = window.innerHeight;
+                    this.canvas.style.position = "absolute";
+                    this.canvas.style.top = 0;
+                    this.canvas.style.left = 0;
+                    this.context = this.canvas.getContext("2d");
+                    this.translate(this.canvas.width / 2, this.canvas.height / 2);
+                    this.scale(1, -1);
+                    break;
                 default:
                     throw new Error("Unknown preset: " + options.preset);
             }
         } else {
-            options.container.appendChild(this.canvas);
-            this.canvas.height = options.height + "px";
-            this.canvas.width = options.width + "px";
+            (options.container).appendChild(this.canvas);
+            this.canvas.height = options.height;
+            this.canvas.width = options.width;
         }
         /**
          * @description Context of the canvas
@@ -63,6 +71,11 @@ export class Canvas {
          * @type {FilterManager}
          */
         this.filters = new FilterManager();
+        /**
+         * @description Object that handles drawing of geometry objects on the canvas
+         * @type {Geometry.Drawer}
+         */
+        this.drawer = new Geometry.Drawer(this);
     }
     /**
       * @param {Number} A 
@@ -83,8 +96,8 @@ export class Canvas {
     drawLine(A, B, C, D) {
         if (A === undefined || B === undefined) throw new Error("At least two arguments need to be provided.")
         if (typeof C === "number") {
-            A = new Point(A, B);
-            B = new Point(C, D);
+            A = { x: A, y: B },
+                B = { x: C, y: D }
         }
         try {
             this.context.beginPath();
@@ -98,7 +111,7 @@ export class Canvas {
     }
     /**
      * @description Transforms the canvas according to the provided properties. If no options argument provided, this function will reset the transformation.
-     * @param {?Object} options
+     * @param {object} options
      * @param {?Number} [options.x] The x coordinate of the [0, 0] point
      * @param {?Number} [options.y] The y coordinate of the [0, 0] point
      * @param {?Number} [options.xScale] The scaling factor of the x axis
@@ -182,17 +195,17 @@ export class Canvas {
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
         this.context.lineWidth = 0.5;
-        for (var i = width; i < this.canvas.height; i += width) {
-            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+        for (var i = width; i < 2 * this.canvas.height; i += width) {
+            this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
-        for (var i = -width; i > -this.canvas.height; i -= width) {
-            this.drawLine(-this.canvas.width, i, this.canvas.width, i);
+        for (var i = -width; i > -2 * this.canvas.height; i -= width) {
+            this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
-        for (var i = width; i < this.canvas.width; i += width) {
-            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+        for (var i = width; i < 2 * this.canvas.width; i += width) {
+            this.drawLine(i, -2 * this.canvas.height, i, 2 * this.canvas.height);
         }
-        for (var i = -width; i > -this.canvas.width; i -= width) {
-            this.drawLine(i, -this.canvas.height, i, this.canvas.height);
+        for (var i = -width; i > -2 * this.canvas.width; i -= width) {
+            this.drawLine(i, -2 * this.canvas.height, i, 2 * this.canvas.height);
         }
         this.context.lineWidth = lw;
     }
@@ -205,6 +218,12 @@ export class Canvas {
      * @returns {void}
      */
     rect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.strokeRect(x, y, width, height);
     }
     /**
@@ -216,6 +235,12 @@ export class Canvas {
      * @returns {void}
      */
     fillRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.fillRect(x, y, width, height);
     }
     /**
@@ -227,6 +252,12 @@ export class Canvas {
      * @returns {void}
      */
     clearRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.clearRect(x, y, width, height);
     }
     /**
@@ -316,7 +347,7 @@ export class Canvas {
      * @return {LineDashPattern}
      */
     getLineDash() {
-        return new LineDashPattern(this.context.getLineDash());
+        return new LineDashPattern(new LineDashPattern(this.context.getLineDash()));
     }
     /**
      * @description Sets the line dash offset
@@ -492,6 +523,71 @@ export class Canvas {
     createPath() {
         return new Path(this);
     }
+    /**
+     * @description Draws the outline of a circle
+     * @param {Number} x The x coordinate of the center point of this circle
+     * @param {Number} y The y coordinate of the center point of this circle 
+     * @param {Number} radius The radius of the circle 
+     */
+    drawCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, 2 * Math.PI);
+        this.context.closePath();
+        this.context.stroke();
+    }
+    /**
+     * @description Draws a circle with infill
+     * @param {Number} x The x coordinate of the center point of this circle
+     * @param {Number} y The y coordinate of the center point of this circle 
+     * @param {Number} radius The radius of the circle 
+     */
+    fillCircle(x, y, radius) {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, 0, 2 * Math.PI);
+        this.context.closePath();
+        this.context.fill();
+    }
+    /**
+     * @description Draws an object on the canvas
+     * @param {...(Geometry.Line | Geometry.Ray | Geometry.Segment | Geometry.Point | Geometry.Circle | Array<Geometry.Line | Geometry.Ray | Geometry.Segment | Geometry.Point | Geometry.Circle>)} object
+     * @returns {void}
+     */
+    draw(...object) {
+        for (var o of object) {
+            if (o === null) {
+                console.warn("Attempted to draw an empty object.");
+                continue;
+            }
+            if (o instanceof Array) {
+                for (var oo of o) {
+                    this.draw(oo);
+                }
+            } else this.drawer.draw(o);
+        }
+    }
+    /**
+     * @description Redraws the whole canvas with a filter and resets all filters applied to the canvas
+     * @param {Filter} filter
+     * @returns {Promise<void>}
+     * @async
+     */
+    async redrawWithFilter(filter) {
+        this.save();
+        this.transform();
+        var id = this.getImageData({
+            x: 0,
+            y: 0,
+            width: this.canvas.width, 
+            height: this.canvas.height
+        });
+        var a = this.filters;
+        this.filters.clear();
+        this.applyFilter(filter);
+        var image = await Image.fromImageData(id);
+        this.clear();
+        this.drawImage(image, 0, 0);
+        this.load();
+    }
 }
 /**
  * @description Simple Path class that inherits all functionalities from Path2D and adds fill() and draw() methods for direct draw on the canvas
@@ -611,7 +707,7 @@ export class Image {
 
 /**
  * @description Manages filters for a canvas
- * @extends {Array<Filter>}
+ * @extends {Array<Filter.Base>}
  */
 class FilterManager extends Array {
     constructor() {
@@ -619,22 +715,22 @@ class FilterManager extends Array {
     }
     /**
      * @description Adds a filter
-     * @param {Filter} filter 
+     * @param {Filter.Base} filter 
      */
     add(filter) {
         this.push(filter);
     }
     /**
      * @description Removes an existing filter
-     * @param {Number | Filter} f 
+     * @param {Number | Filter.Base} filter 
      * @returns {void}
      */
-    remove(f) {
-        if (typeof f === "number") {
-            this.splice(f, 1);
-        } else if (typeof f === "object") {
-            if (this.findIndex(v => v === f) == -1) throw new Error("Filter not found.");
-            this.splice(this.findIndex(v => v === f), 1);
+    remove(filter) {
+        if (typeof filter === "number") {
+            this.splice(filter, 1);
+        } else if (typeof filter === "object") {
+            if (this.findIndex(v => v === filter) == -1) throw new Error("Filter not found.");
+            this.splice(this.findIndex(v => v === filter), 1);
         } else throw new TypeError("Parameter must be and index or a filter.");
     }
     /**
@@ -652,10 +748,15 @@ class FilterManager extends Array {
         return this.join(" ");
     }
 }
+
+var Filter = {};
 /**
  * @description Represents a filter that can be applied to the canvas
+ * @class
+ * @abstract
+ * @private
  */
-export class Filter {
+Filter.Base = class Filter {
     constructor(type, value) {
         /**
          * @description The type of the filter
@@ -680,29 +781,12 @@ export class Filter {
     toString() {
         return `${this.type}(${this.value}${this.unit})`;
     }
-    /**
-     * @description All possible filters
-     * @constant
-     */
-    static filters = {
-        url: Filter.Url,
-        blur: Filter.Blur,
-        brightness: Filter.Brightness,
-        contrast: Filter.Contrast,
-        dropShadow: Filter.DropShadow,
-        grayscale: Filter.Grayscale,
-        hueRotate: Filter.HueRotate,
-        invert: Filter.Invert,
-        opacity: Filter.Opacity,
-        saturation: Filter.Saturation,
-        sepia: Filter.Sepia
-    }
 }
 /**
  * @description Blur filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Blur = class BlurFilter extends Filter {
+Filter.Blur = class BlurFilter extends Filter.Base {
     /**
      * 
      * @param {Number} radius A number representing the radius of the blur
@@ -715,9 +799,9 @@ Filter.Blur = class BlurFilter extends Filter {
 }
 /**
  * @description External SVG filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Url = class UrlFilter extends Filter {
+Filter.Url = class UrlFilter extends Filter.Base {
     /**
      * 
      * @param {String} url The url to the filter
@@ -730,9 +814,9 @@ Filter.Url = class UrlFilter extends Filter {
 }
 /**
  * @description Brightness filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Brightness = class BrightnessFilter extends Filter {
+Filter.Brightness = class BrightnessFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -746,9 +830,9 @@ Filter.Brightness = class BrightnessFilter extends Filter {
 }
 /**
  * @description Contrast filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Contrast = class ContrastFilter extends Filter {
+Filter.Contrast = class ContrastFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -762,9 +846,9 @@ Filter.Contrast = class ContrastFilter extends Filter {
 }
 /**
  * @description DropShadow filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.DropShadow = class DropShadowFilter extends Filter {
+Filter.DropShadow = class DropShadowFilter extends Filter.Base {
     /**
      * 
      * @param {Number} xOffset X axis offset
@@ -801,9 +885,9 @@ Filter.DropShadow = class DropShadowFilter extends Filter {
 }
 /**
  * @description Grayscale filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Grayscale = class GrayscaleFilter extends Filter {
+Filter.Grayscale = class GrayscaleFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -817,9 +901,9 @@ Filter.Grayscale = class GrayscaleFilter extends Filter {
 }
 /**
  * @description Filter that rotates all colors hue by an angle
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.HueRotate = class HueRotateFilter extends Filter {
+Filter.HueRotate = class HueRotateFilter extends Filter.Base {
     /**
      * 
      * @param {Number} angle Angle to rotate in radians
@@ -832,9 +916,9 @@ Filter.HueRotate = class HueRotateFilter extends Filter {
 }
 /**
  * @description Invert filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Invert = class InvertFilter extends Filter {
+Filter.Invert = class InvertFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -848,9 +932,9 @@ Filter.Invert = class InvertFilter extends Filter {
 }
 /**
  * @description Opacity filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Opacity = class OpacityFilter extends Filter {
+Filter.Opacity = class OpacityFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -864,9 +948,9 @@ Filter.Opacity = class OpacityFilter extends Filter {
 }
 /**
  * @description Saturation filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Saturation = class SaturationFilter extends Filter {
+Filter.Saturation = class SaturationFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -880,9 +964,9 @@ Filter.Saturation = class SaturationFilter extends Filter {
 }
 /**
  * @description Sepia filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Sepia = class SepiaFilter extends Filter {
+Filter.Sepia = class SepiaFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -895,51 +979,6 @@ Filter.Sepia = class SepiaFilter extends Filter {
     }
 }
 
-
-// GEOMETRY
-/**
- * @description Class representing a point on the canvas
- */
-export class Point {
-    /**
-     * 
-     * @param {Number} x The x coordinate of the point
-     * @param {Number} y The y coordinate of the point 
-     */
-    constructor(x, y) {
-        if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
-        if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
-        /**
-         * @description The x coordinate
-         * @type {Number}
-         */
-        this.x = round(x);
-        /**
-         * @description The y coordinate
-         * @type {Number}
-         */
-        this.y = round(y);
-    }
-    /**
-     * 
-     * @param {Number} x The x coordinate of the point
-     * @param {Number} y The y coordinate of the point
-     * @returns {Number} The distance
-     */
-    /**
-     * @description Calculates the distance between two points using the pythagorian theorem
-     * @param {Point} x The point to calculate the distance to
-     * @returns {Number} The distance
-     */
-    distance(x, y) {
-        if (x.constructor.name === "Point") {
-            y = x.y;
-            x = x.x
-        } else if (typeof x !== 'number') throw new TypeError("Point x must be a number.");
-        else if (typeof y !== 'number') throw new TypeError("Point y must be a number.");
-        return Math.pow(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2), 1 / 2);
-    }
-}
 /**
  * @description Rounds number with given constants 
  * @param {Number} x The number to round
