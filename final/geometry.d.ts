@@ -349,7 +349,7 @@ declare namespace Geometry {
         getIntersect(object: Line): Segment | Point | null;
         getIntersect(object: Circle): [Point, Point] | Point | null;
         getIntersect(object: Polygon): Array<Segment | Point> | Segment | Point | null;
-        getIntersect(object: Triangle): [Point,  Point] | Segment | Point | null;
+        getIntersect(object: Triangle): [Point, Point] | Segment | Point | null;
     }
 
     declare class Circle extends Base {
@@ -412,19 +412,136 @@ declare namespace Geometry {
          * @param canvas The canvas this Drawer draws on
          */
         constructor(canvas: canvasio.Canvas);
+        /**
+         * The canvasio canvas element this drawe uses to draw onto the canvas.
+         */
         canvas: canvasio.Canvas;
+        /**
+         * This overload of the function Drawer.draw() draws a segment onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param segment The segment
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const segment = new Geometry.Segment(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(10, 10)
+         * );
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(segment); // Draws the segment onto the canvas. 
+         */
         draw(segment: Segment): void;
+        /**
+         * This overload of the function Drawer.draw() draws a line onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param line The line
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const line = new Geometry.Line(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(10, 10)
+         * );
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(line); // Draws the line onto the canvas. 
+         */
         draw(line: Line): void;
+        /**
+         * This overload of the function Drawer.draw() draws a ray onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param ray The ray
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const ray = new Geometry.Ray(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(10, 10)
+         * );
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(ray); // Draws the ray onto the canvas. 
+         */
         draw(ray: Ray): void;
+        /**
+         * This overload of the function Drawer.draw() draws a polygon onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param polygon The polygon
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const polygon = new Geometry.Polygon([
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(10, 10),
+         *      new Geometry.Point(-10,-20),
+         * ]);
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(polygon); // Draws the polygon onto the canvas. 
+         */
         draw(polygon: Polygon): void;
+        /**
+         * This overload of the function Drawer.draw() draws a circle onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param circle The circle
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const circle = new Geometry.Circle(
+         *      new Geometry.Point(0, 0),
+         *      100
+         * );
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(circle); // Draws the circle onto the canvas. 
+         */
         draw(circle: Circle): void;
+        /**
+         * This overload of the function Drawer.draw() draws a point onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param point The point
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const point = new Geometry.Point(100, 100);
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(point); // Draws the point onto the canvas. 
+         */
         draw(point: Point): void;
+        /**
+         * This overload of the function Drawer.draw() draws a triangle onto the canvas. This function is not intended for direct use by the user. Make sure you know, what you are doing when using this function.
+         * @param triangle The triangle
+         * @example
+         * // NOTE: This function is not the preferred way to draw Geometry objects. User canvasio.Canvas.draw() instead.
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen"});
+         * const triangle = new Geometry.Triangle(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(10, 10),
+         *      new Geometry.Point(-10,-20),
+         * );
+         * const drawer = new Geometry.Drawer(canvas);
+         * drawer.draw(triangle); // Draws the triangle onto the canvas. 
+         */
         draw(triangle: Triangle): void;
+        /**
+         * This function directly draws a point onto the canvas.
+         * @param point The point
+         */
         protected #drawPoint(point: Point): void;
+        /**
+         * This function directly draws a line onto the canvas.
+         * @param line The line
+         */
         protected #drawLine(line: Line): void;
+        /**
+         * This function directly draws a ray onto the canvas.
+         * @param ray The ray 
+         */
         protected #drawRay(ray: Ray): void;
+        /**
+         * This function directly draws a segment onto the canvas.
+         * @param segment The segment
+         */
         protected #drawSegment(segment: Segment): void;
+        /**
+         * This function directly draws a circle onto the canvas.
+         * @param circle The circle
+         */
         protected #drawCircle(circle: Circle): void;
+        /**
+         * This function directly draws any polygon onto the canvas.
+         * @param polygon The polygon
+         */
         protected #drawPolygon(polygon: Polygon): void;
     }
 }
