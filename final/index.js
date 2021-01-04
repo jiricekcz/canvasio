@@ -985,7 +985,7 @@ Filter.Sepia = class SepiaFilter extends Filter.Base {
  * @param {"coordinate" | "angle"}
  * @returns {Number}
  */
-function round(x, type = "coordinate") {
+export function round(x, type = "coordinate") {
     switch (type) {
         case "coordinate": return Math.round(x * Math.pow(10, decimalRoundCoordinate)) / Math.pow(10, decimalRoundCoordinate);
         case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
