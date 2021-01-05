@@ -120,19 +120,141 @@ declare namespace canvasio {
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate
          */
         rotate(angle: number): void;
+        /**
+         * Retruns the current transform matrix being applied to the canvas. 
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var matrix = canvas.getTransform(); // Saves the current transform matrix
+         * // Do something here
+         * canvas.setTransform(matrix); // Load the saved transform matrix
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getTransform
+         */
         getTransform(): DOMMatrix2DInit;
+        /**
+         * Replaces the default transform matrix with a given matrix.
+         * @param transform The transform matrix to apply
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var matrix = canvas.getTransform(); // Saves the current transform matrix
+         * // Do something here
+         * canvas.setTransform(matrix); // Load the saved transform matrix
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform
+         */
         setTransform(transform: DOMMatrix2DInit): void;
+        /**
+         * Clears the canvas. 
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.drawLine({ x: 10, y: 10 }, { x: 20, y: 20 }); // Draws a line
+         * 
+         * canvas.clear(); // Clears the canvas
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
+         */
         clear(): void;
+        /**
+         * Draws a simple gird hightlighting the X and Y axis. Used mostly for debugging.
+         * @param width Width of one column of the grid
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * canvas.transform({
+         *      x: 1000,
+         *      y: 500,
+         *      rotation: Math.PI / 4
+         * }); // Transforms the canvas
+         * 
+         * canvas.drawGrid(50); // Draws a rotated and translated grid
+         */
         drawGrid(width: number = 50): void;
-        rect(x : number, y : number, width: number, height: number): void;
+        /**
+         * Draws a rectangle onto the canvas.
+         * @param x The x coordinate of the upper left corner of the rectangle
+         * @param y The y coordinate of the upper left corner of the rectangle
+         * @param width Width of the rectangle
+         * @param height Height of the rectangle
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.rect(100, 100, 200, 100); // Draws the outline of a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect
+         */
+        rect(x: number, y: number, width: number, height: number): void;
+        /**
+         * Draws a rectangle onto the canvas.
+         * @param rectangle The rectangle to draw
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.rect({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Draws the outline of a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeRect
+         */
         rect(rectangle: Rectangle): void;
-        fillRect(x : number, y : number, width: number, height: number): void;
+        /**
+         * Fills a rectangle on the canvas.
+         * @param x The x coordinate of the upper left corner of the rectangle
+         * @param y The y coordinate of the upper left corner of the rectangle
+         * @param width Width of the rectangle
+         * @param height Height of the rectangle
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.fillRect(100, 100, 200, 100); // Fills a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect
+         */
+        fillRect(x: number, y: number, width: number, height: number): void;
+        /**
+         * Fills a rectangle on the canvas.
+         * @param rectangle The rectangle to fill
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.fillRect({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Fills a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect
+         */
         fillRect(rectangle: Rectangle): void;
-        clearRect(x : number, y : number, width: number, height: number): void;
+        /**
+         * Clears a rectangle on the canvas.
+         * @param x The x coordinate of the upper left corner of the rectangle
+         * @param y The y coordinate of the upper left corner of the rectangle
+         * @param width Width of the rectangle
+         * @param height Height of the rectangle
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.clearRect(100, 100, 200, 100); // Clears a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
+         */
+        clearRect(x: number, y: number, width: number, height: number): void;
+        /**
+         * Clears a rectangle on the canvas.
+         * @param rectangle The rectangle to clear
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.clearRect({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Clears a rectangle from point [100, 100] to point [300, 200]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
+         */
         clearRect(rectangle: Rectangle): void;
         save(): void;
         load(): void;
-        text(text: string, x: number, y: number, maxWidth?: number): void; 
+        text(text: string, x: number, y: number, maxWidth?: number): void;
         textOutline(text: string, x: number, y: number, maxWidth?: number): void;
         setLineWidth(width: number): void;
         setLineCap(cap: "butt" | "round" | "square" = "butt"): void;
@@ -269,7 +391,7 @@ declare namespace canvasio {
         length: 4;
     }
     declare interface GeometryObject {
-    
+
     }
     declare interface Rectangle {
         x: number;
