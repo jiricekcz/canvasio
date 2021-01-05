@@ -544,22 +544,23 @@ declare namespace Geometry {
          */
         protected #drawPolygon(polygon: Polygon): void;
     }
+    /**
+    * A specific array of numbers, that has exactly two elements. This array represents a point. PointArrayForm[0] is the x coordinate of the point and PointArrayForm[1] is the y coordinate of the point.
+    */
+    declare interface PointArrayForm extends Array<Number> {
+        /**
+         * The x coordinate of the point this array represents
+         */
+        0: number;
+        /**
+         * The y coordinate of the point this array represents
+         */
+        1: number;
+        /**
+         * Length of this array will be by definition 2.
+         */
+        length: 2;
+    }
 }
-/**
- * A specific array of numbers, that has exactly two elements. This array represents a point. PointArrayForm[0] is the x coordinate of the point and PointArrayForm[1] is the y coordinate of the point.
- */
-declare interface PointArrayForm extends Array<Number> {
-    /**
-     * The x coordinate of the point this array represents
-     */
-    0: number;
-    /**
-     * The y coordinate of the point this array represents
-     */
-    1: number;
-    /**
-     * Length of this array will be by definition 2.
-     */
-    length: 2;
-}
+
 export = Geometry;
