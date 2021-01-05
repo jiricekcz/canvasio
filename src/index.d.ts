@@ -252,7 +252,35 @@ declare namespace canvasio {
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
          */
         clearRect(rectangle: Rectangle): void;
+        /**
+         * Saves the current canvas configuration into the configuration stack.
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setFill("#f0f"); // Sets fill color to #f0f
+         * canvas.save(); // Saves the current canvas configuration
+         * // Here the fill is #f0f
+         * canvas.setFill("#00f") // Sets fill color to #00f
+         * // Here the fill is #00f
+         * canvas.load() // Loads the last canvas configuration saved
+         * // Here the fill is #f0f
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/save
+         */
         save(): void;
+        /**
+         * Loads the last canvas configuration saved to the stack.
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setFill("#f0f"); // Sets fill color to #f0f
+         * canvas.save(); // Saves the current canvas configuration
+         * // Here the fill is #f0f
+         * canvas.setFill("#00f") // Sets fill color to #00f
+         * // Here the fill is #00f
+         * canvas.load() // Loads the last canvas configuration saved
+         * // Here the fill is #f0f
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/restore
+         */
         load(): void;
         text(text: string, x: number, y: number, maxWidth?: number): void;
         textOutline(text: string, x: number, y: number, maxWidth?: number): void;
