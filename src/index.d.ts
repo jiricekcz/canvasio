@@ -745,11 +745,36 @@ declare namespace canvasio {
          */
         draw(...object: Array<GeometryObject | Array<GeometryObject>>): void;
     }
+    /**
+     * The class managing filters for the canvasio.Canvas
+     */
     declare class FilterManager extends Array<Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url> {
+        /**
+         * FilterManager constructor
+         */
         constructor();
-        add(filter: Filter): void;
-        remove(filter: Filter): void;
+        /**
+         * Adds a filter to the list of filters
+         * @param filter Filter to add
+         */
+        add(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        /**
+         * Removes a filter from the list
+         * @param filter Filter to remove
+         */
+        remove(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        /**
+         * Removes a filter from the list by its index
+         * @param filterId The index of the filter
+         */
+        remove(filterId: number): void;
+        /**
+         * Clears all the filters
+         */
         clear(): void;
+        /**
+         * Converts the filter manager to a string
+         */
         toString(): string;
     }
     declare namespace Filter {
