@@ -389,15 +389,156 @@ declare namespace canvasio {
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getLineDash
          */
         getLineDash(): LineDashPattern;
+        /**
+         * Sets the offset of line dash patter set by the canvasio.Canvas.setLineDash() function.
+         * @param offset The offset of the line dash patter
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineDash([10, 10]); // Sets a dashed line pattern
+         * canvas.setLineDashOffset(5); // The line dash pattern will be now offset by 5
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset
+         */
         setLineDashOffset(offset: number): void;
+        /**
+         * Sets the font of the text drawn onto the canvas.
+         * @param font CSS line font style
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setFont("bold italic large serif"); // Set the font weight to bold, the font-style to italic, the font size to large, and the font family to serif.
+         * canvas.text("Hello world", 100, 100); // Writes a hello world text to the canvas.
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font
+         * @uses https://developer.mozilla.org/en-US/docs/Web/CSS/font
+         */
         setFont(font: string): void;
+        /**
+         * Sets the text alignment for text drawn onto the canvas.
+         * @param align Text align style
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setTextAlign("center"); // Sets text alignment to center.
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign
+         */
         setTextAlign(align: "start" | "end" | "left" | "right" | "center" = "start"): void;
+        /**
+         * Sets the baseline of text drawn onto the canvas. Baseline defines how will the text be drawn. For specific baselines refer to the link below.
+         * @param baseline The text baseline
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setTextBaseline("middle"); // The baseline of text will now be in the middle of the text
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline
+         */
         setTextBaseline(baseline: "top" | "hanging" | "middle" | "alphabetic" | "ideographic" | "bottom" = "alphabetic"): void;
+        /**
+         * Changes the text direction. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @param direction The text direction
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setDirection("rtl"); // Sets the text direction to rtl
+         * canvas.text("Hi!", 100, 100); // Canvas will now draw the text "!Hi"
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/direction
+         */
         setDirection(direction: "ltr" | "rtl" | "inherit" = "inherit"): void;
+        /**
+         * Sets the fill for drawing content onto the canvas
+         * @param style CSS like fill value
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setFill("rgb(255, 0, 127)"); // Set the fill to rgb(255, 0, 127)
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+         */
         setFill(style: string): void;
+        /**
+         * Sets the fill as a gradient. For more information about gradients refer to the links below.
+         * @param gradient The gradient
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient
+         */
+        setFill(gradient: CanvasGradient): void;
+        /**
+         * Sets the fill as a patern. For more information about canvas patterns refer to the links below
+         * @param pattern The pattern
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasPattern
+         */
+        setFill(pattern: CanvasPattern): void;
+        /**
+         * Sets the stroke for drawing content onto the canvas
+         * @param style CSS like stroke value
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setStroke("rgb(255, 0, 127)"); // Set the stroke to rgb(255, 0, 127)
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+         */
         setStroke(style: string): void;
+        /**
+         * Sets the Stroke as a gradient. For more information about gradients refer to the links below.
+         * @param gradient The gradient
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasGradient
+         */
+        setStroke(gradient: CanvasGradient): void;
+        /**
+         * Sets the Stroke as a patern. For more information about canvas patterns refer to the links below
+         * @param pattern The pattern
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeStyle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasPattern
+         */
+        setStroke(pattern: CanvasPattern): void;
+        /**
+         * Sets the blur for shadow effects.
+         * @param level The level of the blur for the shadows
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setShadowBlur(10); // Sets the shadow blur
+         * canvas.setShadowColor("blue"); // Sets the shadow color
+         * canvas.fillRect({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Fills a rectangle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowBlur
+         */
         setShadowBlur(level: number): void;
+        /**
+         * Sets the color for shadow effects.
+         * @param color CSS like color
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setShadowBlur(10); // Sets the shadow blur
+         * canvas.setShadowColor("blue"); // Sets the shadow color
+         * canvas.fillRect({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Fills a rectangle
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowColor
+         * @uses https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+         */
         setShadowColor(color: string): void;
+        /**
+         * Sets the offset of shadows
+         * @param x Offset of the shadow on the x axis
+         * @param y Offset of the shadow on the y axis
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setShadowOffset(10, 10); // Sets the shadow offset for drawing to 10 in both directions
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX
+         */
         setShadowOffset(x: number, y: number): void;
         setGlobalAlpha(alpha: number): void;
         setGlobalCompositeOperation(operation: "source-over" | "source-in" | "source-out" | "source-atop" | "destination-over" | "destination-in" | "destination-out" | "destination-atop" | "lighter" | "copy" | "xor" | "multiply" | "screen" | "overlay" | "darken" | "lighten" | "color-dodge" | "color-burn" | "hard-light" | "soft-light" | "difference" | "exclusion" | "hue" | "saturation" | "color" | "luminosity"): void;
