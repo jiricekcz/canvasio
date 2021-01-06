@@ -777,34 +777,106 @@ declare namespace canvasio {
          */
         toString(): string;
     }
+    /**
+     * Namespace conatining all the filters
+     */
     declare namespace Filter {
+        /**
+         * The base filter extended by other filters
+         */
         declare class Base {
+            /**
+             * 
+             * @param type The type of the filter
+             * @param value The value of the filter
+             */
             constructor(type: string, value: number);
+            /**
+             * Type of the filter
+             */
             type: "url" | "blur" | "brightness" | "contrast" | "dropShadow" | "Grayscale" | "hue-rotate" | "invert" | "opacity" | "saturate" | "sepia";
+            /**
+             * The value of the filter
+             */
             value: number;
+            /**
+             * Unit the filter uses
+             */
             unit: string;
+            /**
+             * Converts the filter to a string
+             */
+            toString(): string;
         }
+        /**
+         * A filter that modifies the blur
+         */
         declare class Blur extends Base {
+            /**
+             * 
+             * @param radius Radius of the blur
+             * @example
+             * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+             */
             constructor(radius: number);
             unit: "px";
             type: "blur";
         }
+        /**
+         * An SVG filter from a url
+         */
         declare class Url extends Base {
+            /**
+             * 
+             * @param url The url of the filter
+             * @example 
+             * var filter = new canvasio.Filter.Url("./filter/filter1.svg"); // Creates the url filter
+             */
             constructor(url: string);
-            unit: "px";
+            unit: "";
             type: "url";
         }
+        /**
+         * A filter that modifies the brightness
+         */
         declare class Brightness extends Base {
+            /**
+             * 
+             * @param intensity The intensity of the brightness filter
+             * @example
+             * var filter = new canvasio.Filter.Brightness(0.5); // Creates a brightness filter with intensity 50 %
+             */
             constructor(intensity: number);
             unit: "%";
             type: "brightness";
         }
+        /**
+         * A filter that modifies the contrast
+         */
         declare class Contrast extends Base {
+            /**
+             * 
+             * @param intensity Intensity of the contrast filter
+             * @example
+             * var filter = new canvasio.Filter.Contrast(0.5); // Create a contrast filter with intensity 50 %
+             */
             constructor(intensity: number);
             unit: "%";
             type: "contrast";
         }
+        /**
+         * Filter that modifies the drop of shadow
+         */
         declare class DropShadow extends Base {
+            /**
+             * 
+             * @param xOffset The offset of the shadow on the x axis
+             * @param yOffset The offset of the shadow on the y axis
+             * @param blurRadius The blur radius of the shadow
+             * @param color The color of the shadow
+             * @example
+             * var filter = new canvasio.Filter.DropShadow(10, 10, 2, "#fff"); // Create a drop shadow filter 
+             */
             constructor(xOffset: number, yOffset: number, blurRadius: number, color: string);
             value: undefined;
             type: "drop-shadow";
@@ -812,32 +884,86 @@ declare namespace canvasio {
             units: ["px", "px", "", ""];
             toString(): string;
         }
+        /**
+         * Filter that turns the canvas grayscale
+         */
         declare class Grayscale extends Base {
+            /**
+             * 
+             * @param intensity The intensity of the grayscale filter
+             * @example 
+             * var filter = new canvasio.Filter.Grayscale(1); // Create a grayscale filter
+             */
             constructor(intensity: number);
             unit: "%";
             type: "grayscale";
         }
+        /**
+         * Filter that rotates the hue value of all colors by an angle
+         */
         declare class HueRotate extends Base {
+            /**
+             * 
+             * @param angle The angle of rotation in radians
+             * @example
+             * var filter = new canvasio.Filter.HueRotate(Math.PI / 2); // Rotates the hue by 90 degrees
+             */
             constructor(angle: number);
             unit: "deg";
             type: "hue-rotate";
         }
+        /**
+         * Filter that inverts
+         */
         declare class Invert extends Base {
+            /**
+             * 
+             * @param intensity The intensity of the invert filter
+             * @example
+             * var filter = new canvasio.Filter.Invert(0.5); // Create an invert filter with intensity 50 %
+             */
             constructor(intensity: number);
             unit: "%";
             type: "invert";
         }
+        /**
+         * Opacity filter. Similar to canvasio.Canvas.setGlobalAlpha()
+         */
         declare class Opacity extends Base {
+            /**
+             * 
+             * @param intensity The intensity of the opacity filter
+             * @example
+             * var filter = new canvasio.Filter.Opacity(0.5); // Create an opacity filter with intensity 50 %, thus all objects will be drawn half transparent. 
+             */
             constructor(intensity: number);
             unit: "%";
             type: "opacity";
         }
+        /**
+         * Saturaion filter
+         */
         declare class Saturation extends Base {
+            /**
+             * 
+             * @param intensity The intensity of the saturation change
+             * @example
+             * var filter = new canvasio.Filter.Saturation(0.5); // Create a saturation filter with intensity 50 %
+             */
             constructor(intensity: number);
             unit: "%";
             type: "saturation";
         }
+        /**
+         * Filter that does the sepia effect
+         */
         declare class Sepia extends Base {
+            /**
+             * 
+             * @param intensity Intensity of the sepia effect
+             * @example
+             * var filter = new canvasio.Filter.Sepia(0.5); // Create a filter with the sepia effect of intensity 50 %
+             */
             constructor(intensity: number);
             unit: "%";
             type: "sepia";
