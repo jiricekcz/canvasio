@@ -91,9 +91,9 @@ const intersectFunctions = {
             }
             if (line2.a.x == line2.b.x) return new Point(line2.a.x, line.y(line2.a.x));
             var a1 = line.getLinePolynom().getLinearCoefficient();
-            var b1 = line.getLinePolynom().getAbsoluleCoefficient();
+            var b1 = line.getLinePolynom().getAbsoluteCoefficient();
             var a2 = line2.getLinePolynom().getLinearCoefficient();
-            var b2 = line2.getLinePolynom().getAbsoluleCoefficient();
+            var b2 = line2.getLinePolynom().getAbsoluteCoefficient();
             if (a1 === a2) {
                 if (b1 === b2) {
                     return line;
@@ -841,7 +841,7 @@ export class Polynom {
      * @description Gets the absolute coefficient of this polynom
      * @returns {Number}
      */
-    getAbsoluleCoefficient() {
+    getAbsoluteCoefficient() {
         return this.coefficients[0];
     }
     /**

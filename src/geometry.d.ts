@@ -82,7 +82,7 @@ declare namespace Geometry {
          * console.log(polygon.toString()); // Expected output is Polygon: ([-100, 0], [0, -100], [100, 0])
          */
         toString(): string;
-        
+
         intersects(point: Point): boolean;
         intersects(ray: Ray): boolean;
         intersects(segment: Segment): boolean;
@@ -98,177 +98,425 @@ declare namespace Geometry {
         getIntersect(polygon: Polygon): Polygon | Array<Segment | Point> | Segment | Point | null;
         getIntersect(triangle: Triangle): Polygon | Triangle | Array<Segment | Point> | Segment | Point | null;
     }
-
+    /**
+     * The Geometry.Line class represents a line
+     */
     declare class Line extends Base {
+        /**
+         * Constructs a line from two points
+         * @param point1 One point of the line
+         * @param point2 Second point of the line
+         * @example
+         * var line = new Geometry.Line(
+         *      new Geometry.Point(100, 0),
+         *      new Geometry.Point(0, 100)
+         * ); // Creates a line
+         */
         constructor(point1: Point, point2: Point);
+        /**
+         * One of the points that define the line
+         */
         a: Point;
+        /**
+         * One of the points that define the line
+         */
         b: Point;
+        /**
+         * Returns the y coordinate of this line in point with a given x coordinate
+         * @param x The x value
+         */
         y(x: number): number;
+        /**
+         * Returns the x coordinate of this line in point with a given y coordinate
+         * @param y The y value
+         */
         x(y: number): number;
+        /**
+         * Returns the polynomial expression of this line
+         */
         getLinePolynom(): Polynom;
+        /**
+         * Returns the string representation of this line
+         */
         toString(): string;
+        /**
+         * Creates a perpendicular line, o which a point lays
+         * @param point Point that lays on the perpendicular line
+         */
         getPerpendicular(point: Point): Line;
+        /**
+         * Creates a parallel line, o which a point lays
+         * @param point Point that lays on the parallel line
+         */
         getParallel(point: Point): Line;
+        /**
+         * Calculates the distance between a point and this line
+         * @param point The point
+         */
         distance(point: Point): number;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): Ray | Point | null;
-        getIntersect(object: Segment): Segment | Point | null;
-        getIntersect(object: Line): Line | Point | null;
-        getIntersect(object: Circle): [Point, Point] | Point | null;
-        getIntersect(object: Polygon): Array<Segment | Point> | Segment | Point | null;
-        getIntersect(object: Triangle): [Point, Point] | Segment | Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): Ray | Point | null;
+        getIntersect(segment: Segment): Segment | Point | null;
+        getIntersect(line: Line): Line | Point | null;
+        getIntersect(circle: Circle): [Point, Point] | Point | null;
+        getIntersect(polygon: Polygon): Array<Segment | Point> | Segment | Point | null;
+        getIntersect(triangle: Triangle): [Point, Point] | Segment | Point | null;
     }
-
+    /**
+     * The Geometry.Point class represents a point
+     */
     declare class Point extends Base {
+        /**
+         * Creates a point from the x and y coordinates
+         * @param x The X coordinate
+         * @param y The Y coordinate
+         * @example
+         * var point = new Geometry.Point(0, 0); // Create a point
+         */
         constructor(x: number, y: number);
+        /**
+         * The X coordinate
+         */
         x: number;
+        /**
+         * The Y coordinate
+         */
         y: number;
+        /**
+         * Returns the distance from the zero point [0, 0]
+         */
         absolute(): number;
+        /**
+         * Returns a string representation of this point in the form [x, y]
+         */
         toString(): string;
+        /**
+         * Returns an array representation of this point in the form [x, y]
+         */
         toArray(): PointArrayForm;
+        /**
+         * Returns the distance between this point and another point
+         * @param point The second point
+         */
         distance(point: Point): number;
+        /**
+         * Returns the distance between this point and a line
+         * @param line The line
+         */
         distance(line: Line): number;
+        /**
+         * Reflects this point about another point and returns the new reflected point
+         * @param point Point to reflect about
+         */
         reflectAbout(point: Point): Point;
+        /**
+         * Reflects this point about a line and returns the new reflected point
+         * @param line Line to reflect about
+         */
         reflectAbout(line: Line): Point;
+        /**
+         * Creates a point from a string representation of it
+         * @param string Point in a string form [x, y]
+         */
         static fromString(string: string): Point;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): Point | null;
-        getIntersect(object: Segment): Point | null;
-        getIntersect(object: Line): Point | null;
-        getIntersect(object: Circle): Point | null;
-        getIntersect(object: Polygon): Point | null;
-        getIntersect(object: Triangle): Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): Point | null;
+        getIntersect(segment: Segment): Point | null;
+        getIntersect(line: Line): Point | null;
+        getIntersect(circle: Circle): Point | null;
+        getIntersect(polygon: Polygon): Point | null;
+        getIntersect(triangle: Triangle): Point | null;
     }
-
+    /**
+     * The Geometry.Polynom class represents a polynom
+     */
     declare class Polynom {
-        constructor(...coefficients: number);
+        /**
+         * Creates a polynom from its coefficients
+         * @param coefficients the coefficients of the polynom
+         * @example
+         * var polynom = new Geometry.Polynom(1, 0, 0); // Creates the x^2 polynom
+         */
+        constructor(...coefficients: Array<number>);
+        /**
+         * The degree of this polynom
+         */
         degree: number;
+        /**
+         * Array of coefficients of the polynom
+         */
         coefficients: Array<number>;
+        /**
+         * Returns the value of this polynom at a given point
+         * @param x The x value
+         */
         valueAt(x: number): number;
-        getAbsoluleCoefficient(): number;
+        /**
+         * Returns the absolute coefficient of this polynom
+         */
+        getAbsoluteCoefficient(): number;
+        /**
+         * Returns the linear coefficient of this polynom
+         */
         getLinearCoefficient(): number;
+        /**
+         * Returns the quadratic coefficient of this polynom
+         */
         getQuadraticCoefficient(): number;
-        getQuadraticCoefficient(): number;
+        /**
+         * Returns the cubic coefficient of this polynom
+         */
+        getCubicCoefficient(): number;
     }
-
+    /**
+     * The Geometry.Ray class represents a ray
+     */
     declare class Ray extends Base {
+        /**
+         * Creates a ray from two points
+         * @param endPoint The end point of the ray
+         * @param point2 Another point describing the rays direction
+         * @example
+         * var ray = new Ray(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(100, 100)
+         * ); // Creates a ray from the zero point in the direction of the [100, 100] point
+         */
         constructor(endPoint: Point, point2: Point);
+        /**
+         * The end point of the ray
+         */
         a: Point;
+        /**
+         * The secondary point of the ray
+         */
         b: Point;
+        /**
+         * Returns the Y coordinate of a point that lays on this ray with the x coordinate specified
+         * @param x The X value
+         */
         y(x: number): number;
+        /**
+         * Returns the X coordinate of a point that lies on this ray with the y coordinate specified
+         * @param y The Y value
+         */
         x(y: number): number;
+        /**
+         * Returns a line this segment lays on
+         */
         getLine(): Line;
+        /**
+         * Returns a string representation of this ray
+         */
         toString(): string;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): Ray | Segment | Point | null;
-        getIntersect(object: Segment): Segment | Point | null;
-        getIntersect(object: Line): Ray | Point | null;
-        getIntersect(object: Circle): [Point, Point] | Point | null;
-        getIntersect(object: Polygon): Array<Segment | Point> | Segment | Point | null;
-        getIntersect(object: Triangle): [Point, Point] | Segment | Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): Ray | Segment | Point | null;
+        getIntersect(segment: Segment): Segment | Point | null;
+        getIntersect(line: Line): Ray | Point | null;
+        getIntersect(circle: Circle): [Point, Point] | Point | null;
+        getIntersect(polygon: Polygon): Array<Segment | Point> | Segment | Point | null;
+        getIntersect(triangle: Triangle): [Point, Point] | Segment | Point | null;
     }
-
+    /**
+     * The Geometry.Segment class represents a segment
+     */
     declare class Segment extends Base {
+        /**
+         * Creates a segment from two points
+         * @param point1 One end of the segment
+         * @param point2 Second end of the segment
+         * @example
+         * var segment = new Geometry.Segment(
+         *      new Geometry.Point(0, 0),
+         *      new Geometry.Point(100, 100)
+         * ); // Creates a segment between two points
+         */
         constructor(point1: Point, point2: Point);
+        /**
+         * One of the point of the segment
+         */
         a: Point;
+        /**
+         * One of the point of the segment
+         */
         b: Point;
+        /**
+         * Returns the Y coordinate of a point that lays on this segment with the x coordinate specified
+         * @param x The X value
+         */
         y(x: number): number;
+        /**
+         * Returns the X coordinate of a point that lies on this segment with the y coordinate specified
+         * @param y The Y value
+         */
         x(y: number): number;
+        /**
+         * Returns a string representation of this segment
+         */
         toStings(): string;
+        /**
+         * Returns a line this segment lays on
+         */
         getLine(): Line;
+        /**
+         * Returns the length of this segment
+         */
         length(): number;
+        /**
+         * Joins this segment with another segment and returns the resulting segment
+         * @param segment Another segment
+         */
         join(segment: Segment): Segment;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): Segment | Point | nulll;
-        getIntersect(object: Segment): Segment | Point | null;
-        getIntersect(object: Line): Segment | Point | null;
-        getIntersect(object: Circle): [Point, Point] | Point | null;
-        getIntersect(object: Polygon): Array<Segment | Point> | Segment | Point | null;
-        getIntersect(object: Triangle): [Point, Point] | Segment | Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): Segment | Point | nulll;
+        getIntersect(segment: Segment): Segment | Point | null;
+        getIntersect(line: Line): Segment | Point | null;
+        getIntersect(circle: Circle): [Point, Point] | Point | null;
+        getIntersect(polygon: Polygon): Array<Segment | Point> | Segment | Point | null;
+        getIntersect(triangle: Triangle): [Point, Point] | Segment | Point | null;
     }
-
+    /**
+     * The Geometry.Circle class represents a circle
+     */
     declare class Circle extends Base {
+        /**
+         * Creates a circle from a center point and a radius
+         * @param center Center point of the circle
+         * @param radius Radius of the circle
+         * @example
+         * var circle = new Geometry.Circle(new Geometry.Point(0, 0), 100); // Creates a circle with radius 100
+         */
         constructor(center: Point, radius: number);
+        /**
+         * The radius of the circle
+         */
         r: number;
+        /**
+         * The center point of the circle
+         */
         center: Point;
+        /**
+         * The circumference of the circle
+         */
         length(): number;
+        /**
+         * Returns a string representation of this circle
+         */
         toStings(): string;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): [Point, Point] | Point | null;
-        getIntersect(object: Segment): [Point, Point] | Point | null;
-        getIntersect(object: Line): [Point, Point] | Point | nulll;
-        getIntersect(object: Circle): Circle | [Point, Point] | Point | null;
-        getIntersect(object: Polygon): [Point, Point] | Point | null
-        getIntersect(object: Triangle): [Point, Point] | Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): [Point, Point] | Point | null;
+        getIntersect(segment: Segment): [Point, Point] | Point | null;
+        getIntersect(line: Line): [Point, Point] | Point | nulll;
+        getIntersect(circle: Circle): Circle | [Point, Point] | Point | null;
+        getIntersect(polygon: Polygon): [Point, Point] | Point | null
+        getIntersect(triangle: Triangle): [Point, Point] | Point | null;
     }
-
+    /**
+     * The Geometry.Triangle class represents a Triangle
+     */
     declare class Triangle extends Base {
+        /**
+         * Creates a triangle from three points.
+         * @param a One vertex of the Triangle
+         * @param b Second vertex of the Triangle
+         * @param c Third vertex of the Triangle
+         */
         constructor(a: Point, b: Point, c: Point);
+        /**
+         * One vertex of the Triangle
+         */
         A: Point;
+        /**
+         * One vertex of the Triangle
+         */
         B: Point;
+        /**
+         * One vertex of the Triangle
+         */
         C: Point;
+        /**
+         * One edge of the Triangle
+         */
         a: Segment;
+        /**
+         * One edge of the Triangle
+         */
         b: Segment;
+        /**
+         * One edge of the Triangle
+         */
         c: Segment;
+        /**
+         * Returns the size of the angle BAC
+         */
         getAlpha(): number;
+        /**
+         * Returns the size of the angle CBA
+         */
         getBeta(): number;
+        /**
+         * Returns the size of the angle ACB
+         */
         getGamma(): number;
+        /**
+         * Returns a string representation of this Triangle
+         */
         toString(): string;
 
-        intersects(object: Point): boolean;
-        intersects(object: Ray): boolean;
-        intersects(object: Segment): boolean;
-        intersects(object: Line): boolean;
-        intersects(object: Circle): boolean;
-        intersects(object: Polygon): boolean;
-        intersects(object: Triangle): boolean;
-        getIntersect(object: Point): Point | null;
-        getIntersect(object: Ray): [Point, Point] | Segment | Point | null;
-        getIntersect(object: Segment): [Point, Point] | Segment | Point | null;
-        getIntersect(object: Line): [Point, Point] | Segment | Point | null;
-        getIntersect(object: Circle): Array<Point> | Point | null;
-        getIntersect(object: Polygon): Polygon | Triangle | Array<Segment | Point> | Segment | Point | null;
-        getIntersect(object: Triangle): Triangle | Array<Segment | Point> | Segment | Point | null;
+        intersects(point: Point): boolean;
+        intersects(ray: Ray): boolean;
+        intersects(segment: Segment): boolean;
+        intersects(line: Line): boolean;
+        intersects(circle: Circle): boolean;
+        intersects(polygon: Polygon): boolean;
+        intersects(triangle: Triangle): boolean;
+        getIntersect(point: Point): Point | null;
+        getIntersect(ray: Ray): [Point, Point] | Segment | Point | null;
+        getIntersect(segment: Segment): [Point, Point] | Segment | Point | null;
+        getIntersect(line: Line): [Point, Point] | Segment | Point | null;
+        getIntersect(circle: Circle): Array<Point> | Point | null;
+        getIntersect(polygon: Polygon): Polygon | Triangle | Array<Segment | Point> | Segment | Point | null;
+        getIntersect(triangle: Triangle): Triangle | Array<Segment | Point> | Segment | Point | null;
     }
     /**
      * The Geometry.Drawer object manages the interaction between the Geometry library and the canvasio library. It is used to draw geometry objects onto the canvas. This class is in usual cases only used internaly
