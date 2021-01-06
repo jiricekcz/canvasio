@@ -851,13 +851,59 @@ declare namespace canvasio {
      * canvasio.round(1 / 3, "coordinate"); // Rounds the 1 / 3 in the coordinate mode
      */
     declare function round(x: number, type: "coordinate" | "angle" = "coordinate"): number;
+    /**
+     * The canvasio.Image class represents and image you can draw onto a canvas using the canvasio.Canvas.drawImage() function
+     */
     declare class Image {
+        /**
+         * @param image The image source
+         * @example
+         * const image = new canvasio.Image(document.getElementById("myImage"));
+         */
         constructor(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas);
+        /**
+         * The image source object
+         */
         image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas;
+        /**
+         * Gets an image from a url source
+         * @param url The url of the image
+         * @example
+         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
+         */
         static fromUrl(url: string): Image;
+        /**
+         * Creates an image form the ImageData object
+         * @param imageData The image data
+         */
         static fromImageData(imageData: ImageData): Image;
+        /**
+         * Resizes the image. This function can deform the image
+         * @param width The new width of the image
+         * @param height The new height of the image
+         * @example
+         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
+         * 
+         * image.resize(128, 128); // Resizes the image to 128x128 pixels
+         */
         resize(width: number, height: number): void;
+        /**
+         * Crops the image
+         * @param rectangle The rectangle represents the new crop area
+         * @example
+         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image
+         * 
+         * image.crop({
+         *      x: 0,
+         *      y: 0,
+         *      width: 128,
+         *      height: 128
+         * }); // Crops the image to 128x128 pixels
+         */
         crop(rectangle: Rectangle): void;
+        /**
+         * Gets the method used to draw this image onto the canvas. This method is not intended for direct use.
+         */
         getDrawType(): "normal" | "resize" | "crop";
     }
     declare class LineDashPattern extends Array<number> {
