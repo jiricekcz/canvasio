@@ -906,13 +906,42 @@ declare namespace canvasio {
          */
         getDrawType(): "normal" | "resize" | "crop";
     }
+    /**
+     * A simple class representing a line dash pattern
+     */
     declare class LineDashPattern extends Array<number> {
         constructor(pattern: Array<number>)
     }
+    /**
+     * Class representing a path, that can be directly drawn onto the canvas
+     */
     declare class Path extends Path2D {
+        /**
+         * 
+         * @param canvas The canvas to which the path should be drawn to
+         */
         constructor(canvas: Canvas);
+        /**
+         * The canvas
+         */
         canvas: Canvas;
+        /**
+         * Fills the path
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const path = canvas.createPath(); // Creates the path
+         * // Do something with the path
+         * path.fill(); // Fills the path
+         */
         fill(): void;
+        /**
+         * Draws the path
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const path = canvas.createPath(); // Creates the path
+         * // Do something with the path
+         * path.draw(); // Draws the path
+         */
         draw(): void;
     }
     declare interface dropShadowValues extends Array<number | string> {
@@ -922,30 +951,90 @@ declare namespace canvasio {
         3: string;
         length: 4;
     }
+    /**
+     * Universal interface for any object from the Geometry library
+     */
     declare interface GeometryObject {
 
     }
+    /**
+     * Interface for a rectangle
+     */
     declare interface Rectangle {
+        /**
+         * The X coordinate of the upper left corner of the rectangle
+         */
         x: number;
+        /**
+         * The Y coordinate of the upper left corner of the rectangle
+         */
         y: number;
+        /**
+         * Width of the rectangle
+         */
         width: number;
+        /**
+         * Height of the rectangle
+         */
         height: number;
     }
+    /**
+     * Interface for a point
+     */
     declare interface Point {
+        /**
+         * The X coordinate of the point
+         */
         x: number;
+        /**
+         * The Y coordinate of the point
+         */
         y: number;
     }
+    /**
+     * Options for the constructor of the canvasio.Canvas class
+     */
     declare interface CanvasConstructorOptions {
+        /**
+         * Width of the canvas
+         */
         width?: number,
+        /**
+         * Height of the canvas
+         */
         height?: number,
+        /**
+         * The parent HTML element of the canvas
+         */
         container?: HTMLElement,
+        /**
+         * Preset used when creating a canvas. If a preset is specified, all other options will be ignored.
+         */
         preset?: "fullscreen" | "small" | "math"
     }
+    /**
+     * Options for the transformation of a canvas.
+     */
     declare interface CanvasTransformOptions {
+        /**
+         * The amount by which the zero point should be moved on the X axis
+         */
         x?: number;
+        /**
+         * The amount by which the zero point should be moved on the Y axis
+         */
         y?: number;
+        /**
+         * The scale factor for the X axis
+         */
         xScale?: number;
+        /**
+         * The scale factor for the Y axis
+         */
         yScale?: number;
+        /**
+         * The rotation amount
+         */
         rotation?: number;
     }
 }
