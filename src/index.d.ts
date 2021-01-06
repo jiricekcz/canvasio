@@ -540,22 +540,210 @@ declare namespace canvasio {
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/shadowOffsetX
          */
         setShadowOffset(x: number, y: number): void;
+        /**
+         * Sets the gobal alpha value used when drawing onto the canvas, where 0 is completely transparent and 1 is fully opaque
+         * @param alpha The new global alpha value
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setGlobalAlpha(0.5); // Sets the alpha to 0.5
+         * canvas.drawLine({ x: 10, y: 10 }, { x: 20, y: 20 }); // Draws a line with global alpha value
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalAlpha
+         */
         setGlobalAlpha(alpha: number): void;
+        /**
+         * Sets the operation used when two or more objects intersect. For detailed description about specific operations, see the link below.
+         * @param operation The operation name
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setGlobalCompositeOperation("xor"); // Sets the operation to xor
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+         */
         setGlobalCompositeOperation(operation: "source-over" | "source-in" | "source-out" | "source-atop" | "destination-over" | "destination-in" | "destination-out" | "destination-atop" | "lighter" | "copy" | "xor" | "multiply" | "screen" | "overlay" | "darken" | "lighten" | "color-dodge" | "color-burn" | "hard-light" | "soft-light" | "difference" | "exclusion" | "hue" | "saturation" | "color" | "luminosity"): void;
+        /**
+         * Draws an Image onto the canvas. 
+         * @param image The image to draw
+         * @param x The X coordinate of the upper left corner of the image
+         * @param y The Y coordinate of the upper left corner of the image
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image from ./assets/icon.png
+         * canvas.drawImage(image, 100, 100); // Draws the image
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+         */
         drawImage(image: Image, x: number, y: number);
+        /**
+         * Extracts image data from a region described by a rectangle.
+         * @param rectangle The region 
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var imageData = canvas.getImageData({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * }); // Gets the image data
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData
+         */
         getImageData(rectangle: Rectangle): ImageData;
+        /**
+         * Applies a filter, that will be used when drawing objects. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @param filter The filter
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.applyFilter(filter); // Applies the filter
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
         applyFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        /**
+         * Returns all the filters currently applied to the canvas. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.applyFilter(filter); // Applies the filter
+         * 
+         * console.log(canvas.getAllFilters()); // Logs the FilterManager object with all the filters - [canvasio.Filter.Blur]
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
         getAllFilters(): FilterManager;
+        /**
+         * Removes a filter. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @param filter The filter object
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.applyFilter(filter); // Applies the filter
+         * 
+         * canvas.removeFilter(filter); // Removes the filter
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
         removeFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        /**
+         * Removes a filter with the index of it. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @param filterId The id of the filter
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.applyFilter(filter); // Applies the filter
+         * 
+         * canvas.removeFilter(0); // Removes the first filter
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
+        removeFilter(filterId: number): void;
+        /**
+         * Removes all filters. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.applyFilter(filter); // Applies the filter
+         * 
+         * canvas.clearFilters(); // Clears all filters
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
         clearFilters(): void;
+        /**
+         * Sets the image smoothing mode. 
+         * @param imageSmoothingMode The image smoothing mode
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setImageSmooth("disabled"); // Disables all image smoothing
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingQuality
+         */
         setImageSmooth(imageSmoothingMode: "disabled" | "low" | "medium" | "high"): void;
+        /**
+         * Creates a path.
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var path = canvas.createPath(); // Creates the canvasio.Path object
+         */
         createPath(): Path;
+        /**
+         * Draws a circle onto the canvas
+         * @param x The X coordinate of the center of the circle
+         * @param y The Y coordinate of the center of the circle
+         * @param radius The radius of the circle
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.drawCircle(100, 100, 50); // Draws a circle from [100, 100] with the radius 50
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/stroke
+         */
         drawCircle(x: number, y: number, radius: number): void;
+        /**
+         * Fills a circle on the canvas
+         * @param x The X coordinate of the center of the circle
+         * @param y The Y coordinate of the center of the circle
+         * @param radius The radius of the circle
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.fillCircle(100, 100, 50); // Fills a circle from [100, 100] with the radius 50
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill
+         */
         fillCircle(x: number, y: number, radius: number): void;
-        async redrawWithFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): Promise<void>;
-        draw(...object: GeometryObject): void;
-        draw(...object: GeometryObject[]): void;
-        draw(...object: GeometryObject | GeometryObject[]): void;
+        /**
+         * Redraws everything on the canvas with a filter. Works like applying a filter to a photo. Warning: This feature is experimental. Please refer to the link below for more information.
+         * @param filter Filter to redraw the canvas with
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.drawGrid(50); // Draws a grid
+         * 
+         * var filter = new canvasio.Filter.Blur(2); // Creates a blur filter
+         * canvas.redrawWithFilter(filter); // Redraws the canvas with the blur filter
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+         */
+        redrawWithFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        /**
+         * Draws an object from the Geometry library
+         * @param object The objects to draw onto the canvas
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const point = new Geometry.Point(100, 100);
+         * const point2 = new Geometry.Point(200, 200);
+         * const line = new Geometry.Line(point, point2);
+         * 
+         * canvas.draw(point, point2, line); // Draws the three objects
+         */
+        draw(...object: Array<GeometryObject>): void;
+        /**
+         * Draws an object from the Geometry library
+         * @param object The objects to draw onto the canvas
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const point = new Geometry.Point(100, 100);
+         * const point2 = new Geometry.Point(200, 200);
+         * const line = new Geometry.Line(point, point2);
+         * 
+         * canvas.draw([point, point2, line]); // Draws the three objects
+         */
+        draw(...object: Array<Array<GeometryObject>>): void;
+        /**
+         * Draws an object from the Geometry library
+         * @param object The objects to draw onto the canvas
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const point = new Geometry.Point(100, 100);
+         * const point2 = new Geometry.Point(200, 200);
+         * const line = new Geometry.Line(point, point2);
+         * 
+         * canvas.draw(point, point2, line, line.getIntersect(point)); // Draws the three objects and the intersection
+         */
+        draw(...object: Array<GeometryObject | Array<GeometryObject>>): void;
     }
     declare class FilterManager extends Array<Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url> {
         constructor();
