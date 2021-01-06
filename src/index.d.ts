@@ -282,15 +282,112 @@ declare namespace canvasio {
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/restore
          */
         load(): void;
+        /**
+         * Writes a text onto the canvas with optional text wrapping.
+         * @param text The text
+         * @param x The X coordinate of the upper left corner of the text box
+         * @param y The Y coordinate of the upper left corner of the text box
+         * @param maxWidth Max width for text wrapping
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.text("Hello world!", 300, 100); // Writes a Hello world! text onto the canvas.
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillText
+         */
         text(text: string, x: number, y: number, maxWidth?: number): void;
+        /**
+        * Writes an outline of a text onto the canvas with optional text wrapping.
+        * @param text The text
+        * @param x The X coordinate of the upper left corner of the text box
+        * @param y The Y coordinate of the upper left corner of the text box
+        * @param maxWidth Max width for text wrapping
+        * @example
+        * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+        * 
+        * canvas.textOutline("Hello world!", 300, 100); // Writes a Hello world! text outline onto the canvas.
+        * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/strokeText
+        */
         textOutline(text: string, x: number, y: number, maxWidth?: number): void;
+        /**
+         * Sets the width of a line. Line width is scaled according the scale matrix.
+         * @param width The width of the line
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineWidth(2); // Sets the line width to 2
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineWidth
+         */
         setLineWidth(width: number): void;
+        /**
+         * Sets the default line cap.
+         * @param cap The cap type
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineCap("round"); // Sets the line cap to round.
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap
+         */
         setLineCap(cap: "butt" | "round" | "square" = "butt"): void;
+        /**
+         * Sets the default line join for all lines 
+         * @param join The deafult join of two or more lines
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineJoin("bevel"); // Sets the line join to bevel.
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin
+         */
         setLineJoin(join: "round" | "bevel" | "miter" = "miter"): void;
+        /**
+         * Sets the miter limit ratio."
+         * @param limit The new miter limit ratio
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setMiterLimit(10); // Sets the miter limit ratio to 10
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit
+         */
         setMiterLimit(limit: number): void;
+        /**
+         * Sets the line dash pattern for all lines drawn
+         * @param dashArray The line dash patter
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineDash([10, 20, 40, 20]); // All lines drawn will be solid for 10 blank for 20 solid for the next 40 and then 10 blank again
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+         */
         setLineDash(dashArray: Array<number>): void;
+        /**
+         * Sets the line dash pattern for all lines drawn
+         * @param lineDashPattern The line dash patter
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         *
+         * const lineDash = new canvasio.LineDashPattern([10, 20, 40, 20]);
+         * canvas.setLineDash(lineDash); // All lines drawn will be solid for 10 blank for 20 solid for the next 40 and then 10 blank again
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+         */
         setLineDash(lineDashPattern: LineDashPattern): void;
+        /**
+         * Sets a simple dash pattern with only one repeating patter
+         * @param lineWidth Width of the line in the dash
+         * @param spacing Spacing between the line dashes
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * canvas.setLineDash(10, 10); // Sets the line to dash each 10
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+         */
         setLineDash(lineWidth: number, spacing: number): void;
+        /**
+         * Gets the current line dash
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var lineDash = canvas.getLineDash(); // Saves the current line dash pattern
+         * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getLineDash
+         */
         getLineDash(): LineDashPattern;
         setLineDashOffset(offset: number): void;
         setFont(font: string): void;
