@@ -843,6 +843,13 @@ declare namespace canvasio {
             type: "sepia";
         }
     }
+    /**
+     * Rounds a number with the library's rounding constants
+     * @param x Number to round
+     * @param type Rounding type
+     * @example
+     * canvasio.round(1 / 3, "coordinate"); // Rounds the 1 / 3 in the coordinate mode
+     */
     declare function round(x: number, type: "coordinate" | "angle" = "coordinate"): number;
     declare class Image {
         constructor(image: HTMLImageElement | SVGImageElement | HTMLVideoElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas);
