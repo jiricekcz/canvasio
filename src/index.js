@@ -571,7 +571,7 @@ export class Canvas {
      * @returns {Promise<void>}
      * @async
      */
-    async redrawWithFilter(filter) {
+    redrawWithFilter(filter) {
         this.save();
         this.transform();
         var id = this.getImageData({
@@ -580,12 +580,10 @@ export class Canvas {
             width: this.canvas.width, 
             height: this.canvas.height
         });
-        var a = this.filters;
         this.filters.clear();
         this.applyFilter(filter);
-        var image = await Image.fromImageData(id);
         this.clear();
-        this.drawImage(image, 0, 0);
+        this.context.putImageData(id, 0, 0);
         this.load();
     }
 }
