@@ -1258,6 +1258,10 @@ declare namespace canvasio {
          * // Expected output: canvasio.Vector(0.2, 0.4, 0.6, 1)
          */
         divide(n: number): Vector;
+        /**
+         * Returns the string representation of this vector
+         */
+        toString(): string;
         private concat();
         private copyWithin();
         private entries();

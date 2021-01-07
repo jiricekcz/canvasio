@@ -1071,7 +1071,12 @@ export class Vector extends Array {
         }
         return new Vector(...v);
     }
-
+    /**
+     * @returns {String}
+     */
+    toString() {
+        return `Vector${this.length}D: [${this.join(", ")}]`;
+    }
 
 }
 
