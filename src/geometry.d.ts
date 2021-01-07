@@ -1,4 +1,3 @@
-import * as canvasio from "./index.js"
 /**
  * The Geomtery namespace contains all the classes you can use to draw geometrical shapes onto a canvas using the canvasio library.
  */
