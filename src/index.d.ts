@@ -1163,6 +1163,102 @@ declare namespace canvasio {
          */
         rotation?: number;
     }
+    /**
+     * The canvasio.Vector class represents a vector of any length
+     */
+    declare class Vector extends Array<number> {
+        /**
+         * 
+         * @param values The values for the vector
+         * @example
+         * const v = new canvasio.Vector(1, 2, 3, 4, 5); // Creates a vector
+         */
+        constructor(...values: Array<number>);
+        /**
+         * Multiplies this vector with another vector and returns the result
+         * @param vector The vector to multiply this vector with
+         * @example
+         * const v1 = new canvasio.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new canvasio.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.multiply(v2); // Multiplies the vectors
+         * // Expected output: canvasio.Vector(2, 4, 12, 16)
+         */
+        multiply(vector: Vector): Vector;
+        /**
+         * Multiplies the vector by a number
+         * @param n The number to multiply this vector with
+         * @example
+         * const v1 = new canvasio.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.multiply(5);
+         * // Expected output: canvasio.Vector(5, 10, 15, 25)
+         */
+        multiply(n: number): Vector;
+        /**
+         * Subtracts this vector from another vector and returns the result
+         * @param vector The vector to subtract this vector from
+         * @example
+         * const v1 = new canvasio.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new canvasio.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.subtract(v2); // Subtracts the vectors
+         * // Expected output: canvasio.Vector(1, 0, 1, 0)
+         */
+        subtract(vector: Vector): Vector;
+        /**
+         * Subtracts a number from this vector
+         * @param n The number to subtract
+         * @example
+         * const v1 = new canvasio.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.subtract(5);
+         * // Expected output: canvasio.Vector(-4, -3, -2, 0)
+         */
+        subtract(n: number): Vector;
+        /**
+         * Adds this vector to another vector and returns the result
+         * @param vector The vector to add this vector to
+         * @example
+         * const v1 = new canvasio.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new canvasio.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.add(v2); // Adds the vectors
+         * // Expected output: canvasio.Vector(3, 4, 7, 8)
+         */
+        add(vector: Vector): Vector;
+        /**
+         * Adds a number to this vector
+         * @param n The number to add
+         * @example
+         * const v1 = new canvasio.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.add(5);
+         * // Expected output: canvasio.Vector(6, 7, 8, 10)
+         */
+        add(n: number): Vector;
+        /**
+         * Divides this vector by another vector and returns the result
+         * @param vector The vector to divide this vector by
+         * @example
+         * const v1 = new canvasio.Vector(2, 2, 6, 10); // Constructs a vectors
+         * const v2 = new canvasio.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.divide(v2); // Divides the vectors
+         * // Expected output: canvasio.Vector(2, 1, 2, 2.5)
+         */
+        divide(vector: Vector): Vector;
+        /**
+         * Divides this vector by a number
+         * @param n The number to divide by
+         * @example
+         * const v1 = new canvasio.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.divide(5);
+         * // Expected output: canvasio.Vector(0.2, 0.4, 0.6, 1)
+         */
+        divide(n: number): Vector;
+    }
 }
 
 export = canvasio;

@@ -1,3 +1,4 @@
+import { type } from "os";
 import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js";
 import * as Geometry from "./geometry.js"
 /**
@@ -577,7 +578,7 @@ export class Canvas {
         var id = this.getImageData({
             x: 0,
             y: 0,
-            width: this.canvas.width, 
+            width: this.canvas.width,
             height: this.canvas.height
         });
         this.filters.clear();
@@ -975,6 +976,103 @@ Filter.Sepia = class SepiaFilter extends Filter.Base {
         super("sepia", intensity * 100);
         this.unit = "%";
     }
+}
+/**
+ * @extends {Array<number>}
+ */
+export class Vector extends Array {
+    /**
+     * 
+     * @param  {...Number} values 
+     */
+    constructor(...values) {
+        super();
+        if (values.length == 0) throw new Error("Vector must have at least one value.");
+        if (values.length == 1) console.warn("Using a one-dimensional vector, consider using native number insted.");
+        this.push(...values);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    multiply(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val * vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not multiply vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] * vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    divide(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val / vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not divide vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] / vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    add(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val + vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not add vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] + vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    minus(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val - vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not minus vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] - vector[i]);
+        }
+        return new Vector(...v);
+    }
+
+
 }
 
 /**
