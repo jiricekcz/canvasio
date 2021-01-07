@@ -1258,7 +1258,34 @@ declare namespace canvasio {
          * // Expected output: canvasio.Vector(0.2, 0.4, 0.6, 1)
          */
         divide(n: number): Vector;
+        private concat();
+        private copyWithin();
+        private entries();
+        private find();
+        private filter();
+        private every();
+        private findIndex();
+        private fill();
+        private forEach();
+        private includes();
+        private indexOf();
+        private keys();
+        private lastIndexOf();
+        private join();
+        private map();
+        private pop();
+        private push(); 
+        private reduce();
+        private reduceRight();
+        private reverse();
+        private shift();
+        private slice();
+        private splice();
+        private some();
+        private sort();
+        private toLocaleString();
+        private unshift();
+        private values();
     }
 }
-
 export = canvasio;
