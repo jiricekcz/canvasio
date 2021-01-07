@@ -1164,7 +1164,7 @@ declare namespace canvasio {
         rotation?: number;
     }
     /**
-     * The canvasio.Vector class represents a vector of any length
+     * The canvasio.Vector class represents a vector of any length. This class extends the Array<number> class, but many inherited methods are hidden in the InteliSense. These methods will still be available for use, but may result in unexpected behaviour.
      */
     declare class Vector extends Array<number> {
         /**
@@ -1262,6 +1262,14 @@ declare namespace canvasio {
          * Returns the string representation of this vector
          */
         toString(): string;
+        /**
+         * Returns the magnitude of this vector. This value also corresponds to the distance from the zero point.
+         * @example
+         * const v = new canvasio.Vector(3, 4);
+         * 
+         * console.log(v.magnitude()); // Expected output is 5
+         */
+        magnitude(): number;
         private concat();
         private copyWithin();
         private entries();

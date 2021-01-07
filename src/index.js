@@ -1077,6 +1077,12 @@ export class Vector extends Array {
     toString() {
         return `Vector${this.length}D: [${this.join(", ")}]`;
     }
+    /**
+     * @returns {number}
+     */
+    magnitude() {
+        return Math.pow(this.reduce(this.map(v => v * v), (a, b) => a + b), 1 / 2);
+    }
 
 }
 
