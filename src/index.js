@@ -1,4 +1,3 @@
-import { type } from "os";
 import { decimalRoundCoordinate, decimalRoundAngle } from "./constants.js";
 import * as Geometry from "./geometry.js"
 /**
@@ -988,7 +987,7 @@ export class Vector extends Array {
     constructor(...values) {
         super();
         if (values.length == 0) throw new Error("Vector must have at least one value.");
-        if (values.length == 1) console.warn("Using a one-dimensional vector, consider using native number insted.");
+        if (values.length == 1) throw new Error("Vector must have")
         this.push(...values);
     }
     /**
@@ -1081,7 +1080,7 @@ export class Vector extends Array {
      * @returns {number}
      */
     magnitude() {
-        return Math.pow(this.reduce(this.map(v => v * v), (a, b) => a + b), 1 / 2);
+        return Math.pow(this.map(v => v * v).reduce((a, b) => a + b), 1 / 2);
     }
     /**
      * 
@@ -1089,9 +1088,21 @@ export class Vector extends Array {
      * @returns {number}
      */
     dotProduct(vector) {
-        return this.reduce(this.map((v, i) => v * vector[i]), (a, b) => a + b);
+        return this.map((v, i) => v * vector[i]).reduce((a, b) => a + b);
     }
-
+    /**
+     * @returns {Vector}
+     */
+    normalize() {
+        return new Vector(...this.map(v => v / this.magnitude()));
+    }
+    map(callback) {
+        var t = [];
+        for (var tt of this) {
+            t.push(callback(tt));
+        }
+        return t;
+    }
 }
 
 /**

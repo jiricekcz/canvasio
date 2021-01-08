@@ -1280,6 +1280,15 @@ declare namespace canvasio {
          * @uses https://en.wikipedia.org/wiki/Dot_product
          */
         dotProduct(vector: Vector): number;
+        /**
+         * Makes a unit vector for this vector. Resulting vector has the same length
+         * @example 
+         * const v = new canvasio.Vector(4, 4); // Constructs a vectors
+         * 
+         * const normalizedV = v.normalize(); // Normalizes the vector
+         * // Expected output: canvasio.Vector(Math.SQRT1_2, Math.SQRT1_2);
+         */
+        normalize(): Vector;
         private concat();
         private copyWithin();
         private entries();
