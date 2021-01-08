@@ -1270,6 +1270,16 @@ declare namespace canvasio {
          * console.log(v.magnitude()); // Expected output is 5
          */
         magnitude(): number;
+        /**
+         * Calculates the dot product of this vector and another vector
+         * @example
+         * const v1 = new canvasio.Vector(1, 3, -5);
+         * const v2 = new canvasio.Vector(4, -2, -1);
+         * 
+         * console.log(v1.dotProduct(v2)); // Expected output 3
+         * @uses https://en.wikipedia.org/wiki/Dot_product
+         */
+        dotProduct(vector: Vector): number;
         private concat();
         private copyWithin();
         private entries();

@@ -1083,6 +1083,14 @@ export class Vector extends Array {
     magnitude() {
         return Math.pow(this.reduce(this.map(v => v * v), (a, b) => a + b), 1 / 2);
     }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {number}
+     */
+    dotProduct(vector) {
+        return this.reduce(this.map((v, i) => v * vector[i]), (a, b) => a + b);
+    }
 
 }
 
