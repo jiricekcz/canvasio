@@ -1286,9 +1286,31 @@ declare namespace canvasio {
          * const v = new canvasio.Vector(4, 4); // Constructs a vectors
          * 
          * const normalizedV = v.normalize(); // Normalizes the vector
-         * // Expected output: canvasio.Vector(Math.SQRT1_2, Math.SQRT1_2);
+         * // Expected output: canvasio.Vector(Math.SQRT1_2, Math.SQRT1_2)
          */
         normalize(): Vector;
+        /**
+         * Creates a vector with the same direction as this vector, but magnitude set to a given value
+         * @param magnitude The target magnitude
+         * @example
+         * const v = new canvasio.Vector(4, 4); // Constructs a vector
+         * 
+         * const v2 = v.setMagnitude(Math.SQRT2); // Sets the magnitude to the square root of two
+         * // Expected output: canvasio.Vector(1, 1)
+         */
+        setMagnitude(magnitude: number): Vector;
+        /**
+         * Creates a vector with the same direction as this vector, but magnitude is the maximum of the current magnitude and a given magnitude
+         * @param magnitude The limiting magnitude
+         * @example
+         * const v = new canvasio.Vector(4, 4); // Constructs a vector
+         * 
+         * const v2 = v.limitMagnitude(Math.SQRT2); // Limits the magnitude to the square root of two
+         * // Expected output: canvasio.Vector(1, 1)
+         * const v3 = v.limitMagnitude(10); // Limits the magnitude to 10
+         * // Expected output: canvasio.Vector(4, 4)
+         */
+        limitMagnitude(magnitude: number): Vector;
         private concat();
         private copyWithin();
         private entries();

@@ -1103,6 +1103,24 @@ export class Vector extends Array {
         }
         return t;
     }
+    /**
+     * 
+     * @param {number} magnitude 
+     * @returns {Vector}
+     */
+    setMagnitude(magnitude) {
+        return new Vector(...this.map(v => v / (this.magnitude() / magnitude))); 
+    }
+    /**
+     * 
+     * @param {number} limit
+     * @returns {Vector} 
+     */
+    limitMagnitude(limit) {
+        var v = this.setMagnitude(limit);
+        if (v.magnitude() >= this.magnitude) return this;
+        return v;
+    }
 }
 
 /**
