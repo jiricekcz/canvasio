@@ -831,6 +831,15 @@ declare namespace Geometry {
          * console.log(v.angle()); // Expected output is Math.PI / 4
          */
         angle(): number;
+        /**
+         * Creates a Vector from the angle and magnitude. Returns a two-dimensional vector
+         * @param angle The angle of the vector
+         * @param magnitude The magnitude of the vector, defaults to 1 for unit vector
+         * @example
+         * const v = new Geometry.Vector.fromPolar(Math.PI / 4, Math.SQRT2); // Constructs a vector
+         * // Expected output is Geometry.Vector(1, 1);
+         */
+        static fromPolar(angle: number, magnitude: number = 1): Vector;
         private concat();
         private copyWithin();
         private entries();

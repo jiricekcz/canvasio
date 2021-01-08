@@ -1451,4 +1451,12 @@ export class Vector extends Array {
         if (this.length != 2) throw new Error("This method is only defined for a two dimensional vector.");
         return Math.atan2(this[1], this[0]);
     }
+    /**
+     * 
+     * @param {number} angle 
+     * @param {number} magnitude 
+     */
+    static fromPolar(angle, magnitude = 1) {
+        return new Vector(Math.cos(angle) * magnitude, Math.sin(angle) * magnitude);
+    }
 }
