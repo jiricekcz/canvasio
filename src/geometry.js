@@ -1444,4 +1444,11 @@ export class Vector extends Array {
         if (v.magnitude() >= this.magnitude) return this;
         return v;
     }
+    /**
+     * @returns {number}
+     */
+    angle() {
+        if (this.length != 2) throw new Error("This method is only defined for a two dimensional vector.");
+        return Math.atan2(this[1], this[0]);
+    }
 }

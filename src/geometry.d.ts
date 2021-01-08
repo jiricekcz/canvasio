@@ -823,6 +823,14 @@ declare namespace Geometry {
          * // Expected output: Geometry.Vector(4, 4)
          */
         limitMagnitude(magnitude: number): Vector;
+        /**
+         * Returns the angle of this vector in radians. This function is only available for Vector2D vectors. Other length vectors throw an error.
+         * @example
+         * const v = new Geometry.Vector(2, 2); // Constructs a vector
+         * 
+         * console.log(v.angle()); // Expected output is Math.PI / 4
+         */
+        angle(): number;
         private concat();
         private copyWithin();
         private entries();
