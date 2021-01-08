@@ -675,6 +675,183 @@ declare namespace Geometry {
          */
         length: 2;
     }
+        /**
+     * The Geometry.Vector class represents a vector of any length. This class extends the Array<number> class, but many inherited methods are hidden in the InteliSense. These methods will still be available for use, but may result in unexpected behaviour.
+     */
+    declare class Vector extends Array<number> {
+        /**
+         * 
+         * @param values The values for the vector
+         * @example
+         * const v = new Geometry.Vector(1, 2, 3, 4, 5); // Creates a vector
+         */
+        constructor(...values: Array<number>);
+        /**
+         * Multiplies this vector with another vector and returns the result
+         * @param vector The vector to multiply this vector with
+         * @example
+         * const v1 = new Geometry.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new Geometry.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.multiply(v2); // Multiplies the vectors
+         * // Expected output: Geometry.Vector(2, 4, 12, 16)
+         */
+        multiply(vector: Vector): Vector;
+        /**
+         * Multiplies the vector by a number
+         * @param n The number to multiply this vector with
+         * @example
+         * const v1 = new Geometry.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.multiply(5);
+         * // Expected output: Geometry.Vector(5, 10, 15, 25)
+         */
+        multiply(n: number): Vector;
+        /**
+         * Subtracts this vector from another vector and returns the result
+         * @param vector The vector to subtract this vector from
+         * @example
+         * const v1 = new Geometry.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new Geometry.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.subtract(v2); // Subtracts the vectors
+         * // Expected output: Geometry.Vector(1, 0, 1, 0)
+         */
+        subtract(vector: Vector): Vector;
+        /**
+         * Subtracts a number from this vector
+         * @param n The number to subtract
+         * @example
+         * const v1 = new Geometry.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.subtract(5);
+         * // Expected output: Geometry.Vector(-4, -3, -2, 0)
+         */
+        subtract(n: number): Vector;
+        /**
+         * Adds this vector to another vector and returns the result
+         * @param vector The vector to add this vector to
+         * @example
+         * const v1 = new Geometry.Vector(2, 2, 4, 4); // Constructs a vectors
+         * const v2 = new Geometry.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.add(v2); // Adds the vectors
+         * // Expected output: Geometry.Vector(3, 4, 7, 8)
+         */
+        add(vector: Vector): Vector;
+        /**
+         * Adds a number to this vector
+         * @param n The number to add
+         * @example
+         * const v1 = new Geometry.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.add(5);
+         * // Expected output: Geometry.Vector(6, 7, 8, 10)
+         */
+        add(n: number): Vector;
+        /**
+         * Divides this vector by another vector and returns the result
+         * @param vector The vector to divide this vector by
+         * @example
+         * const v1 = new Geometry.Vector(2, 2, 6, 10); // Constructs a vectors
+         * const v2 = new Geometry.Vector(1, 2, 3, 4); // Constructs a vectors
+         * 
+         * const product = v1.divide(v2); // Divides the vectors
+         * // Expected output: Geometry.Vector(2, 1, 2, 2.5)
+         */
+        divide(vector: Vector): Vector;
+        /**
+         * Divides this vector by a number
+         * @param n The number to divide by
+         * @example
+         * const v1 = new Geometry.Vector(1, 2, 3, 5); // Constructs a vectors
+         * 
+         * const product = v1.divide(5);
+         * // Expected output: Geometry.Vector(0.2, 0.4, 0.6, 1)
+         */
+        divide(n: number): Vector;
+        /**
+         * Returns the string representation of this vector
+         */
+        toString(): string;
+        /**
+         * Returns the magnitude of this vector. This value also corresponds to the distance from the zero point.
+         * @example
+         * const v = new Geometry.Vector(3, 4);
+         * 
+         * console.log(v.magnitude()); // Expected output is 5
+         */
+        magnitude(): number;
+        /**
+         * Calculates the dot product of this vector and another vector
+         * @example
+         * const v1 = new Geometry.Vector(1, 3, -5);
+         * const v2 = new Geometry.Vector(4, -2, -1);
+         * 
+         * console.log(v1.dotProduct(v2)); // Expected output 3
+         * @uses https://en.wikipedia.org/wiki/Dot_product
+         */
+        dotProduct(vector: Vector): number;
+        /**
+         * Makes a unit vector for this vector. Resulting vector has the same length
+         * @example 
+         * const v = new Geometry.Vector(4, 4); // Constructs a vectors
+         * 
+         * const normalizedV = v.normalize(); // Normalizes the vector
+         * // Expected output: Geometry.Vector(Math.SQRT1_2, Math.SQRT1_2)
+         */
+        normalize(): Vector;
+        /**
+         * Creates a vector with the same direction as this vector, but magnitude set to a given value
+         * @param magnitude The target magnitude
+         * @example
+         * const v = new Geometry.Vector(4, 4); // Constructs a vector
+         * 
+         * const v2 = v.setMagnitude(Math.SQRT2); // Sets the magnitude to the square root of two
+         * // Expected output: Geometry.Vector(1, 1)
+         */
+        setMagnitude(magnitude: number): Vector;
+        /**
+         * Creates a vector with the same direction as this vector, but magnitude is the maximum of the current magnitude and a given magnitude
+         * @param magnitude The limiting magnitude
+         * @example
+         * const v = new Geometry.Vector(4, 4); // Constructs a vector
+         * 
+         * const v2 = v.limitMagnitude(Math.SQRT2); // Limits the magnitude to the square root of two
+         * // Expected output: Geometry.Vector(1, 1)
+         * const v3 = v.limitMagnitude(10); // Limits the magnitude to 10
+         * // Expected output: Geometry.Vector(4, 4)
+         */
+        limitMagnitude(magnitude: number): Vector;
+        private concat();
+        private copyWithin();
+        private entries();
+        private find();
+        private filter();
+        private every();
+        private findIndex();
+        private fill();
+        private forEach();
+        private includes();
+        private indexOf();
+        private keys();
+        private lastIndexOf();
+        private join();
+        private map();
+        private pop();
+        private push(); 
+        private reduce();
+        private reduceRight();
+        private reverse();
+        private shift();
+        private slice();
+        private splice();
+        private some();
+        private sort();
+        private toLocaleString();
+        private unshift();
+        private values();
+    }
 }
 
 export = Geometry;
