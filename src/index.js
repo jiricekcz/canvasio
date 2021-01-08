@@ -987,7 +987,7 @@ export class Vector extends Array {
     constructor(...values) {
         super();
         if (values.length == 0) throw new Error("Vector must have at least one value.");
-        if (values.length == 1) throw new Error("Vector must have")
+        if (values.length == 1) console.warn("You are trying to use a vector with just one value. Consider using the native number class for better performance.");
         this.push(...values);
     }
     /**
