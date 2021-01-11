@@ -11,6 +11,7 @@ geometryOut/
 todo.txt
 package.json
 jsdoc/
+tsdoc.json
 #debug.log
 debug.log
 src/debug.log
