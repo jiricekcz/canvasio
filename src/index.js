@@ -76,6 +76,31 @@ export class Canvas {
          * @type {Geometry.Drawer}
          */
         this.drawer = new Geometry.Drawer(this);
+        /**
+         * @type {Array<TriggerArea>}
+         */
+        this.triggerAreas = [];
+        this.canvas.addEventListener("mousemove", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("hover", event);
+                }
+            }
+        });
+        this.canvas.addEventListener("mouseup", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("mouseup", event);
+                }
+            }
+        });
+        this.canvas.addEventListener("mousedown", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("mousedown", event);
+                }
+            }
+        });
     }
     /**
       * @param {Number} A 
@@ -586,6 +611,10 @@ export class Canvas {
         this.context.putImageData(id, 0, 0);
         this.load();
     }
+    createTriggerArea(rectangle) {
+        return new TriggerArea(this, rectangle);
+    }
+
 }
 /**
  * @description Simple Path class that inherits all functionalities from Path2D and adds fill() and draw() methods for direct draw on the canvas
@@ -989,5 +1018,38 @@ export function round(x, type = "coordinate") {
         case "coordinate": return Math.round(x * Math.pow(10, decimalRoundCoordinate)) / Math.pow(10, decimalRoundCoordinate);
         case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
         default: throw new Error("Unsuported rounding type.")
+    }
+}
+export class TriggerArea {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Object} rect 
+     */
+    constructor(canvas, rect) {
+        this.canvas = canvas;
+        this.x = rect.x;
+        this.y = rect.y;
+        this.width = rect.width;
+        this.height = rect.height;
+        this.eventListeners = {};
+        this.canvas.triggerAreas.push(this);
+    }
+    isInside(x, y) {
+        return x > this.x && y > this.y && x < this.x + this.width && y < this.y + this.height;
+    }
+    /**
+     * 
+     * @param {string} eventType
+     * @param {MouseEvent} event 
+     */
+    emit(eventType, event) {
+        for (var e of this.eventListeners[eventType]) {
+            e(event);
+        }
+    }
+    on(eventType, callback) {
+        if (!this.eventListeners[eventType]) this.eventListeners[eventType] = [];
+        this.eventListeners[eventType].push(callback);
     }
 }

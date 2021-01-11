@@ -26,6 +26,10 @@ declare namespace canvasio {
          */
         canvas: HTMLCanvasElement;
         /**
+         * An array of triger areas this canvas updates with events
+         */
+        triggerAreas: Array<TriggerArea>;
+        /**
          * The CanvasRenderingContext2D context of this canvas.
          */
         context: CanvasRenderingContext2D;
@@ -744,6 +748,20 @@ declare namespace canvasio {
          * canvas.draw(point, point2, line, line.getIntersect(point)); // Draws the three objects and the intersection
          */
         draw(...object: Array<GeometryObject | Array<GeometryObject>>): void;
+                /**
+         * Creates a trigger area and returns it
+         * @param rectangle The rectangle of the trigger area
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var tArea = canvas.createTriggerArea({
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * });
+         */
+        createTriggerArea(rectangle: Rectangle): TriggerArea;
     }
     /**
      * The class managing filters for the canvasio.Canvas
@@ -1163,5 +1181,133 @@ declare namespace canvasio {
          */
         rotation?: number;
     }
+    /**
+     * The canvasio.TriggerArea class represents an area on the canvas, that responds to mouse events.
+     */
+    declare class TriggerArea {
+        /**
+         * Parent canvas of this trigger area
+         */
+        canvas: Canvas;
+        /**
+         * The x coordinate of the upper left corner of the trigger area
+         */
+        x: number;
+        /**
+         * The y coordinate of the upper left corner of the trigger area
+         */
+        y: number;
+        /**
+         * The width of the trigger area
+         */
+        width: number;
+        /**
+         * The height of the trigger area
+         */
+        height: number;
+        /**
+         * Event listeners
+         */
+        eventListeners: TriggerAreaListeners;
+        /**
+         * 
+         * @param canvas The canvas this Trigger area belongs to
+         * @param rectangle The rectangle of the trigger area
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * const area = new canvasio.TriggerArea(canvas, {
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100
+         * });
+         */
+        constructor(canvas: Canvas, rectangle: Rectangle);
+        /**
+         * Triggers a function, when an event occurs.
+         * @param event The string of the name of the event
+         * @param handler A function to be called when the event occurs
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var tArea = canvas.createTriggerArea({ 
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100     
+         * });
+         * tArea.on("hover", event => {
+         *      console.log(event); // Logs the MouseEvent object
+         * }); // When you hover over this trigger area, logs the event
+         */
+        on(event: "hover", handler: (event: MouseEvent) => void): void;
+        /**
+         * Triggers a function, when an event occurs.
+         * @param event The string of the name of the event
+         * @param handler A function to be called when the event occurs
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var tArea = canvas.createTriggerArea({ 
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100     
+         * });
+         * tArea.on("mousedown", event => {
+         *      console.log(["left", "right", "middle", "backward", "forward"][event.button]); // Logs the type of button pressed.
+         * }); // When you click the area, log the button
+         */
+        on(event: "mousedown", handler: (event: MouseEvent) => void): void;
+        /**
+         * Triggers a function, when an event occurs.
+         * @param event The string of the name of the event
+         * @param handler A function to be called when the event occurs
+         * @example 
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var tArea = canvas.createTriggerArea({ 
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100     
+         * });
+         * 
+         * tArea.on("mouseup", event => {
+         *      console.log(["left", "right", "middle", "backward", "forward"][event.button]); // Logs the type of button pressed.
+         * }); // When you release a mouse button in this area, log the button
+         */
+        on(event: "mouseup", handler: (event: MouseEvent) => void): void;
+        /**
+         * Emits an event for this area. This function is not intended to be called directly. Do not use this, if you are not absolutely sure, what you're doing.
+         * @param eventType The event that should be emitted
+         * @param event The event object
+         */
+        emit(eventType: "mouseup" | "mousedown" | "hover", event: MouseEvent): void;
+        /**
+         * Determines if a point lays in the trigger area
+         * @param x The x coordinate of the point
+         * @param y The y coordinate of the point
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var tArea = canvas.createTriggerArea({ 
+         *      x: 100,
+         *      y: 100,
+         *      width: 200,
+         *      height: 100     
+         * });
+         * 
+         * console.log(tArea.isInside(150, 150)); // Expected output is true
+         */
+        isInside(x: number, y: number): boolean;
+    }
+    declare interface TriggerAreaListeners {
+        mousedown: Array<(event: MouseEvent) => void>;
+        mouseup: Array<(event: MouseEvent) => void>;
+        hover: Array<(event: MouseEvent) => void>;
+    }
+
 }
 export = canvasio;
