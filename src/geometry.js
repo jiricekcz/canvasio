@@ -799,6 +799,13 @@ export class Point extends Base {
         var a = string.split("[").pop().split("]")[0].split(", ");
         return new Point(a[0], a[1]);
     }
+    /**
+     * @param {Vector} vector
+     */
+    static fromVector(vector) {
+        if (vector.length != 2) throw new Error("Can only create a point from a 2D vector.");
+        return new this(vector[0], vector[1]);
+    } 
 }
 
 

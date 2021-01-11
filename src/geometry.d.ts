@@ -226,6 +226,11 @@ declare namespace Geometry {
          * @param string Point in a string form [x, y]
          */
         static fromString(string: string): Point;
+        /**
+         * Creates a point from a vector
+         * @param vector The vector to create the point from
+         */
+        static fromVector(vector: Vector): Point;
 
         intersects(point: Point): boolean;
         intersects(ray: Ray): boolean;
