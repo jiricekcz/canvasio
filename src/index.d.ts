@@ -1303,9 +1303,21 @@ declare namespace canvasio {
          */
         isInside(x: number, y: number): boolean;
     }
+    /**
+     * The listeners for a trigger area events
+     */
     declare interface TriggerAreaListeners {
+        /**
+         * All the listeners for the mousedown event
+         */
         mousedown: Array<(event: MouseEvent) => void>;
+        /**
+         * All the listeners for the mouseup event
+         */
         mouseup: Array<(event: MouseEvent) => void>;
+        /**
+         * All the listeners for the hover event
+         */
         hover: Array<(event: MouseEvent) => void>;
     }
 
