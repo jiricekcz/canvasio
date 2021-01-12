@@ -1109,3 +1109,54 @@ export class Animation {
         return new Animation(canvas, urls.map(v => urls.map(v => Image.fromUrl(v))), x, y);
     }
 }
+export class DrawArea extends TriggerArea {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Object} rect 
+     * @param {Function} drawFunction 
+     */
+    constructor(canvas, rect, drawFunction) {
+        if (!rect) rect = {
+            x: 0,
+            y: 0,
+            width: canvas.canvas.width,
+            height: canvas.canvas.height
+        }
+        super(canvas, rect);
+        if (!drawFunction) {
+            drawFunction = (a, b, event) => {
+                this.canvas.save();
+                this.canvas.transform();
+                this.canvas.drawLine(a, b);
+                this.canvas.load();
+            }
+        }
+        this.enabled = true;
+        this.drawing = false;
+        this.lineFunction = drawFunction;
+        this.on("mousedown", event => {
+            this.drawing = true;
+        });
+        this.on("mouseup", event => {
+            this.drawing = false;
+        });
+        this.on("hover", event => {
+            if (!this.prevPos) this.prevPos = { x: event.x, y: event.y };
+            if (this.enabled && this.drawing) {
+                this.lineFunction(this.prevPos, { x: event.x, y: event.y }, event);
+            }
+            this.prevPos = { x: event.x, y: event.y };
+        })
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    toggle() {
+        this.enabled = !this.enabled;
+    }
+
+}

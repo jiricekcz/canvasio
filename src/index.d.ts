@@ -1406,7 +1406,7 @@ declare namespace canvasio {
          * @example
          * animation.crop({ x: 10, y: 10, width: 80, height: 80 }); // Crops an Animation called animation to a 80 by 80 square
          */
-        crop(rect: Rect): void;
+        crop(rect: Rectangle): void;
         /**
          * Plays out an animation with a given frame rate
          * @param frameRate The number of frames to play per second
@@ -1431,6 +1431,54 @@ declare namespace canvasio {
          */
         setTo(frame: number): void;
         static fromUrl(canvas: Canvas, urls: Array<string>, x: number, y: number): void;
+    }
+    /**
+     * The canvasio.DrawArea class is a class used to make an area into which the user can draw
+     */
+    declare class DrawArea extends TriggerArea {
+        /**
+         * Creates a Draw area
+         * @param canvas The canvas to which the draw area should be drawn
+         * @param rect The area of the draw area. Defaults to fullscreen
+         * @param lineFunction Function used to draw a line. Defaults to the default line function
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * var lines = [];
+         * 
+         * new canvasio.DrawArea(canvas, { x: 0, y: 0, width: 200, height:200 }, (a, b) => {
+         *      canvas.line(a, b); // Draws the line
+         *      lines.push({a, b}); // Does something else with the points (here it saves them to an array)
+         * });
+         */
+        constructor(canvas: Canvas, rect?: Rectangle, lineFunction?: (a: Point, b: Point, event: MouseEvent) => void);
+        /**
+         * Function, that draws a line for the draw area. 
+         */
+        lineFunction: (a: Point, b: Point, event: MouseEvent) => void;
+        /**
+         * Whether or not this Draw area is currently enabled 
+         */
+        enabled: boolean;
+        /**
+         * If the Draw area is currently drawing
+         */
+        readonly drawing: boolean;
+        /**
+         * The last point the mouse was at
+         */
+        readonly pevPos: Point;
+        /**
+         * Enable the draw area
+         */
+        enable(): void;
+        /**
+         * Disable the draw area
+         */
+        disable(): void;
+        /**
+         * Toggle the draw area
+         */
+        toggle(): void;
     }
 }
 export = canvasio;
