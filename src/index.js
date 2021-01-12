@@ -620,6 +620,9 @@ export class Canvas {
     createAnimationFromUrls(urls, x, y) {
         return Animation.fromUrls(this, urls, x, y);
     }
+    createDrawingArea(rect, func) {
+        return new DrawingArea(this, rect, func);
+    }
 
 }
 /**

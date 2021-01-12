@@ -787,6 +787,20 @@ declare namespace canvasio {
          * var a = canvas.createAnimationFromUrls(urls, 100, 100); // Creates the animation and saves it
          */
         createAnimationFromUrls(urls: Array<string>, x: number, y: number): Animation;
+        /**
+        * Creates a draw area and returns it
+        * @param rectangle The rectangle of the draw area
+        * @example 
+        * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+        * 
+        * var tArea = canvas.createDrawArea({
+        *      x: 100,
+        *      y: 100,
+        *      width: 200,
+        *      height: 100
+        * }); // Creates a draw area with the default line function
+        */
+        createDrawArea(rect?: Rectangle, lineFunction?: (a: Point, b: Point, event: MouseEvent) => void): DrawArea;
     }
     /**
      * The class managing filters for the canvasio.Canvas
