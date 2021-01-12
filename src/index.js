@@ -614,6 +614,12 @@ export class Canvas {
     createTriggerArea(rectangle) {
         return new TriggerArea(this, rectangle);
     }
+    createAnimation(frames, x, y) {
+        return new Animation(this, frames, x, y);
+    }
+    createAnimationFromUrls(urls, x, y) {
+        return Animation.fromUrls(this, urls, x, y);
+    }
 
 }
 /**
@@ -1051,5 +1057,55 @@ export class TriggerArea {
     on(eventType, callback) {
         if (!this.eventListeners[eventType]) this.eventListeners[eventType] = [];
         this.eventListeners[eventType].push(callback);
+    }
+}
+export class Animation {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Array<Image>} images 
+     * @param {number} x
+     * @param {number} y
+     */
+    constructor(canvas, images, x, y) {
+        this.canvas = canvas;
+        this.images = images;
+        this.x = x;
+        this.y = y;
+        this.i = 0;
+        this.intervalId = null;
+    }
+    get length() {
+        return this.images.length;
+    }
+    drawFrame(n) {
+        this.canvas.drawImage(this.images[n], this.x, this.y);
+    }
+    crop(rect) {
+        for (var i of this.images) {
+            i.crop(rect);
+        }
+    }
+    drawNext() {
+        this.drawFrame(this.i);
+        i++;
+    }
+    pause() {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+    }
+    play(frameRate, afterDraw) {
+        this.intervalId = setInterval(() => {
+            if (afterDraw instanceof Function) afterDraw(this.i);
+        }, 1000 / frameRate);
+    }
+    reset() {
+        this.i = 0;
+    }
+    setTo(i) {
+        this.i = i;
+    }
+    static fromUrls(canvas, urls, x, y) {
+        return new Animation(canvas, urls.map(v => urls.map(v => Image.fromUrl(v))), x, y);
     }
 }

@@ -748,20 +748,45 @@ declare namespace canvasio {
          * canvas.draw(point, point2, line, line.getIntersect(point)); // Draws the three objects and the intersection
          */
         draw(...object: Array<GeometryObject | Array<GeometryObject>>): void;
-                /**
-         * Creates a trigger area and returns it
-         * @param rectangle The rectangle of the trigger area
-         * @example 
+        /**
+        * Creates a trigger area and returns it
+        * @param rectangle The rectangle of the trigger area
+        * @example 
+        * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+        * 
+        * var tArea = canvas.createTriggerArea({
+        *      x: 100,
+        *      y: 100,
+        *      width: 200,
+        *      height: 100
+        * });
+        */
+        createTriggerArea(rectangle: Rectangle): TriggerArea;
+        /**
+         * Creates an animation on the canvas and returns it
+         * @param images The images representing the frame
+         * @param x The x coordinate of the upper left corner
+         * @param y The y coordinate of the upper left corner
+         * @example
          * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
          * 
-         * var tArea = canvas.createTriggerArea({
-         *      x: 100,
-         *      y: 100,
-         *      width: 200,
-         *      height: 100
-         * });
+         * var a = canvas.createAnimation(frames, 100, 100); // Creates the animation and saves it
          */
-        createTriggerArea(rectangle: Rectangle): TriggerArea;
+        createAnimation(images: Array<Image>, x: number, y: number): Animation;
+        /**
+         * Creates an animation from urls and returns it
+         * @param urls An array of urls
+         * @param x The x coordinate of the upper left corner
+         * @param y The y coordinate of the upper left corner
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const urls = new Array(100); // Creates an array for 100 urls
+         * const folder = "./resources/animation1/"; // Saves the folder with the animation frames
+         * urls = urls.map((v, i) => folder + i + ".png"); // Maps the blank array to the urls ex. "./resources/animation1/0.png"
+         * 
+         * var a = canvas.createAnimationFromUrls(urls, 100, 100); // Creates the animation and saves it
+         */
+        createAnimationFromUrls(urls: Array<string>, x: number, y: number): Animation;
     }
     /**
      * The class managing filters for the canvasio.Canvas
@@ -1320,6 +1345,92 @@ declare namespace canvasio {
          */
         hover: Array<(event: MouseEvent) => void>;
     }
-
+    /**
+     * The canvas.Animation class epresents an Animation, which is a collection of images - the frames of the animation.
+     */
+    declare class Animation {
+        /**
+         * The length of the animation in frames
+         */
+        readonly length: number;
+        /**
+         * The index of the current frame in the animation
+         */
+        i: number;
+        /**
+         * The id of the interval that draws the animation when using play
+         */
+        intervalId: number;
+        /**
+         * Creates an animation. Not intended for direct use. See cavnasio.canvas.createAnimation().
+         * @param canvas The canvas this Animation should be drawn on
+         * @param images The images to create the frames from
+         * @param x The x coordinate of the upper left corner of the animation
+         * @param y The y coordinate of the upper left corner of the animation
+         * @exapmle
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * 
+         * var animation = new canvasio.Animation(canvas, [
+         *      canvasio.Image.fromUrl("./resources/animation/1.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/2.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/3.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/4.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/5.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/6.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/7.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/8.png"),
+         *      canvasio.Image.fromUrl("./resources/animation/9png")
+         * ], 0, 0); // Creates the animation
+         */
+        constructor(canvas: Canvas, images: Array<Image>, x: number, y: number);
+        /**
+         * Draws the next frame in the animation.
+         * @example
+         * setInterval(() => {
+         *      animation.drawNext(); // animation is a previously created animation.
+         *      // Do something before the animation draws a next frame
+         * }, 1000/21); // Repeats the draw everyo 1/21 of a second - 21 fps
+         */
+        drawNext(): void;
+        /**
+         * Draws a frame on a specified index. This does not affect the curent animation frame for play() or drawNext()
+         * @param frameNumber Number of the frame to draw
+         * @example
+         * animation.drawFrame(0); // animation is a previously created animation 
+         * // Draws the first frame of this animation
+         */
+        drawFrame(frameNumber: number): void;
+        /**
+         * Crops all the frames
+         * @param rect The rectangle to crop out of all the frames
+         * @example
+         * animation.crop({ x: 10, y: 10, width: 80, height: 80 }); // Crops an Animation called animation to a 80 by 80 square
+         */
+        crop(rect: Rect): void;
+        /**
+         * Plays out an animation with a given frame rate
+         * @param frameRate The number of frames to play per second
+         * @param afterDraw A function, that is called when a frame is drawn
+         * @example
+         * animation.play(21, i => {
+         *      if (i % 21 == 0) console.log("Frame: " + i + " played."); // Every second logs the amount of frames played.
+         * }); // Plays an animation at 21 fps
+         */
+        play(frameRate: number, afterDraw?: (frame: number) => void): void;
+        /**
+         * Pauses the animation
+         */
+        pause(): void;
+        /**
+         * Sets the animation frame to 0. Does not stop the animation.
+         */
+        reset(): void;
+        /**
+         * Sets the animation to a specific frame
+         * @param frame The index of the frame
+         */
+        setTo(frame: number): void;
+        static fromUrl(canvas: Canvas, urls: Array<string>, x: number, y: number): void;
+    }
 }
 export = canvasio;
