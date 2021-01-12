@@ -1480,7 +1480,7 @@ declare namespace canvasio {
         /**
          * The last point the mouse was at
          */
-        readonly pevPos: Point;
+        readonly prevPos: Point;
         /**
          * Enable the draw area
          */
