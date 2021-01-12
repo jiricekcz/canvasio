@@ -1460,7 +1460,7 @@ declare namespace canvasio {
          * var lines = [];
          * 
          * new canvasio.DrawArea(canvas, { x: 0, y: 0, width: 200, height:200 }, (a, b) => {
-         *      canvas.line(a, b); // Draws the line
+         *      canvas.drawLine(a, b); // Draws the line
          *      lines.push({a, b}); // Does something else with the points (here it saves them to an array)
          * });
          */
