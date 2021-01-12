@@ -128,7 +128,6 @@ export class Canvas {
             this.context.beginPath();
             this.context.moveTo(A.x, A.y);
             this.context.lineTo(B.x, B.y);
-            this.context.closePath();
             this.context.stroke();
         } catch (e) {
             throw new Error(`Unable to draw line from [${A.x}, ${A.y}] to [${B.x}, ${B.y}]`);
@@ -596,7 +595,7 @@ export class Canvas {
      * @returns {Promise<void>}
      * @async
      */
-    redrawWithFilter(filter) {
+    async redrawWithFilter(filter) {
         this.save();
         this.transform();
         var id = this.getImageData({
@@ -605,10 +604,11 @@ export class Canvas {
             width: this.canvas.width,
             height: this.canvas.height
         });
+        var image = await Image.fromImageData(id);
         this.filters.clear();
         this.applyFilter(filter);
         this.clear();
-        this.context.putImageData(id, 0, 0);
+        this.drawImage(image, 0, 0)
         this.load();
     }
     createTriggerArea(rectangle) {
@@ -946,7 +946,7 @@ Filter.HueRotate = class HueRotateFilter extends Filter.Base {
      */
     constructor(angle) {
         if (typeof angle !== "number") throw new TypeError("Angle must be a number.");
-        super("hue-rotate", Math.round(angle / Math.PI * 180 * 1e2) * 1e2);
+        super("hue-rotate", Math.round(angle / Math.PI * 180 * 1e2) / 1e2);
         this.unit = "deg";
     }
 }

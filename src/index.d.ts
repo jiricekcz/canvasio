@@ -711,7 +711,7 @@ declare namespace canvasio {
          * canvas.redrawWithFilter(filter); // Redraws the canvas with the blur filter
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
          */
-        redrawWithFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): void;
+        async redrawWithFilter(filter: Filter.Blur | Filter.Brightness | Filter.Contrast | Filter.DropShadow | Filter.Grayscale | Filter.HueRotate | Filter.Invert | Filter.Opacity | Filter.Saturation | Filter.Sepia | Filter.Url): Promise<void>;
         /**
          * Draws an object from the Geometry library
          * @param object The objects to draw onto the canvas
