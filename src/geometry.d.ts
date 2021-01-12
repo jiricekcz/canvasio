@@ -81,6 +81,16 @@ declare namespace Geometry {
          * console.log(polygon.toString()); // Expected output is Polygon: ([-100, 0], [0, -100], [100, 0])
          */
         toString(): string;
+        /**
+         * Creates a regular polygon around a center with a radius
+         * @param vertices Number of vertices of the polygon
+         * @param center The center of the polygon
+         * @param radius The radius of the polygon
+         * @param rotation At what angle should be the first vertex from the x axis
+         * @example
+         * const poly = Geometry.Polygon.createRegular(5, new Geometry.Point(0, 0), 100); // Creates a regular pentagon around 0, 0
+         */
+        static createRegular(vertices: number, center: Point, radius: number, rotation: number = 0): Polygon;
 
         intersects(point: Point): boolean;
         intersects(ray: Ray): boolean;

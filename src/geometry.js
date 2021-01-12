@@ -367,7 +367,7 @@ const intersectFunctions = {
                 }
             }
             c.push(...u);
-            
+
             //Removes extra segments
             for (var i = 0; i < c.length; i++) {
                 var v = c[i];
@@ -605,6 +605,21 @@ export class Polygon extends Base {
     toString() {
         return `Polygon: (${this.vertices.join(", ")}})`;
     }
+    /**
+     * 
+     * @param {number} vertices 
+     * @param {Point} center 
+     * @param {number} radius 
+     * @param {number} angle 
+     */
+    static createRegular(vertices, center, radius, angle = 0) {
+        var angleIncrement = Math.PI * 2 / vertices;
+        var vects = [];
+        for (var i = 0; i < vertices; i++) {
+            vects.push(Vector.fromPolar(angle + i * angleIncrement, radius));
+        }
+        return new this(vects.map(v => new Point(v[0] + center.x, v[1] + center.y)));
+    }
 }
 
 
@@ -805,7 +820,7 @@ export class Point extends Base {
     static fromVector(vector) {
         if (vector.length != 2) throw new Error("Can only create a point from a 2D vector.");
         return new this(vector[0], vector[1]);
-    } 
+    }
 }
 
 
@@ -1439,7 +1454,7 @@ export class Vector extends Array {
      * @returns {Vector}
      */
     setMagnitude(magnitude) {
-        return new Vector(...this.map(v => v / (this.magnitude() / magnitude))); 
+        return new Vector(...this.map(v => v / (this.magnitude() / magnitude)));
     }
     /**
      * 
