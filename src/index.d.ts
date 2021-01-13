@@ -573,7 +573,7 @@ declare namespace canvasio {
          * @example
          * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
          * 
-         * var image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image from ./assets/icon.png
+         * var image = await canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image from ./assets/icon.png
          * canvas.drawImage(image, 100, 100); // Draws the image
          * @uses https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
          */
@@ -1052,7 +1052,7 @@ declare namespace canvasio {
          * Gets an image from a url source
          * @param url The url of the image
          * @example
-         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
+         * const image = await canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
          */
         async static fromUrl(url: string): Promise<Image>;
         /**
@@ -1065,7 +1065,7 @@ declare namespace canvasio {
          * @param width The new width of the image
          * @param height The new height of the image
          * @example
-         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
+         * const image = await canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
          * 
          * image.resize(128, 128); // Resizes the image to 128x128 pixels
          */
@@ -1074,7 +1074,7 @@ declare namespace canvasio {
          * Crops the image
          * @param rectangle The rectangle represents the new crop area
          * @example
-         * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image
+         * const image = await canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image
          * 
          * image.crop({
          *      x: 0,
@@ -1366,7 +1366,7 @@ declare namespace canvasio {
         /**
          * The length of the animation in frames
          */
-        readonly length: number;
+        readonly get length(): number;
         /**
          * The index of the current frame in the animation
          */
@@ -1385,15 +1385,15 @@ declare namespace canvasio {
          * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
          * 
          * var animation = new canvasio.Animation(canvas, [
-         *      canvasio.Image.fromUrl("./resources/animation/1.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/2.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/3.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/4.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/5.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/6.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/7.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/8.png"),
-         *      canvasio.Image.fromUrl("./resources/animation/9png")
+         *      await canvasio.Image.fromUrl("./resources/animation/1.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/2.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/3.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/4.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/5.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/6.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/7.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/8.png"),
+         *      await canvasio.Image.fromUrl("./resources/animation/9png")
          * ], 0, 0); // Creates the animation
          */
         constructor(canvas: Canvas, images: Array<Image>, x: number, y: number);
@@ -1422,6 +1422,14 @@ declare namespace canvasio {
          */
         crop(rect: Rectangle): void;
         /**
+         * Resizes all the frames
+         * @param width The width of the animation
+         * @param height The height of the animation
+         * @example
+         * animation.resize(100, 100); // Resizes an Animation called animation to 100 by 100 square
+         */
+        resize(width: number, height: number): void;
+        /**
          * Plays out an animation with a given frame rate
          * @param frameRate The number of frames to play per second
          * @param afterDraw A function, that is called when a frame is drawn
@@ -1444,7 +1452,7 @@ declare namespace canvasio {
          * @param frame The index of the frame
          */
         setTo(frame: number): void;
-        static fromUrl(canvas: Canvas, urls: Array<string>, x: number, y: number): void;
+        async static fromUrl(canvas: Canvas, urls: Array<string>, x: number, y: number): Promise<Animation>;
     }
     /**
      * The canvasio.DrawArea class is a class used to make an area into which the user can draw
@@ -1495,7 +1503,175 @@ declare namespace canvasio {
         toggle(): void;
     }
     class Sprite {
-        constructor(texture: Image)
+        /**
+         * Creates a sprite with a static texture, represented by an image
+         * @param canvas The canvas to which the sprite will be drawn
+         * @param texture The texture of the sprite
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * async function main () { // Creates an asyncronous function, so we can use the aync/await syntax
+         *      var texture = await canvasio.Image.fromUrl("./resources/sprite.png"); // Creates the texture for the sprite
+         *      var sprite = new canvasio.Sprite(canvas, texture); // Creates the sprite
+         * }
+         * main(); // Calls the main function
+         * 
+         */
+        constructor(canvas: Canvas, texture: Image);
+        /**
+         * Creates a sprite with an animated texture, represented by an animation
+         * @param canvas The canvas to which the sprite will be drawn
+         * @param texture The texture of the sprite
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "fullscreen" });
+         * const urls = ["./resources/an/1.png", "./resources/an/2.png", "./resources/an/3.png", "./resources/an/4.png"];
+         * async function main () { // Creates an asyncronous function, so we can use the aync/await syntax
+         *      var texture = await canvas.createAnimationFromUrls(urls) // Creates the texture for the sprite
+         *      var sprite = new canvasio.Sprite(canvas, texture); // Creates the sprite
+         * }
+         * main(); // Calls the main function
+         * 
+         */
+        constructor(canvas: Canvas, texture: Animation);
+        /**
+         * The x coordinate of the sprite
+         */
+        x: number;
+        /**
+         * The y coordinate of the sprite
+         */
+        y: number;
+        /**
+         * The x velocity of the sprite
+         */
+        velocityX: number;
+        /**
+         * The y velocity of the sprite
+         */
+        velocityY: number;
+        /**
+         * The x acceleration of the sprite
+         */
+        accelerationX: number;
+        /**
+         * The y
+         */
+        accelerationY: number;
+        /**
+         * The position of the sprite in px
+         */
+        private pos: Vector2D<number>;
+        /**
+         * The velocity of the sprite in px per frame
+         */
+        private v: Vector2D<number>;
+        /**
+         * The acceleration of the sprite in px per frame per frame
+         */
+        private a: Vector2D<number>;
+        /**
+         * The limit for the sprites position
+         */
+        positionLimit: Vector2D<Range>;
+        /**
+         * The limit for the velocity 
+         */
+        velocityLimit: Vector2D<Range>;
+        /**
+         * The limit for the acceleration
+         */
+        accelerationLimit: Vector2D<Range>;
+        /**
+         * Maximum acceleration
+         */
+        maxAcceleration: number | Range | Vector2D<Range>;
+        /**
+         * Maximum velocity
+         */
+        maxVelocity: number | Range | Vector2D<Range>;
+        /**
+         * The friction of the sprite. This number should be between 0 and 1, 0 being all the friction and 1 being none
+         */
+        friction: number;
+        /**
+         * The coefficient of a bounce, when position is limited by positionLimit. Number should be between 0 and 1, 0 being no bounce and 1 being a perfect bounce
+         */
+        bounce: number;
+        /**
+         * The texture of the sprite
+         */        
+        texture: Animation | Image;
+        /**
+         * Moves the sprite along the x axis
+         * @param x The x move
+         */
+        moveX(x: number): void;
+        /**
+         * Moves the sprite along the y axis
+         * @param y The y move
+         */
+        moveY(y: number): void;
+        /**
+         * Draws the sprite
+         */
+        draw(): void;
+        /**
+         * Sets the sprites position limit to the canvas border
+         * @param spriteWidth The width of the sprite
+         * @param spriteHeight The height of the sprite
+         */
+        limitToCanvasBorders(spriteWidth: number, spriteHeight: number): void;
     }
+    /**
+     * The Vector2D interface represents a vector of a value
+     */
+    declare interface Vector2D<T> {
+        x: T;
+        y: T;
+    }
+    /**
+     * The canvasio.Range class represent a range
+     */
+    declare class Range {
+        /**
+         * The minimum value of this range
+         */
+        min: number;
+        /**
+         * The maximum value of this range
+         */
+        max: number;
+        /**
+         * 
+         * @param min The min value
+         * @param max The max value
+         * @example
+         * var r = new canvasio.Range(0, 100); // Creates a range from 0 to 100
+         */
+        constructor(min: number, max: number);
+        /**
+         * Limits a number to this range
+         * @param value The value to limit
+         * @example
+         * var r = new canvasio.Range(0, 100); // Creates a range
+         * 
+         * console.log(r.limit(105)); // Logs 100 to the console
+         */
+        limit(value: number): number;
+        /**
+         * Checks if two ranges are the same
+         * @param range The other range
+         */
+        equals(range: Range): boolean;
+        /**
+         * Checks if a number is in this range
+         * @param number The number
+         * @example
+         * var r = new canvasio.Range(0, 100); // Creates a range
+         * 
+         * console.log(r.isWithin(105)); // Logs false
+         */
+        isWithin(number: number): boolean;
+    }
+
 }
 export = canvasio;

@@ -684,7 +684,7 @@ export class Image {
      * @returns {Promise<Image>}
      */
     static fromUrl(url) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var i = new window.Image;
             i.src = url;
             i.onload = () => {
@@ -1095,6 +1095,11 @@ export class Animation {
             i.crop(rect);
         }
     }
+    resize(w, h) {
+        for (var i of this.images) {
+            i.resize(w, h);
+        }
+    }
     drawNext() {
         if (this.i >= this.length) this.i = 0;
         this.drawFrame(this.i);
@@ -1118,7 +1123,10 @@ export class Animation {
     static async fromUrls(canvas, urls, x, y) {
         var m = [];
         for (var i = 0; i < urls.length; i++) {
-            m[i] = await Image.fromUrl(urls[i]);
+            m[i] = Image.fromUrl(urls[i]);
+        }
+        for (var i = 0; i < m.length; i++) {
+            m[i] = await m[i];
         }
         return new Animation(canvas, m, x, y);
     }
@@ -1174,3 +1182,133 @@ export class DrawArea extends TriggerArea {
     }
 }
 
+export class Sprite {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Image | Animation} texture 
+     */
+    constructor(canvas, texture) {
+        this.canvas = canvas;
+        this.texture = texture;
+        this.pos = { x: 0, y: 0 };
+        this.v = { x: 0, y: 0 };
+        this.a = { x: 0, y: 0 };
+        this.friction = 1;
+        this.bounce = 0;
+    }
+    get x() {
+        return this.pos.x;
+    }
+    get y() {
+        return this.pos.y;
+    }
+    set x(value) {
+        this.pos.x = value;
+    }
+    set y(value) {
+        this.pos.y = value;
+    }
+    get velocityX() {
+        return this.v.x;
+    }
+    get velocityY() {
+        return this.v.y;
+    }
+    set velocityX(value) {
+        this.v.x = value;
+    }
+    set velocityY(value) {
+        this.v.y = value;
+    }
+    set accelerationX(value) {
+        this.a.x = value;
+    }
+    set accelerationY(value) {
+        this.a.y = value;
+    }
+    get accelerationX() {
+        return this.a.x;
+    }
+    get accelerationY() {
+        return this.a.y;
+    }
+    set maxVelocity(value) {
+        if (value instanceof Range) return this.velocityLimit = { x: value, y: value };
+        if (value instanceof number) return this.velocityLimit = { x: new Range(-value, value), y: new Range(-value, value) };
+        this.velocityLimit = value;
+    }
+    get maxVelocity() {
+        return this.velocityLimit;
+    }
+    set maxAcceleration(value) {
+        if (value instanceof Range) return this.accelerationLimit = { x: value, y: value };
+        if (value instanceof number) return this.accelerationLimit = { x: new Range(-value, value), y: new Range(-value, value) };
+        this.accelerationLimit = value;
+    }
+    get maxAcceleration() {
+        return this.accelerationLimit;
+    }
+    moveX(x) {
+        this.x += x;
+    }
+    moveY(y) {
+        this.y += y;
+    }
+    limitToCanvasBorders(width, height) {
+        this.postionLimit = {
+            x: new Range(0, this.canvas.canvas.width - width),
+            y: new Range(0, this.canvas.canvas.height - height)
+        }
+    }
+    draw() {
+        if (this.accelerationLimit) {
+            this.a.x = this.accelerationLimit.x.limit(this.a.x);
+            this.a.y = this.accelerationLimit.y.limit(this.a.y);
+        }
+
+        this.v.x += this.a.x;
+        this.v.y += this.a.y;
+        this.v.x *= this.friction;
+        this.v.y *= this.friction;
+        if (this.velocityLimit) {
+            if (!this.velocityLimit.x.isWithin(this.v.x)) this.a.x = 0;
+            if (!this.velocityLimit.y.isWithin(this.v.y)) this.a.y = 0;
+            this.v.x = this.velocityLimit.x.limit(this.v.x);
+            this.v.y = this.velocityLimit.y.limit(this.v.y);
+        }
+        this.pos.x += this.v.x;
+        this.pos.y += this.v.y;
+        if (this.postionLimit) {
+            if (!this.postionLimit.x.isWithin(this.pos.x)) this.v.x = - this.v.x * this.bounce;
+            if (!this.postionLimit.y.isWithin(this.pos.y)) this.v.y = - this.v.y * this.bounce;
+            this.pos.x = this.postionLimit.x.limit(this.pos.x);
+            this.pos.y = this.postionLimit.y.limit(this.pos.y);
+        }
+        if (this.texture instanceof Image) {
+            this.canvas.drawImage(this.texture, this.x, this.y);
+        } else if (this.texture instanceof Animation) {
+            this.texture.x = this.x;
+            this.texture.y = this.y;
+            this.texture.drawNext();
+        }
+
+    }
+}
+export class Range {
+    constructor(min, max) {
+        this.min = min;
+        this.max = max;
+    }
+    limit(value) {
+        if (value < this.min) return this.min;
+        if (value > this.max) return this.max;
+        return value;
+    }
+    equals(rangle) {
+        return this.max === rangle.max && this.min === rangle.min;
+    }
+    isWithin(number) {
+        return number < this.max && number > this.min;
+    }
+}
