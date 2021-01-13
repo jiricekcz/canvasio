@@ -1054,12 +1054,12 @@ declare namespace canvasio {
          * @example
          * const image = canvasio.Image.fromUrl("./assets/icon.png"); // Loads the image form ./assets/icon.png
          */
-        static fromUrl(url: string): Image;
+        async static fromUrl(url: string): Promise<Image>;
         /**
          * Creates an image form the ImageData object
          * @param imageData The image data
          */
-        static fromImageData(imageData: ImageData): Image;
+        async static fromImageData(imageData: ImageData): Promise<Image>;
         /**
          * Resizes the image. This function can deform the image
          * @param width The new width of the image
@@ -1493,6 +1493,9 @@ declare namespace canvasio {
          * Toggle the draw area
          */
         toggle(): void;
+    }
+    class Sprite {
+        constructor(texture: Image)
     }
 }
 export = canvasio;

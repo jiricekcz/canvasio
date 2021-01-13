@@ -681,10 +681,16 @@ export class Image {
     /**
      * @description Creates Image object from url
      * @param {String} url 
-     * @returns {Image}
+     * @returns {Promise<Image>}
      */
     static fromUrl(url) {
-        return new Image(`url(${url})`);
+        return new Promise(function(resolve, reject) {
+            var i = new window.Image;
+            i.src = url;
+            i.onload = () => {
+                resolve(new Image(i));
+            };
+        });
     }
     /**
      * @description Creates Image object from ImageData object
@@ -1090,8 +1096,9 @@ export class Animation {
         }
     }
     drawNext() {
+        if (this.i >= this.length) this.i = 0;
         this.drawFrame(this.i);
-        i++;
+        this.i++;
     }
     pause() {
         clearInterval(this.intervalId);
@@ -1108,8 +1115,12 @@ export class Animation {
     setTo(i) {
         this.i = i;
     }
-    static fromUrls(canvas, urls, x, y) {
-        return new Animation(canvas, urls.map(v => urls.map(v => Image.fromUrl(v))), x, y);
+    static async fromUrls(canvas, urls, x, y) {
+        var m = [];
+        for (var i = 0; i < urls.length; i++) {
+            m[i] = await Image.fromUrl(urls[i]);
+        }
+        return new Animation(canvas, m, x, y);
     }
 }
 export class DrawArea extends TriggerArea {
@@ -1161,5 +1172,5 @@ export class DrawArea extends TriggerArea {
     toggle() {
         this.enabled = !this.enabled;
     }
-
 }
+
