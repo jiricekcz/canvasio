@@ -215,10 +215,10 @@ export class Canvas {
      */
     drawGrid(width = 50) {
         var lw = this.context.lineWidth;
-        this.context.lineWidth = 2;
+        this.context.lineWidth *= 2;
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
-        this.context.lineWidth = 0.5;
+        this.context.lineWidth *= 0.25;
         for (var i = width; i < 2 * this.canvas.height; i += width) {
             this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
@@ -622,6 +622,34 @@ export class Canvas {
     }
     createDrawingArea(rect, func) {
         return new DrawingArea(this, rect, func);
+    }
+    get width() {
+        return this.canvas.width;
+    }
+    set width(value) {
+        this.canvas.width = value;
+    }
+    get height() {
+        return this.canvas.height;
+    }
+    set height(value) {
+        this.canvas.height = value;
+    }
+    graph(func, min, max, step) {
+        var points = [];
+        for (var x = min; x < max; x += step) {
+            points.push({ x, y: func(x) });
+        }
+        var p = new Path(this);
+        var i=0;
+        while (Number.isNaN(Number(points[i].y))) {
+            i++;
+        }
+        p.moveTo(points[i].x, points[i].y);
+        for (i++; i < points.length; i++) {
+            p.lineTo(points[i].x, points[i].y);
+        }
+        p.draw();
     }
 
 }

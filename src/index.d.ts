@@ -38,6 +38,14 @@ declare namespace canvasio {
          */
         filters: FilterManager;
         /**
+         * The width of the canvas
+         */
+        width: number;
+        /**
+         * The height of the canvas
+         */
+        height: number;
+        /**
          * Draws a line (a segment) from point A to point B
          * @param A Point A
          * @param B Point B
@@ -801,6 +809,21 @@ declare namespace canvasio {
         * }); // Creates a draw area with the default line function
         */
         createDrawArea(rect?: Rectangle, lineFunction?: (a: Point, b: Point, event: MouseEvent) => void): DrawArea;
+        /**
+         * Graphs a mathematical function. 
+         * @param fun The function to graph. The function will be graphed continuously. All x values should return a number or NaN. NaN value ignors the point
+         * @param start The x value to start the graphing
+         * @param end The x value at which to end the graphing
+         * @param step The resolution of the graphing, defaults to 1 px
+         * @example
+         * const canvas = new canvasio.Canvas({ preset: "math" });
+         * 
+         * canvas.scale(150, 150); // Scales the canvas
+         * canvas.setLineWidth(1/150); // Sets the line width according to the scale
+         * canvas.drawGrid(Math.PI / 4); // Draws a grid
+         * canvas.graph(Math.sin, -canvas.width / 2, canvas.width / 2, 0.01);
+         */
+        graph(fun: (x: number) => number, start: number, end: number, step?: number = 1): void;
     }
     /**
      * The class managing filters for the canvasio.Canvas
@@ -1598,7 +1621,7 @@ declare namespace canvasio {
         bounce: number;
         /**
          * The texture of the sprite
-         */        
+         */
         texture: Animation | Image;
         /**
          * Moves the sprite along the x axis
