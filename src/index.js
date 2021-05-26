@@ -76,6 +76,31 @@ export class Canvas {
          * @type {Geometry.Drawer}
          */
         this.drawer = new Geometry.Drawer(this);
+        /**
+         * @type {Array<TriggerArea>}
+         */
+        this.triggerAreas = [];
+        this.canvas.addEventListener("mousemove", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("hover", event);
+                }
+            }
+        });
+        this.canvas.addEventListener("mouseup", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("mouseup", event);
+                }
+            }
+        });
+        this.canvas.addEventListener("mousedown", event => {
+            for (var t of this.triggerAreas) {
+                if (t.isInside(event.x, event.y)) {
+                    t.emit("mousedown", event);
+                }
+            }
+        });
     }
     /**
       * @param {Number} A 
@@ -103,7 +128,6 @@ export class Canvas {
             this.context.beginPath();
             this.context.moveTo(A.x, A.y);
             this.context.lineTo(B.x, B.y);
-            this.context.closePath();
             this.context.stroke();
         } catch (e) {
             throw new Error(`Unable to draw line from [${A.x}, ${A.y}] to [${B.x}, ${B.y}]`);
@@ -111,7 +135,7 @@ export class Canvas {
     }
     /**
      * @description Transforms the canvas according to the provided properties. If no options argument provided, this function will reset the transformation.
-     * @param {?Object} options
+     * @param {object} options
      * @param {?Number} [options.x] The x coordinate of the [0, 0] point
      * @param {?Number} [options.y] The y coordinate of the [0, 0] point
      * @param {?Number} [options.xScale] The scaling factor of the x axis
@@ -191,10 +215,10 @@ export class Canvas {
      */
     drawGrid(width = 50) {
         var lw = this.context.lineWidth;
-        this.context.lineWidth = 2;
+        this.context.lineWidth *= 2;
         this.drawLine(-this.canvas.width, 0, this.canvas.width, 0);
         this.drawLine(0, -this.canvas.height, 0, this.canvas.height);
-        this.context.lineWidth = 0.5;
+        this.context.lineWidth *= 0.25;
         for (var i = width; i < 2 * this.canvas.height; i += width) {
             this.drawLine(-2 * this.canvas.width, i, 2 * this.canvas.width, i);
         }
@@ -218,6 +242,12 @@ export class Canvas {
      * @returns {void}
      */
     rect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.strokeRect(x, y, width, height);
     }
     /**
@@ -229,6 +259,12 @@ export class Canvas {
      * @returns {void}
      */
     fillRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.fillRect(x, y, width, height);
     }
     /**
@@ -240,6 +276,12 @@ export class Canvas {
      * @returns {void}
      */
     clearRect(x, y, width, height) {
+        if (typeof x == "object") {
+            var y = x.y;
+            var width = x.width;
+            var height = x.height;
+            x = x.x;
+        }
         this.context.clearRect(x, y, width, height);
     }
     /**
@@ -329,7 +371,7 @@ export class Canvas {
      * @return {LineDashPattern}
      */
     getLineDash() {
-        return new LineDashPattern(this.context.getLineDash());
+        return new LineDashPattern(new LineDashPattern(this.context.getLineDash()));
     }
     /**
      * @description Sets the line dash offset
@@ -559,17 +601,57 @@ export class Canvas {
         var id = this.getImageData({
             x: 0,
             y: 0,
-            width: this.canvas.width, 
+            width: this.canvas.width,
             height: this.canvas.height
         });
-        var a = this.filters;
+        var image = await Image.fromImageData(id);
         this.filters.clear();
         this.applyFilter(filter);
-        var image = await Image.fromImageData(id);
         this.clear();
-        this.drawImage(image, 0, 0);
+        this.drawImage(image, 0, 0)
         this.load();
     }
+    createTriggerArea(rectangle) {
+        return new TriggerArea(this, rectangle);
+    }
+    createAnimation(frames, x, y) {
+        return new Animation(this, frames, x, y);
+    }
+    createAnimationFromUrls(urls, x, y) {
+        return Animation.fromUrls(this, urls, x, y);
+    }
+    createDrawingArea(rect, func) {
+        return new DrawingArea(this, rect, func);
+    }
+    get width() {
+        return this.canvas.width;
+    }
+    set width(value) {
+        this.canvas.width = value;
+    }
+    get height() {
+        return this.canvas.height;
+    }
+    set height(value) {
+        this.canvas.height = value;
+    }
+    graph(func, min, max, step) {
+        var points = [];
+        for (var x = min; x < max; x += step) {
+            points.push({ x, y: func(x) });
+        }
+        var p = new Path(this);
+        var i=0;
+        while (Number.isNaN(Number(points[i].y))) {
+            i++;
+        }
+        p.moveTo(points[i].x, points[i].y);
+        for (i++; i < points.length; i++) {
+            p.lineTo(points[i].x, points[i].y);
+        }
+        p.draw();
+    }
+
 }
 /**
  * @description Simple Path class that inherits all functionalities from Path2D and adds fill() and draw() methods for direct draw on the canvas
@@ -627,10 +709,16 @@ export class Image {
     /**
      * @description Creates Image object from url
      * @param {String} url 
-     * @returns {Image}
+     * @returns {Promise<Image>}
      */
     static fromUrl(url) {
-        return new Image(`url(${url})`);
+        return new Promise(function (resolve, reject) {
+            var i = new window.Image;
+            i.src = url;
+            i.onload = () => {
+                resolve(new Image(i));
+            };
+        });
     }
     /**
      * @description Creates Image object from ImageData object
@@ -689,7 +777,7 @@ export class Image {
 
 /**
  * @description Manages filters for a canvas
- * @extends {Array<Filter>}
+ * @extends {Array<Filter.Base>}
  */
 class FilterManager extends Array {
     constructor() {
@@ -697,22 +785,22 @@ class FilterManager extends Array {
     }
     /**
      * @description Adds a filter
-     * @param {Filter} filter 
+     * @param {Filter.Base} filter 
      */
     add(filter) {
         this.push(filter);
     }
     /**
      * @description Removes an existing filter
-     * @param {Number | Filter} f 
+     * @param {Number | Filter.Base} filter 
      * @returns {void}
      */
-    remove(f) {
-        if (typeof f === "number") {
-            this.splice(f, 1);
-        } else if (typeof f === "object") {
-            if (this.findIndex(v => v === f) == -1) throw new Error("Filter not found.");
-            this.splice(this.findIndex(v => v === f), 1);
+    remove(filter) {
+        if (typeof filter === "number") {
+            this.splice(filter, 1);
+        } else if (typeof filter === "object") {
+            if (this.findIndex(v => v === filter) == -1) throw new Error("Filter not found.");
+            this.splice(this.findIndex(v => v === filter), 1);
         } else throw new TypeError("Parameter must be and index or a filter.");
     }
     /**
@@ -730,10 +818,15 @@ class FilterManager extends Array {
         return this.join(" ");
     }
 }
+
+export var Filter = {};
 /**
  * @description Represents a filter that can be applied to the canvas
+ * @class
+ * @abstract
+ * @private
  */
-export class Filter {
+Filter.Base = class Filter {
     constructor(type, value) {
         /**
          * @description The type of the filter
@@ -758,29 +851,12 @@ export class Filter {
     toString() {
         return `${this.type}(${this.value}${this.unit})`;
     }
-    /**
-     * @description All possible filters
-     * @constant
-     */
-    static filters = {
-        url: Filter.Url,
-        blur: Filter.Blur,
-        brightness: Filter.Brightness,
-        contrast: Filter.Contrast,
-        dropShadow: Filter.DropShadow,
-        grayscale: Filter.Grayscale,
-        hueRotate: Filter.HueRotate,
-        invert: Filter.Invert,
-        opacity: Filter.Opacity,
-        saturation: Filter.Saturation,
-        sepia: Filter.Sepia
-    }
 }
 /**
  * @description Blur filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Blur = class BlurFilter extends Filter {
+Filter.Blur = class BlurFilter extends Filter.Base {
     /**
      * 
      * @param {Number} radius A number representing the radius of the blur
@@ -793,9 +869,9 @@ Filter.Blur = class BlurFilter extends Filter {
 }
 /**
  * @description External SVG filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Url = class UrlFilter extends Filter {
+Filter.Url = class UrlFilter extends Filter.Base {
     /**
      * 
      * @param {String} url The url to the filter
@@ -808,9 +884,9 @@ Filter.Url = class UrlFilter extends Filter {
 }
 /**
  * @description Brightness filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Brightness = class BrightnessFilter extends Filter {
+Filter.Brightness = class BrightnessFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -824,9 +900,9 @@ Filter.Brightness = class BrightnessFilter extends Filter {
 }
 /**
  * @description Contrast filter
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Contrast = class ContrastFilter extends Filter {
+Filter.Contrast = class ContrastFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -840,9 +916,9 @@ Filter.Contrast = class ContrastFilter extends Filter {
 }
 /**
  * @description DropShadow filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.DropShadow = class DropShadowFilter extends Filter {
+Filter.DropShadow = class DropShadowFilter extends Filter.Base {
     /**
      * 
      * @param {Number} xOffset X axis offset
@@ -879,9 +955,9 @@ Filter.DropShadow = class DropShadowFilter extends Filter {
 }
 /**
  * @description Grayscale filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Grayscale = class GrayscaleFilter extends Filter {
+Filter.Grayscale = class GrayscaleFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -895,24 +971,24 @@ Filter.Grayscale = class GrayscaleFilter extends Filter {
 }
 /**
  * @description Filter that rotates all colors hue by an angle
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.HueRotate = class HueRotateFilter extends Filter {
+Filter.HueRotate = class HueRotateFilter extends Filter.Base {
     /**
      * 
      * @param {Number} angle Angle to rotate in radians
      */
     constructor(angle) {
         if (typeof angle !== "number") throw new TypeError("Angle must be a number.");
-        super("hue-rotate", Math.round(angle / Math.PI * 180 * 1e2) * 1e2);
+        super("hue-rotate", Math.round(angle / Math.PI * 180 * 1e2) / 1e2);
         this.unit = "deg";
     }
 }
 /**
  * @description Invert filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Invert = class InvertFilter extends Filter {
+Filter.Invert = class InvertFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -926,9 +1002,9 @@ Filter.Invert = class InvertFilter extends Filter {
 }
 /**
  * @description Opacity filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Opacity = class OpacityFilter extends Filter {
+Filter.Opacity = class OpacityFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -942,9 +1018,9 @@ Filter.Opacity = class OpacityFilter extends Filter {
 }
 /**
  * @description Saturation filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Saturation = class SaturationFilter extends Filter {
+Filter.Saturation = class SaturationFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -958,9 +1034,9 @@ Filter.Saturation = class SaturationFilter extends Filter {
 }
 /**
  * @description Sepia filter 
- * @extends {Filter}
+ * @extends {Filter.Base}
  */
-Filter.Sepia = class SepiaFilter extends Filter {
+Filter.Sepia = class SepiaFilter extends Filter.Base {
     /**
      * 
      * @param {Number} intensity A number between 0 and 1 representing the intensity
@@ -973,16 +1049,294 @@ Filter.Sepia = class SepiaFilter extends Filter {
     }
 }
 
+
 /**
  * @description Rounds number with given constants 
  * @param {Number} x The number to round
  * @param {"coordinate" | "angle"}
  * @returns {Number}
  */
-function round(x, type = "coordinate") {
+export function round(x, type = "coordinate") {
     switch (type) {
         case "coordinate": return Math.round(x * Math.pow(10, decimalRoundCoordinate)) / Math.pow(10, decimalRoundCoordinate);
         case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
         default: throw new Error("Unsuported rounding type.")
+    }
+}
+export class TriggerArea {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Object} rect 
+     */
+    constructor(canvas, rect) {
+        this.canvas = canvas;
+        this.x = rect.x;
+        this.y = rect.y;
+        this.width = rect.width;
+        this.height = rect.height;
+        this.eventListeners = {};
+        this.canvas.triggerAreas.push(this);
+    }
+    isInside(x, y) {
+        return x > this.x && y > this.y && x < this.x + this.width && y < this.y + this.height;
+    }
+    /**
+     * 
+     * @param {string} eventType
+     * @param {MouseEvent} event 
+     */
+    emit(eventType, event) {
+        for (var e of this.eventListeners[eventType]) {
+            e(event);
+        }
+    }
+    on(eventType, callback) {
+        if (!this.eventListeners[eventType]) this.eventListeners[eventType] = [];
+        this.eventListeners[eventType].push(callback);
+    }
+}
+export class Animation {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Array<Image>} images 
+     * @param {number} x
+     * @param {number} y
+     */
+    constructor(canvas, images, x, y) {
+        this.canvas = canvas;
+        this.images = images;
+        this.x = x;
+        this.y = y;
+        this.i = 0;
+        this.intervalId = null;
+    }
+    get length() {
+        return this.images.length;
+    }
+    drawFrame(n) {
+        this.canvas.drawImage(this.images[n], this.x, this.y);
+    }
+    crop(rect) {
+        for (var i of this.images) {
+            i.crop(rect);
+        }
+    }
+    resize(w, h) {
+        for (var i of this.images) {
+            i.resize(w, h);
+        }
+    }
+    drawNext() {
+        if (this.i >= this.length) this.i = 0;
+        this.drawFrame(this.i);
+        this.i++;
+    }
+    pause() {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+    }
+    play(frameRate, afterDraw) {
+        this.intervalId = setInterval(() => {
+            if (afterDraw instanceof Function) afterDraw(this.i);
+        }, 1000 / frameRate);
+    }
+    reset() {
+        this.i = 0;
+    }
+    setTo(i) {
+        this.i = i;
+    }
+    static async fromUrls(canvas, urls, x, y) {
+        var m = [];
+        for (var i = 0; i < urls.length; i++) {
+            m[i] = Image.fromUrl(urls[i]);
+        }
+        for (var i = 0; i < m.length; i++) {
+            m[i] = await m[i];
+        }
+        return new Animation(canvas, m, x, y);
+    }
+}
+export class DrawArea extends TriggerArea {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Object} rect 
+     * @param {Function} drawFunction 
+     */
+    constructor(canvas, rect, drawFunction) {
+        if (!rect) rect = {
+            x: 0,
+            y: 0,
+            width: canvas.canvas.width,
+            height: canvas.canvas.height
+        }
+        super(canvas, rect);
+        if (!drawFunction) {
+            drawFunction = (a, b, event) => {
+                this.canvas.save();
+                this.canvas.transform();
+                this.canvas.drawLine(a, b);
+                this.canvas.load();
+            }
+        }
+        this.enabled = true;
+        this.drawing = false;
+        this.lineFunction = drawFunction;
+        this.on("mousedown", event => {
+            this.drawing = true;
+        });
+        this.on("mouseup", event => {
+            this.drawing = false;
+        });
+        this.on("hover", event => {
+            if (!this.prevPos) this.prevPos = { x: event.x, y: event.y };
+            if (this.enabled && this.drawing) {
+                this.lineFunction(this.prevPos, { x: event.x, y: event.y }, event);
+            }
+            this.prevPos = { x: event.x, y: event.y };
+        })
+    }
+    enable() {
+        this.enabled = true;
+    }
+    disable() {
+        this.enabled = false;
+    }
+    toggle() {
+        this.enabled = !this.enabled;
+    }
+}
+
+export class Sprite {
+    /**
+     * 
+     * @param {Canvas} canvas 
+     * @param {Image | Animation} texture 
+     */
+    constructor(canvas, texture) {
+        this.canvas = canvas;
+        this.texture = texture;
+        this.pos = { x: 0, y: 0 };
+        this.v = { x: 0, y: 0 };
+        this.a = { x: 0, y: 0 };
+        this.friction = 1;
+        this.bounce = 0;
+    }
+    get x() {
+        return this.pos.x;
+    }
+    get y() {
+        return this.pos.y;
+    }
+    set x(value) {
+        this.pos.x = value;
+    }
+    set y(value) {
+        this.pos.y = value;
+    }
+    get velocityX() {
+        return this.v.x;
+    }
+    get velocityY() {
+        return this.v.y;
+    }
+    set velocityX(value) {
+        this.v.x = value;
+    }
+    set velocityY(value) {
+        this.v.y = value;
+    }
+    set accelerationX(value) {
+        this.a.x = value;
+    }
+    set accelerationY(value) {
+        this.a.y = value;
+    }
+    get accelerationX() {
+        return this.a.x;
+    }
+    get accelerationY() {
+        return this.a.y;
+    }
+    set maxVelocity(value) {
+        if (value instanceof Range) return this.velocityLimit = { x: value, y: value };
+        if (value instanceof number) return this.velocityLimit = { x: new Range(-value, value), y: new Range(-value, value) };
+        this.velocityLimit = value;
+    }
+    get maxVelocity() {
+        return this.velocityLimit;
+    }
+    set maxAcceleration(value) {
+        if (value instanceof Range) return this.accelerationLimit = { x: value, y: value };
+        if (value instanceof number) return this.accelerationLimit = { x: new Range(-value, value), y: new Range(-value, value) };
+        this.accelerationLimit = value;
+    }
+    get maxAcceleration() {
+        return this.accelerationLimit;
+    }
+    moveX(x) {
+        this.x += x;
+    }
+    moveY(y) {
+        this.y += y;
+    }
+    limitToCanvasBorders(width, height) {
+        this.postionLimit = {
+            x: new Range(0, this.canvas.canvas.width - width),
+            y: new Range(0, this.canvas.canvas.height - height)
+        }
+    }
+    draw() {
+        if (this.accelerationLimit) {
+            this.a.x = this.accelerationLimit.x.limit(this.a.x);
+            this.a.y = this.accelerationLimit.y.limit(this.a.y);
+        }
+
+        this.v.x += this.a.x;
+        this.v.y += this.a.y;
+        this.v.x *= this.friction;
+        this.v.y *= this.friction;
+        if (this.velocityLimit) {
+            if (!this.velocityLimit.x.isWithin(this.v.x)) this.a.x = 0;
+            if (!this.velocityLimit.y.isWithin(this.v.y)) this.a.y = 0;
+            this.v.x = this.velocityLimit.x.limit(this.v.x);
+            this.v.y = this.velocityLimit.y.limit(this.v.y);
+        }
+        this.pos.x += this.v.x;
+        this.pos.y += this.v.y;
+        if (this.postionLimit) {
+            if (!this.postionLimit.x.isWithin(this.pos.x)) this.v.x = - this.v.x * this.bounce;
+            if (!this.postionLimit.y.isWithin(this.pos.y)) this.v.y = - this.v.y * this.bounce;
+            this.pos.x = this.postionLimit.x.limit(this.pos.x);
+            this.pos.y = this.postionLimit.y.limit(this.pos.y);
+        }
+        if (this.texture instanceof Image) {
+            this.canvas.drawImage(this.texture, this.x, this.y);
+        } else if (this.texture instanceof Animation) {
+            this.texture.x = this.x;
+            this.texture.y = this.y;
+            this.texture.drawNext();
+        }
+
+    }
+}
+export class Range {
+    constructor(min, max) {
+        this.min = min;
+        this.max = max;
+    }
+    limit(value) {
+        if (value < this.min) return this.min;
+        if (value > this.max) return this.max;
+        return value;
+    }
+    equals(rangle) {
+        return this.max === rangle.max && this.min === rangle.min;
+    }
+    isWithin(number) {
+        return number < this.max && number > this.min;
     }
 }

@@ -1,21 +1,6 @@
-import { Canvas } from './index.js'
+import { Canvas, round } from './index.js'
 import { decimalRoundAngle, decimalRoundCoordinate, lineLengthMultiplier } from "./constants.js"
 
-
-//! Util
-/**
- * @description Rounds number with given constants 
- * @param {Number} x The number to round
- * @param {"coordinate" | "angle"}
- * @returns {Number}
- */
-export function round(x, type = "coordinate") {
-    switch (type) {
-        case "coordinate": return Math.round(x * Math.pow(10, decimalRoundCoordinate)) / Math.pow(10, decimalRoundCoordinate);
-        case "angle": return Math.round(x * Math.pow(10, decimalRoundAngle)) / Math.pow(10, decimalRoundAngle);
-        default: throw new Error("Unsuported rounding type.")
-    }
-}
 
 
 
@@ -24,11 +9,16 @@ export function round(x, type = "coordinate") {
  * 
  * @private
  */
-export function getIntersect(a, b) {
+function getIntersect(a, b) {
     try {
         return intersectFunctions[a.constructor.name][b.constructor.name](a, b);
     } catch (e) {
-        return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
+        if (!(e instanceof TypeError)) console.error(e);
+        try {
+            return intersectFunctions[b.constructor.name][a.constructor.name](b, a);
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
 /**
@@ -44,7 +34,7 @@ const intersectFunctions = {
          */
         Line: (point, line) => line.x(point.y) === point.x ? point : null,
         /**
-         * 
+         * `
          * @param {Point} point 
          * @param {Point} point2 
          * @returns {Point | null}
@@ -101,9 +91,9 @@ const intersectFunctions = {
             }
             if (line2.a.x == line2.b.x) return new Point(line2.a.x, line.y(line2.a.x));
             var a1 = line.getLinePolynom().getLinearCoefficient();
-            var b1 = line.getLinePolynom().getAbsoluleCoefficient();
+            var b1 = line.getLinePolynom().getAbsoluteCoefficient();
             var a2 = line2.getLinePolynom().getLinearCoefficient();
-            var b2 = line2.getLinePolynom().getAbsoluleCoefficient();
+            var b2 = line2.getLinePolynom().getAbsoluteCoefficient();
             if (a1 === a2) {
                 if (b1 === b2) {
                     return line;
@@ -204,6 +194,7 @@ const intersectFunctions = {
             var i = l.getIntersect(ray);
             if (i === null) return null; if (i instanceof Point) return i.intersects(segment) ? i : null; else {
                 if (segment.a.intersects(ray)) {
+                    if (segment.a.distance(ray.a) === 0) return ray.a;
                     return segment.b.intersects(ray) ? segment : new Segment(segment.a, ray.a);
                 } else {
                     return segment.b.intersects(ray) ? new Segment(segment.b, ray.a) : null;
@@ -286,6 +277,7 @@ const intersectFunctions = {
                 let dx = Math.cos(angle) * l;
                 let dy = Math.sin(angle) * l;
                 let p = new Point(circle.center.x + dx, circle.center.y + dy);
+                if (!p.intersects(line)) p = new Point(circle.center.x + dx, circle.center.y - dy);
                 return [p, p.reflectAbout(circle.center)];
             }
             var c = new Circle(line.getIntersect(h), l);
@@ -295,7 +287,7 @@ const intersectFunctions = {
          * 
          * @param {Circle} circle 
          * @param {Ray} ray 
-         * @returns {[Point, Point], Point, null}
+         * @returns {[Point, Point] | Point | null}
          */
         Ray: (circle, ray) => {
             var l = ray.getLine();
@@ -367,12 +359,15 @@ const intersectFunctions = {
             for (var i = 0; i < c.length; i++) {
                 var v = c[i];
                 if (v instanceof Point) continue;
+                var u = [];
                 for (var a of c) {
-                    if (a instanceof Point) continue;
+                    if (a instanceof Point || a === v) continue;
                     if (!a.intersects(v)) continue;
-                    c.push(v.join(a));
+                    u.push(v.join(a));
                 }
             }
+            c.push(...u);
+
             //Removes extra segments
             for (var i = 0; i < c.length; i++) {
                 var v = c[i];
@@ -535,7 +530,7 @@ const intersectFunctions = {
          * @param {Segment} segment
          * @returns {Array<Segment | Point> | Segment | Point | null}
          */
-        Segment: (triangle, segment) => intersectFunctions.Polygon.Ray(triangle, segment),
+        Segment: (triangle, segment) => intersectFunctions.Polygon.Segment(triangle, segment),
     }
 }
 
@@ -608,7 +603,22 @@ export class Polygon extends Base {
      * @returns {String}
      */
     toString() {
-        return `Polygon: (${this.edges.join(", ")}})`;
+        return `Polygon: (${this.vertices.join(", ")}})`;
+    }
+    /**
+     * 
+     * @param {number} vertices 
+     * @param {Point} center 
+     * @param {number} radius 
+     * @param {number} angle 
+     */
+    static createRegular(vertices, center, radius, angle = 0) {
+        var angleIncrement = Math.PI * 2 / vertices;
+        var vects = [];
+        for (var i = 0; i < vertices; i++) {
+            vects.push(Vector.fromPolar(angle + i * angleIncrement, radius));
+        }
+        return new this(vects.map(v => new Point(v[0] + center.x, v[1] + center.y)));
     }
 }
 
@@ -793,16 +803,23 @@ export class Point extends Base {
             var i = perpendicular.getIntersect(object);
             return this.reflectAbout(i);
         }
-        throw new TypeError("Can not reflect about this object.");
+        throw new TypeError("Cannot reflect about this object.");
     }
     /**
-     * @description Creates a point object form the string representation of it tin the form [x, y];
+     * @description Creates a point object form the string representation of it in the form [x, y];
      * @param {String} string 
      * @returns {Point}
      */
     static fromString(string) {
         var a = string.split("[").pop().split("]")[0].split(", ");
         return new Point(a[0], a[1]);
+    }
+    /**
+     * @param {Vector} vector
+     */
+    static fromVector(vector) {
+        if (vector.length != 2) throw new Error("Can only create a point from a 2D vector.");
+        return new this(vector[0], vector[1]);
     }
 }
 
@@ -846,7 +863,7 @@ export class Polynom {
      * @description Gets the absolute coefficient of this polynom
      * @returns {Number}
      */
-    getAbsoluleCoefficient() {
+    getAbsoluteCoefficient() {
         return this.coefficients[0];
     }
     /**
@@ -957,6 +974,7 @@ export class Segment extends Base {
     constructor(point1, point2) {
         if (!(point1 instanceof Point)) throw new TypeError("The point1 argument must be a type of Point.");
         if (!(point2 instanceof Point)) throw new TypeError("The point2 argument must be a type of Point.");
+        if (point1.distance(point2) === 0) throw new Error("Need two different points to construct a segment.")
         super();
         /**
          * @description The first point of the segment
@@ -1018,11 +1036,11 @@ export class Segment extends Base {
      * @returns {Segment}
      */
     join(segment) {
-        if (!(segment instanceof Segment)) throw new TypeError("The segemnt argument mus be a Segment.");
+        if (!(segment instanceof Segment)) throw new TypeError("The segemnt argument must be a Segment.");
         var i = this.getIntersect(segment);
-        if (i === null) throw new Error("Can not join segments that do not intersect.");
+        if (i === null) throw new Error("Cannot join segments that do not intersect.");
         if (i instanceof Point) {
-            if (!(this.getLine().getIntersect(this) instanceof Segment)) throw new Error("Can not join segments that do not lay on one line.");
+            if (!(this.getLine().getIntersect(this) instanceof Segment)) throw new Error("Cannot join segments that do not lay on one line.");
             var a = [this.a, this.b].find(v => v.distance(i) > 0);
             var b = [segment.a, segment.b].find(v => v.distance(i) > 0);
             return new Segment(a, b);
@@ -1030,6 +1048,7 @@ export class Segment extends Base {
         if (i instanceof Segment) {
             var a = [this.a, this.b].find(v => !v.intersects(i));
             var b = [segment.a, segment.b].find(v => !v.intersects(i));
+            if (a.distance(b) === 0) return segment;
             return new Segment(a, b);
         }
     }
@@ -1095,8 +1114,8 @@ export class Triangle extends Polygon {
         if (!(a instanceof Point)) throw new TypeError("The a argument must be a type of Point.");
         if (!(b instanceof Point)) throw new TypeError("The b argument must be a type of Point.");
         if (!(c instanceof Point)) throw new TypeError("The c argument must be a type of Point.");
-        if (new Line(a, b).intersects(c)) throw new Error("Can not construct a triangle from three points that lay on the same line.");
-        if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle can not match.");
+        if (new Line(a, b).intersects(c)) throw new Error("Cannot construct a triangle from three points that lay on the same line.");
+        if (a.distance(b) === 0 || a.distance(c) === 0 || c.distance(b) === 0) throw new Error("Points on a triangle cannot match.");
         super([a, b, c]);
         /**
          * @description One vertex of the triangle
@@ -1159,6 +1178,13 @@ export class Triangle extends Polygon {
         var c = this.c.length();
         return Math.acos((a * a + b * b - c * c) / (2 * a * b));
     }
+    /**
+     * @description Returns the string representation of this object
+     * @returns {String}
+     */
+    toString() {
+        return `Triangle: (${this.vertices.join(", ")}})`;
+    }
 }
 
 
@@ -1191,7 +1217,7 @@ export class Drawer {
         if (object instanceof Ray) return this.#drawRay(object);
         if (object instanceof Segment) return this.#drawSegment(object);
         if (object instanceof Circle) return this.#drawCircle(object);
-        if (object instanceof Triangle) return this.#drawTriangle(object);
+        if (object instanceof Polygon || object instanceof Triangle) return this.#drawPolygon(object);
         throw new TypeError("Cannot draw this object. If you believe this is not correct, please report this on the offical GitHub page. Object:" + (object && object.constructor ? object.constructor.name : object));
     }
     /**
@@ -1275,15 +1301,184 @@ export class Drawer {
         this.canvas.drawCircle(circle.center.x, circle.center.y, circle.r);
     }
     /**
-     * @description Draws a triangle on to the canvas
-     * @param {Triangle} triangle 
+     * @description Draws a polygon on to the canvas
+     * @param {Polygon} polygon 
      * @returns {void}
      * @private
      */
-    #drawTriangle(triangle) {
-        if (!(triangle instanceof Triangle)) throw new TypeError("The triangle argument must be a type of triangle.");
-        for (var e of triangle.edges) {
-            this.#drawSegment(e);
+    #drawPolygon(polygon) {
+        if (!(polygon instanceof Polygon)) throw new TypeError("The polygon argument must be a type of polygon.");
+        this.canvas.context.beginPath();
+        this.canvas.context.moveTo(polygon.vertices[0].x, polygon.vertices[0].y)
+        for (var i = 1; i < polygon.vertices.length; i++) {
+            this.canvas.context.lineTo(polygon.vertices[i].x, polygon.vertices[i].y);
         }
+        this.canvas.context.closePath();
+        this.canvas.context.stroke();
+    }
+}
+
+
+
+//! Vector
+/**
+ * @extends {Array<number>}
+ */
+export class Vector extends Array {
+    /**
+     * 
+     * @param  {...Number} values 
+     */
+    constructor(...values) {
+        super();
+        if (values.length == 0) throw new Error("Vector must have at least one value.");
+        if (values.length == 1) console.warn("You are trying to use a vector with just one value. Consider using the native number class for better performance.");
+        this.push(...values);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    multiply(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val * vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not multiply vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] * vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    divide(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val / vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not divide vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] / vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    add(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val + vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not add vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] + vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {Vector}
+     */
+    minus(vector) {
+        if (vector instanceof Number) {
+            var v = [];
+            for (var val of this) {
+                v.push(val - vector);
+            }
+            return new Vector(...v);
+        }
+        if (vector.length != this.length) throw new Error("Can not minus vectors, that don't have the same length.");
+        var v = [];
+        for (var i = 0; i < vector.length; i++) {
+            v.push(this[i] - vector[i]);
+        }
+        return new Vector(...v);
+    }
+    /**
+     * @returns {String}
+     */
+    toString() {
+        return `Vector${this.length}D: [${this.join(", ")}]`;
+    }
+    /**
+     * @returns {number}
+     */
+    magnitude() {
+        return Math.pow(this.map(v => v * v).reduce((a, b) => a + b), 1 / 2);
+    }
+    /**
+     * 
+     * @param {Vector} vector 
+     * @returns {number}
+     */
+    dotProduct(vector) {
+        return this.map((v, i) => v * vector[i]).reduce((a, b) => a + b);
+    }
+    /**
+     * @returns {Vector}
+     */
+    normalize() {
+        return new Vector(...this.map(v => v / this.magnitude()));
+    }
+    map(callback) {
+        var t = [];
+        for (var tt of this) {
+            t.push(callback(tt));
+        }
+        return t;
+    }
+    /**
+     * 
+     * @param {number} magnitude 
+     * @returns {Vector}
+     */
+    setMagnitude(magnitude) {
+        return new Vector(...this.map(v => v / (this.magnitude() / magnitude)));
+    }
+    /**
+     * 
+     * @param {number} limit
+     * @returns {Vector} 
+     */
+    limitMagnitude(limit) {
+        var v = this.setMagnitude(limit);
+        if (v.magnitude() >= this.magnitude) return this;
+        return v;
+    }
+    /**
+     * @returns {number}
+     */
+    angle() {
+        if (this.length != 2) throw new Error("This method is only defined for a two dimensional vector.");
+        return Math.atan2(this[1], this[0]);
+    }
+    /**
+     * 
+     * @param {number} angle 
+     * @param {number} magnitude 
+     */
+    static fromPolar(angle, magnitude = 1) {
+        return new Vector(Math.cos(angle) * magnitude, Math.sin(angle) * magnitude);
     }
 }
